@@ -1,0 +1,511 @@
+<apex:page showHeader="false" sidebar="false" showChat="false" showQuickActionVfHeader="false"
+    controller="PaymentMethodsController" action="{!initStripeProps}" docType="html-5.0">
+    <apex:includeScript value="{!$Resource.jquery}" />
+    <apex:includeScript value="{!$Resource.StripePaymentMethod}" />
+    <apex:stylesheet value="{!$Resource.transaction_css}" />
+    <apex:stylesheet value="{!$Resource.StripePaymentMethod_css}" />
+    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add or Replace Payment Method</title>
+    
+    <body class="bodybgstyle">
+        <apex:slds />
+        <div class="slds-scope slds-grow slds-p-top_xx-large">
+            <div id="spinner" class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+
+            <apex:form >
+                <input type="hidden" value="{!stripePublishableKey}" id="stripePublishableKey" />
+                <input type="hidden" value="{!labelsJson}" id="customLabels" />
+                <input type="hidden" value="{!appMode}" id="app-mode" />  
+                <input type="hidden" value="{!IF(cards == null || cards.empty, false, true)}" id="cardsExists" />  
+                <apex:actionFunction name="resetStripeError" action="{!resetStripeError}"
+                    rerender="fetchStripeErrorscriptBlock" />
+            </apex:form>    
+
+            <div class="slds-grid slds-grid_vertical slds-grid_vertical-align-center slds-grid_align-center slds-p-top_xx-large">
+                <apex:pageBlock rendered="{!not(isblank(error))}">
+                    <apex:pageMessage summary="{!error}" severity="error" />
+                </apex:pageBlock>
+
+                <div class="stripeErrorBlock my-10px">
+                    <apex:outPutPanel id="fetchStripeErrorscriptBlock">
+                        <input type="hidden" value="{!stripeError}" id="stripeError" />
+                        <apex:pageBlock rendered="{!(stripeError != '')}">
+                            <apex:pageMessage summary="{!stripeError}" severity="ERROR" />
+                            <div style="text-align: center">
+                                <button class="payment-button retrypaymentexception" id="retrypaymentexception" name="retry"
+                                    type="button" onclick="hidestripeErrorBlock();">Retry Payment</button>
+                            </div>
+                        </apex:pageBlock>
+                    </apex:outPutPanel>
+                </div>
+            </div>
+
+            <apex:form id="payment-form" styleClass="payment-form">
+                <div class="slds-grid slds-grid_vertical slds-grid_vertical-align-center slds-grid_align-center slds-p-top_xx-large">
+                    
+                    <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-col slds-align-middle my-10px">
+                            <apex:pageBlock rendered="{!isblank(error)}">
+                                <h3 style="margin-bottom: 20px;">
+                                    Hi <span>{!contact.Name}</span>,
+                                    <apex:outputPanel rendered="{!if(defaultPaymentMethodId != null  , true ,false)}">
+                                        Replace Card for <span>{!organization}</span>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!if(defaultPaymentMethodId == null  , true ,false)}">
+                                        Add New Card for <span>{!organization}</span>
+                                    </apex:outputPanel>
+                                </h3>
+                                <apex:outputPanel rendered="{!if(defaultPaymentMethodId != null  , true ,false)}">
+                                    <div style="text-align: center">
+                                        <apex:commandbutton styleClass="replacecard-button"
+                                            onclick="addorReplaceCard()" reRender="none"
+                                            value="{!if(defaultPaymentMethodId != null  , 'Replace Card' ,'Add Card')}" />
+                                    </div>
+                                </apex:outputPanel>
+                                
+                                <div class="cards-tab">
+                                    <div class="existingcards">
+                                        <apex:repeat value="{!cards}" var="card">
+                                            <div class="customcc">
+                                                <div class="card p-relative">
+                                                    <div class="{!if(card.id = defaultPaymentMethodId  , 'cardstatus selected' ,'cardstatus')}"></div>
+                                                    <div class="flip">
+                                                        <div class="front">
+                                                            <div class="strip-bottom"></div>
+                                                            <div class="strip-top"></div>
+                                                            <div class="investor card-font">{!if(card.id = defaultPaymentMethodId  , 'Default Card' ,'Card')}</div>
+                                                            <div class="chip">
+                                                                <div class="chip-line"></div>
+                                                                <div class="chip-line"></div>
+                                                                <div class="chip-line"></div>
+                                                                <div class="chip-line"></div>
+                                                                <div class="chip-main"></div>
+                                                            </div>
+                                                            <svg class="wave" viewBox="0 3.71 26.959 38.787" width="26.959"
+                                                                height="38.787" fill="white">
+                                                                <path
+                                                                    d="M19.709 3.719c.266.043.5.187.656.406 4.125 5.207 6.594 11.781 6.594 18.938 0 7.156-2.469 13.73-6.594 18.937-.195.336-.57.531-.957.492a.9946.9946 0 0 1-.851-.66c-.129-.367-.035-.777.246-1.051 3.855-4.867 6.156-11.023 6.156-17.718 0-6.696-2.301-12.852-6.156-17.719-.262-.317-.301-.762-.102-1.121.204-.36.602-.559 1.008-.504z">
+                                                                </path>
+                                                                <path
+                                                                    d="M13.74 7.563c.231.039.442.164.594.343 3.508 4.059 5.625 9.371 5.625 15.157 0 5.785-2.113 11.097-5.625 15.156-.363.422-1 .472-1.422.109-.422-.363-.472-1-.109-1.422 3.211-3.711 5.156-8.551 5.156-13.843 0-5.293-1.949-10.133-5.156-13.844-.27-.309-.324-.75-.141-1.114.188-.367.578-.582.985-.542h.093z">
+                                                                </path>
+                                                                <path
+                                                                    d="M7.584 11.438c.227.031.438.144.594.312 2.953 2.863 4.781 6.875 4.781 11.313 0 4.433-1.828 8.449-4.781 11.312-.398.387-1.035.383-1.422-.016-.387-.398-.383-1.035.016-1.421 2.582-2.504 4.187-5.993 4.187-9.875 0-3.883-1.605-7.372-4.187-9.875-.321-.282-.426-.739-.266-1.133.164-.395.559-.641.984-.617h.094zM1.178 15.531c.121.02.238.063.344.125 2.633 1.414 4.437 4.215 4.437 7.407 0 3.195-1.797 5.996-4.437 7.406-.492.258-1.102.07-1.36-.422-.257-.492-.07-1.102.422-1.359 2.012-1.075 3.375-3.176 3.375-5.625 0-2.446-1.371-4.551-3.375-5.625-.441-.204-.676-.692-.551-1.165.122-.468.567-.785 1.051-.742h.094z">
+                                                                </path>
+                                                            </svg>
+                                                            <div class="card-number card-font">
+                                                                <div class="section card-font fs-22px">xxxx</div>
+                                                                <div class="section card-font fs-22px">xxxx</div>
+                                                                <div class="section card-font fs-22px">xxxx</div>
+                                                                <div class="section card-font fs-22px">{!card.last4}</div>
+                                                            </div>
+                                                            <div class="end"><span class="end-text card-font">Exp.
+                                                                    End:</span><span class="end-date card-font">
+                                                                    {!card.exp_month}/{!card.exp_year}</span></div>
+                                                            <div class="card-holder card-font">{!contact.Name}</div>
+                                                            <div class="master">
+                                                                <apex:image rendered="{!contains(card.brand, 'Visa')}"
+                                                                    value="{!$Resource.visa}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'MasterCard')}"
+                                                                    value="{!$Resource.Mastercard}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'Maestro')}"
+                                                                    value="{!$Resource.Maestro}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'Cirrus')}"
+                                                                    value="{!$Resource.Cirrus}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'American Express')}"
+                                                                    value="{!$Resource.AmericanExpress}" width="40"
+                                                                    height="40" alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'Discover')}"
+                                                                    value="{!$Resource.Discover}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'Diners Club')}"
+                                                                    value="{!$Resource.DinersClub}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'JCB')}"
+                                                                    value="{!$Resource.JCB}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'UnionPay')}"
+                                                                    value="{!$Resource.UnionPay}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                                <apex:image rendered="{!contains(card.brand, 'unknown') || isBlank(card.brand)}"
+                                                                    value="{!$Resource.UnknownCard}" width="40" height="40"
+                                                                    alt="{!card.brand}" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </apex:repeat>
+                                    </div>
+                                    <div class="newcardform" id="newcardform">
+                                        <apex:pageBlockSection columns="1">
+                                            <apex:pageBlockSectionItem >
+                                                <apex:outputPanel >
+                                                    <div class="payment-group1">
+                                                        <div class="group">
+                                                            <div>
+                                                                <div>
+                                                                    <div id="pouet">
+
+                                                                        <section class="stripe-wrap-float-labels">
+                                                                            <div class="cardwrapper">
+                                                                                <div>
+                                                                                    <div class="stripe-label-row">
+                                                                                        <div class="stripelabel-field">
+                                                                                            <div id="stripe-card-number" class="stripe-label-input empty"></div>
+                                                                                            <label for="stripe-card-number">Card Number</label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="stripe-label-row">
+                                                                                        <div class="stripelabel-field half-width">
+                                                                                            <div id="stripe-card-expiry" class="stripe-label-input empty"></div>
+                                                                                            <label class="stripe-label" for="stripe-card-expiry">Expiration</label>
+                                                                                        </div>
+                                                                                        <div class="stripelabel-field half-width">
+                                                                                            <div id="stripe-card-cvc" class="stripe-label-input empty"></div>
+                                                                                            <label for="stripe-card-cvc">CVC</label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </section>
+
+                                                                    </div>
+                                                                    <div id="card-errors" class="stripe-error error" role="alert"></div>
+                                                                    <div>
+                                                                        <div class="outcome">
+                                                                            <span class="save-card-cb-container">
+                                                                                <label for="save-card">
+                                                                                    <input type="checkbox" id="save-card" checked="checked" disabled="disabled" />
+                                                                                    {!$Label.save_card_for_future_checkouts}
+                                                                                </label>
+                                                                            </span>
+                                                                        </div>
+                                                                        <div style="text-align: center">
+                                                                            <apex:commandbutton styleClass="payment-button"
+                                                                                onclick="addNewCard()" reRender="none"
+                                                                                value="Save Card" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </apex:outputPanel>
+                                            </apex:pageBlockSectionItem>
+                                        </apex:pageBlockSection>
+                                    </div>    
+                                </div>
+                            </apex:pageBlock>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <apex:actionFunction name="saveNewCardToken" action="{!saveNewCard}" reRender="charge-output, payment-form, fetchStripeErrorscriptBlock"
+                                     oncomplete="chargeComplete('{!newCard}')">
+                    <apex:param name="request" assignTo="{!stripePaymentRequestJson}" value=""/>
+                </apex:actionFunction>
+
+            </apex:form>
+
+            <!-- Show Success Message After Card Adding to Stripe -->            
+            <apex:outputPanel id="charge-output" styleClass="charge-output">
+                <apex:outputPanel styleClass="charge-output-panel">
+                        <apex:outputPanel rendered="{!if(newPaymentMethodId != null  , true ,false)}">
+                            <!-- Store Transaction Record Details-->
+                            <apex:variable value="{!newCard}" var="responseSavedCard"/>
+<!-- Start Custom Receipt Design Starts Here-->
+<div class="slds-grid slds-grid_align-center">
+    <div class="slds-col slds-align-middle">
+        <div class="bg-lightgrey">
+            <div class="margin-auto-w-100">
+                <table align="center" border="0" cellpadding="0" cellspacing="0"
+                    role="presentation" class="w-100">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td-format">
+                                <div class="customtablewrapper-inline-column">
+                                    <table border="0" cellpadding="0" cellspacing="0"
+                                        role="presentation" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="v-align-top;p-0">
+                                                    <table border="0" cellpadding="0"
+                                                        cellspacing="0" role="presentation"
+                                                        width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left" class="customtable-tdreset-wbreak">
+                                                                    <div class="cell-alingleft-c-black-f-13 text-black">
+                                                                        <div class="border-box">
+                                                                            <div class="companyname-highlight">
+                                                                                <div class="companyname-wrapper">
+                                                                                    <span class="text-white">{!contact.Name}</span>
+                                                                                </div>
+                                                                                <div class="transaction-status-wrapper mt-16px pt-12px pb-12px bg-color-white text-align-center">
+                                                                                    <div class="transactionstatus-icon margin-left-right-auto">
+                                                                                        <img src="{!$Resource.success_icon }"
+                                                                                            alt="Success"
+                                                                                            class="custom-image-default"></img>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="margin-auto-w-100">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td-format">
+                                <div class="customtablewrapper-inline-column">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="v-align-top;p-0">
+                                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left" class="customtable-tdreset-wbreak">
+                                                                    <div class="cell-alingleft-c-black-f-13 text-black">
+                                                                        <div class="transaction-status-wrapper text-dblue fw-900 pt-12px pb-12px bg-color-white text-align-center">
+                                                                            <div class="margin-left-right-auto transaction-status-message text-dblue fw-900">
+                                                                                Card Added Successfully
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="margin-auto-w-100">
+                <table align="center" border="0" cellpadding="0" cellspacing="0"
+                    role="presentation" class="w-100">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td-format">
+                                <div class="customtablewrapper-inline-column">
+                                    <table border="0" cellpadding="0" cellspacing="0"
+                                        role="presentation" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="v-align-top;p-0">
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left"
+                                                                    class="customtable-tdreset-wbreak">
+                                                                    <div class="cell-alingleft-c-black-f-13 text-black">
+                                                                        <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                                            <div class="transaction-infowrap">
+                                                                                <div class="transaction-itemlabel text-lightgrey">
+                                                                                    {!$ObjectType.Payment_Method__c.fields.Brand__c.Label}
+                                                                                </div>
+                                                                                <div class="transaction-itemvalue text-lightblue">
+                                                                                    {!responseSavedCard.brand}
+                                                                                </div>
+                                                                            </div>
+                                                                            <apex:outputPanel rendered="{!if(responseSavedCard.last4 != null , true ,false)}">
+                                                                                <div class="transaction-infowrap">
+                                                                                    <div class="transaction-itemlabel text-lightgrey">
+                                                                                        {!$ObjectType.Payment_Method__c.fields.Card_Last_4_Digit__c.Label}
+                                                                                    </div>
+                                                                                    <div class="transaction-itemvalue text-lightblue text-capitalize">
+                                                                                        {!responseSavedCard.last4}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </apex:outputPanel>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="margin-auto-w-100">
+                <table align="center" border="0" cellpadding="0" cellspacing="0"
+                    role="presentation" class="w-100">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td-format">
+                                <div class="customtablewrapper-inline-column">
+                                    <table border="0" cellpadding="0" cellspacing="0"
+                                        role="presentation" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="v-align-top;p-0">
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left" class="customtable-tdreset-wbreak">
+                                                                    <div class="cell-alingleft-c-black-f-13 text-black">
+                                                                        <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                                            <div class="transaction-infowrap">
+                                                                                <div class="transaction-itemlabel text-lightgrey">
+                                                                                    {!$ObjectType.Account.Label}
+                                                                                </div>
+                                                                                <div class="transaction-itemvalue text-lightblue">
+                                                                                    {!contact.Account.Name}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="margin-auto-w-100">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td-format">
+                                <div class="customtablewrapper-inline-column">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="v-align-top;p-0">
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left" class="customtable-tdreset-wbreak">
+                                                                    <div class="cell-alingleft-c-black-f-13 text-black">
+                                                                        <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                                            <div class="fs-14px text-align-center lh-1-5 text-lightblue">
+                                                                                For any queries please reach out to {!contact.Account.Name}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="margin-auto-w-100">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+                    <tbody>
+                        <tr>
+                            <td class="custom-td-format">
+                                <div class="customtablewrapper-inline-column">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td class="v-align-top;p-0">
+                                                    <table border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation" width="100%">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td align="left" class="customtable-tdreset-wbreak">
+                                                                    <div class="cell-alingleft-c-black-f-13 text-black">
+                                                                        <div class="transaction-status-wrapper text-align-center p-td-10px-p-lr12px fs-12px text-lightgrey">
+                                                                            <!-- <div class="mt-16px-mb-16px">
+                                                                                <span class="text-lightgrey fs-12px lh-1-5">
+                                                                                    Please report this payment if you find it to be suspicious<br></br>
+                                                                                    <span class="text-lightgrey fs-12px lh-1-5">or fraudulent&nbsp;</span>
+                                                                                    <a href="mailto:" class="custom-link" target="_blank"></a>
+                                                                                </span>
+                                                                            </div> -->
+                                                                            <div class="mt-16px-mb-16px">
+                                                                                <div>
+                                                                                    <div class="d-inlineblock v-align-middle">
+                                                                                        CopyRight@{!contact.Account.Name}
+                                                                                    </div>
+                                                                                    <div class="d-inlineblock v-align-middle ml-5px">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Custom Receipt Design Starts Here-->              
+                            
+                        </apex:outputPanel>
+
+                </apex:outputPanel>                
+            </apex:outputPanel> 
+
+        </div>
+
+    </body>
+</apex:page>

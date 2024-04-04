@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "some_error",
+    "message": "some_message",
+    "type": "some_type",
+    "doc_url": null
+  }
+}

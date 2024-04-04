@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="objectapiname" label="Object ApiName" description="Object Apiname Ex: Account" required="true" />
+    <design:attribute name="messagesLimitPerPage" label="Messages Per Page" description="No of Messages Per Page" required="true" default="10" />
+</design:component>

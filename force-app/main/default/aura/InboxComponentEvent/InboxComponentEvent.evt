@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Inbox Component Event.">
+    <aura:attribute name="selectedFromNumber" type="String" default=""></aura:attribute>
+    <aura:attribute name="selectedTemplateText" type="String" default=""></aura:attribute>
+</aura:event>

@@ -1,0 +1,79 @@
+<aura:component description="KanbanDragAndDropComp" 
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+    controller="PMA_SearchController">
+    <aura:attribute name="sObjectName" type="String" default="Order_Item__c"/>
+    <aura:attribute name="sObjectFields" type="String[]" default="['Name', 'Product_Option__c', 'Product__c','Product_Name__c' , 'Product__r.Name', 'Quantity__c', 'Notes__c', 'Item_Status__c' , 'Order__r.Account__c', 'Order__r.Account__r.Name' , 'Order__r.Member__c' , 'Order__r.Member__r.Name' ,'Order__c', 'Order__r.Name', 'Order__r.Order_Type__c','Order__r.Status__c']"/>
+    <aura:attribute name="sObjectPickListFieldApiName" type="String" default="Item_Status__c"/>
+    <!-- Pooling Attributes -->
+    <aura:attribute name="timeoutInMiliseconds" type="Integer" default="30000"/>
+    <aura:attribute name="setIntervalId" type="Integer"/>
+    <aura:attribute name="userInteraction" type="Boolean" default="false"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="sObjectRecordList" type="PMA_SearchController.kanbanWrap"/>
+     <!-- Handler for Page Location Change -->
+    <aura:handler event="aura:locationChange" action="{!c.handleDestroy}"/>
+
+    <div>
+        <div class="card_wrapper d-sm-flex-col slds-grid slds-grid_align-center">
+            <aura:iteration var="pickVal" items="{!v.sObjectRecordList.pickVals}">
+                <aura:if isTrue="{! (pickVal != 'Closed') }">
+                    <div class="stageContainer stage_width" key="{!pickVal}" >
+                        <h1 class="column_heading">{!pickVal}</h1>
+                        <ul ondrop="{!c.drop}" ondragover="{!c.allowDrop}"
+                        class="slds-has-dividers_around-space dropZone list-style-none" data-Pick-Val="{!pickVal}" style="height:70vh;overflow-y:auto;">
+                            <aura:iteration var="objRecord" items="{!v.sObjectRecordList.records}">
+                                <aura:if isTrue="{!pickVal == objRecord.orderLineItemRecord.Item_Status__c}">
+                                    <li class="cusCursor forceRecordLayout" draggable="true" ondragstart="{!c.drag}" data-drag-id="{!objRecord.orderLineItemRecord.Id}">
+                                        <article class="pipelineViewCard uiDraggable">
+                                            <div class="pipelineViewCardInnerWrapper">
+                                                <div class="slds-grid slds-grid_align-spread">
+                                                    <div class="slds-grid slds-grid_vertical slds-gutters_direct align-self-center slds-grid_vertical-align-center next-stagebtnwrap d-largescreen-none xx-small" data-record-id="{!objRecord.orderLineItemRecord.Id}"  onclick="{!c.itemTouchPrevStage}">
+                                                        <lightning:icon class="movetonextstage" size="xx-medium" iconName="utility:jump_to_left" alternativeText="jump_to_left" ></lightning:icon>
+                                                    </div>
+                                                    <div class="slds-grid flex-column width-95">
+                                                        <h3 class="slds-truncate1">
+                                                            <span class="slds-truncate1 carditem-title">
+                                                                {!objRecord.orderLineItemRecord.Order__r.Member__r.Name} : {!objRecord.orderLineItemRecord.Order__r.Name}
+                                                            </span>
+                                                        </h3>
+                                                        <h3 class="slds-truncate1" title="{!objRecord.orderLineItemRecord.Product_Name__c}">
+                                                            <span class="slds-truncate1 carditem-title" data-id="{!objRecord.orderLineItemRecord.Product__c}">
+                                                                {!objRecord.orderLineItemRecord.Product_Name__c} x {!objRecord.orderLineItemRecord.Quantity__c}
+                                                            </span>
+                                                        </h3>
+                                                        <aura:if isTrue="{! !empty(objRecord.optionComponentRecords) }">
+                                                            <hr class="mx0-my5"></hr>
+                                                            <span><b class="color-blue">Option Components</b></span>
+                                                            <h3 class="slds-truncate1">
+                                                                <aura:iteration var="optioncomponetrecord"
+                                                                    items="{! objRecord.optionComponentRecords }">
+                                                                    <span class="slds-truncate1 carditem-title">
+                                                                        {! optioncomponetrecord.Name }
+                                                                    </span> <br></br>
+                                                                </aura:iteration>
+                                                            </h3>
+                                                        </aura:if>
+
+                                                        <h3 class="order-notes" title="{!objRecord.orderLineItemRecord.Notes__c}">
+                                                            <span class="slds-text-align_left">
+                                                                {!objRecord.orderLineItemRecord.Notes__c}
+                                                            </span>
+                                                        </h3>
+                                                    </div>
+                                                    <div class="slds-grid slds-grid_vertical slds-m-top_xx-small slds-gutters_direct align-self-center slds-grid_vertical-align-center next-stagebtnwrap d-largescreen-none xx-small" data-record-id="{!objRecord.orderLineItemRecord.Id}"  onclick="{!c.itemTouchNextStage}">
+                                                        <lightning:icon class="movetonextstage" size="xx-medium" iconName="utility:jump_to_right" alternativeText="jump_to_right" ></lightning:icon>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </li>
+                                </aura:if> 
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </aura:if>
+            </aura:iteration>
+        </div>
+    </div>
+</aura:component>

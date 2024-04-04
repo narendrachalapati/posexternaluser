@@ -1,0 +1,25 @@
+{
+  "api_id": "befc2dda-d622-11ec-92ce-0242ac110003",
+  "objects": [
+    {
+      "content_type": "image/jpeg",
+      "file_name": "sample_file1.jpg",
+      "media_id": "5aa6ece8-3191-4197-9c67-2da00bc4bb84",
+      "size": 85277,
+      "status": "success",
+      "status_code": 201,
+      "upload_time": "2021-02-17T07:16:09.153289Z",
+      "media_url": "https://media.plivo.com/Account/123/Media/456"
+    },
+    {
+      "content_type": "image/png",
+      "file_name": "sample_file2.png",
+      "media_id": "5aa6ece8-3191-4197-9c67-2da00bc4bb85",
+      "size": 16709,
+      "status": "success",
+      "status_code": 201,
+      "upload_time": "2021-02-18T11:21:55.972100055Z",
+      "media_url": "https://media.plivo.com/Account/123/Media/456"
+    }
+  ]
+  }

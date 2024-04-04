@@ -1,0 +1,106 @@
+<aura:component
+                implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,forceCommunity:searchInterface,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable"
+                controller="MassMessageController" access="global">
+    
+    <ltng:require
+                  styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.jquerylib + '/css/jquery.fancybox.min.css')}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="sObjectApiName" type="String" default=""></aura:attribute>
+    
+    <aura:attribute name="ltngSelectedvalue" type="string" default="" />
+    <aura:attribute name="currentMessage" type="string" default="" />
+    <aura:attribute name="selectedlistviewId" type="string" default="" />
+    <aura:attribute name="Activitylist" type="List" default="" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="mycolumns" type="List" />
+    <aura:import library="lightning:confirm" property="LightningConfirm" />
+    <!--mass Attributes-->
+    <aura:attribute name="listviewobjt" type="list" />
+    <aura:attribute name="selectedlistofrecords" type="list" />
+    <!--mass Attributes-->
+    <aura:attribute name="selectedPhoneNumber" type="string" default="" />
+    
+    <!--mms Attributes-->
+    <aura:attribute name="mmsPreview" type="string" default="" />
+    <aura:attribute name="fileName" type="string" default="" />
+    <aura:attribute name="fileType" type="string" default="" />
+    <aura:attribute name="currentAttachId" type="string" default="" />
+    
+    <!-- Storing Message text for Character Count and Limits -->
+    <aura:attribute name="messageFieldMaxLength" type="Integer" default="160" />
+    <aura:attribute name="messageCharacterCount" type="Integer" default="0" />
+    <aura:attribute name="smsCount" type="Integer" default="0" />
+    
+    <aura:handler name="fromNumberEvent" event="c:InboxComponentEvent" action="{!c.handleFromNumberComponentEvent}" />
+    <aura:handler name="selectTemplateEvent" event="c:InboxComponentEvent" action="{!c.handleTemplateComponentEvent}" />
+    
+    <div>
+        <lightning:card>
+            <div class="button-flex custom-scrollbar">
+                <aura:iteration items="{!v.listviewobjt}" var="listview" indexVar="key">
+                    
+                    <button type="button"
+                            class="{! (v.selectedlistviewId == listview.Id) ? 'button-outline active' : 'button-outline' }"
+                            data-listviewid="{!listview.Id}" onclick="{! c.openingmessagebox }"><span>{! listview.Name
+                        }</span></button>
+                </aura:iteration>
+            </div>
+            <div class="slds-grid slds-grid_align-spread slds-wrap">
+                <div class="slds-var-p-around_xx-small container lgc-bg">
+                    <c:TemplateCmp sObjectApiName="{!v.sObjectApiName}"></c:TemplateCmp>
+                </div>
+                <div class="slds-var-p-around_xx-small container lgc-bg">
+                    <c:FromCmp></c:FromCmp>
+                </div>
+            </div>
+            
+            <div class="{! (empty(v.mmsPreview)) ? 'messagebox slds-grid d-flex-justify-content-space-between d-flex-align-items-end slds-p-left_x-small slds-p-right_x-small' : 'messagebox slds-grid d-flex-justify-content-space-between slds-wrap d-flex-align-items-end slds-p-left_x-small slds-p-right_x-small' }">
+                <div class="{! (empty(v.mmsPreview)) ? 'filewrapper d-flex-align-self-start' : 'filewrapper d-flex-align-self-start d-flex-100' }">
+                    <aura:if isTrue="{! (empty(v.mmsPreview)) }">
+                        <lightning:input class="fileuploadinput" aura:id="fileId"
+                                         onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment"
+                                         accept="image/png,image/jpg,image/jpeg" multiple="false" />
+                    </aura:if>
+                    
+                    <aura:if isTrue="{! (!empty(v.mmsPreview)) }">
+                        <div class="file-preview-sf">
+                            <div class="slds-is-relative w-max-content">
+                                <img src="{!v.mmsPreview}" class="image-preview"></img>
+                                <div class="change-image slds-is-absolute" onclick="{!c.resetFile}">
+                                    <lightning:icon iconName='standard:recycle_bin' alternativeText='recycle_bin'
+                                                    size='small' title='recycle_bin'>
+                                    </lightning:icon>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                </div>
+                <textarea class="message-input"
+                          placeholder="Enter message here for selected listview contacts" type="text" onfocus="{!c.onFocusSendMessageHandler}" onfocusout="{!c.onFocusOutSendMessageHandler}"
+                          onkeyup="{!c.updateActivityMesssage}" autoComplete="off">{!v.currentMessage}</textarea>
+                <lightning:icon iconName='utility:send' alternativeText='send' size='large' title='send'
+                                onclick="{!c.openConfirm}" class="d-flex-align-self-start"></lightning:icon>
+            </div>
+            <div class="sms-counter-wrap">
+                <span class="message-counter">{!v.messageCharacterCount}</span>/<span class="message-max-size">{!v.messageFieldMaxLength}</span>
+                | &nbsp; <span class="sms-count">{!v.smsCount}</span> SMS
+            </div>
+            <c:PreviewSMS templateBody="{!v.currentMessage}"></c:PreviewSMS>
+        </lightning:card>
+
+        <lightning:card>
+            <lightning:datatable data="{! v.selectedlistofrecords }" hideCheckboxColumn="true"
+                                 columns="{! v.mycolumns }" keyField="id" />
+            
+        </lightning:card>
+    </div>
+    
+    <aura:if isTrue="{!v.isLoading}">
+        <div class="slds-spinner_container centered-axis-xy">
+            <div role="status" class="slds-spinner">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

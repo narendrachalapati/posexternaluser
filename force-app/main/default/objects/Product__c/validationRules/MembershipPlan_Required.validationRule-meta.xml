@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MembershipPlan_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( ISPICKVAL( Product_Family__c , &quot;Membership Fees&quot;),
+ ISPICKVAL( Plan__c , &quot;&quot; ) 
+)</errorConditionFormula>
+    <errorDisplayField>Plan__c</errorDisplayField>
+    <errorMessage>Please Select Plan Type for Membership Fee Product</errorMessage>
+</ValidationRule>

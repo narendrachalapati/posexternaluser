@@ -1,0 +1,157 @@
+<aura:component  controller="ChatBotController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global" >
+
+   <!--Attribute section start-->
+   <!-- Boolean Attribute for Isolated Component -->
+   <aura:attribute name="isIsolatedComponent" type="Boolean" default="false" />
+   <!-- Boolean Attribute for Loading -->
+   <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+   <!-- Storing Current User Details -->
+    <!-- <aura:attribute name="currentUser" type="User" /> -->
+
+   <!-- Boolean to Show Quicksend for Phone Number Not Found --> 
+   <aura:attribute name="showSendMessagetoNewPhone" type="Boolean" default="false"/>
+
+   <!-- Load Previous Pages Limit Per Page and Store offset Attributes-->
+   <aura:attribute name="messagesLimitPerPage" type="Integer" default="10"/>
+   <aura:attribute name="currentMessagesListPage" type="Integer" default="1"/>
+   <aura:attribute name="currentOffset" type="Integer" default="0"/>
+
+   <!-- Application Event Specific Flters -->
+   <aura:attribute name='componentUniqueName' type='String' default=""/>
+
+   <!-- Onload Store ContactList Wrapper -->  
+   <aura:attribute name="activitywrapper" type="ChatBotController.InboxMember" />
+
+   <!-- Selected Member Fields -->
+   <aura:attribute name="SelectedRecordId" type="String" />
+   <aura:attribute name="SelectedContactPhone" type="String" />
+   <aura:attribute name="SelectedLatestActivityNum" type="Double" default="0" />
+   <aura:attribute name="SelectedObjectapiname" type="String" default="" />
+   <!-- Pooling Attributes -->
+   <aura:attribute name="timeoutInMiliseconds" type="Integer" default="10000"/>
+   <aura:attribute name="setIntervalId" type="Integer"/>
+   <aura:attribute name="userInteraction" type="Boolean" default="false"/>
+
+   <!-- Search contact attributes -->
+   <aura:attribute name="searchText" type="String" default="" />
+   <aura:attribute name="searchDelay" type="Integer" default="300"/>
+   <aura:attribute name="searchDelayTimeout" type="Integer"/>
+   <!--Attribute section end-->
+   
+   <lightning:navigation aura:id="navigate" />
+
+   <!-- Register Inbox Pooling Application Event -->
+   <aura:registerEvent name="InboxPoolingEvent" type="c:InboxApplicationEvent"/>
+   <!-- Register for Communications Application Event -->
+   <aura:registerEvent name="communicateEvent" type="c:componentCommunicationEvent"/>
+
+   <!-- Handlers section -->
+   <aura:handler name="init" value="{!this}" action="{!c.doint}" />
+   <!-- Handler for Inbox Pooling Application Event -->
+   <aura:handler event="c:InboxApplicationEvent" action="{!c.handleInboxPoolingEvent}"/>
+   <!-- Handler for Component Communication -->
+   <aura:handler event="c:componentCommunicationEvent" action="{!c.handleComponentCommunicationEvent}"/>
+   <!-- Handler for Page Location Change -->
+   <aura:handler event="aura:locationChange" action="{!c.handleDestroy}"/>
+   
+   <aura:if isTrue="{!v.isLoading}">
+      <div class="spinnercontain">
+         <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+               <span class="slds-assistive-text">{!$Label.c.Loading_Message}</span>
+               <div class="slds-spinner__dot-a"></div>
+               <div class="slds-spinner__dot-b"></div>
+            </div>
+         </div>
+      </div>
+   </aura:if>
+
+      <div class="sf-wrapper-main">
+         <div class="sf-wrapper-main">
+
+               <div class="{! (v.isIsolatedComponent) ? v.componentUniqueName + ' memberslisttab activetab main-screen inbox-wrapper-height d-flex' : 'memberslisttab activetab main-screen inbox-wrapper-height d-flex' }">
+
+                  <div class="d-flex d-flex-column d-flex-min-w-0 d-flex-w-100">
+                     <div class="search-screen-header d-flex d-flex-column d-flex-justify-content-center d-flex-align-items-center">
+                        <input id="searchInput" onkeyup="{!c.onEnterText}" value="{!v.searchText}" type="text"
+                           placeholder="Search Contacts here" class="search-input" autocomplete="false"/>
+                        <hr class="divider" />   
+                     </div>
+
+                     <div class="home-screen-messages homeScreenMessagesBody">
+                        <!-- Start Members List -->
+                        <aura:if isTrue="{! !empty(v.activitywrapper)}">
+                           <aura:iteration items="{!v.activitywrapper}" var="ActContwrapper">
+                              <div class="{!  ( !empty(v.SelectedContactPhone) &amp;&amp; ( ActContwrapper.contactPhoneNumber == v.SelectedContactPhone ) ) ? 'home-screen-messages-message message contact-tile active' : 'home-screen-messages-message message contact-tile' }" data-uuid="{! !empty(ActContwrapper.recordId) ? (ActContwrapper.recordId) : ( !empty(ActContwrapper.inboxrecord) ? (ActContwrapper.inboxrecord.Id) : '') }" data-contactPhoneNumber="{! ActContwrapper.contactPhoneNumber}" data-objectApiName="{!ActContwrapper.objectApiName}" data-latestActivityNumber="{!ActContwrapper.latestActivityNumber}" onclick="{!c.OpenMessageDetails}">
+                                    <aura:if isTrue="{! !(ActContwrapper.hasPictureURL) }">
+                                       <span class="slds-avatar noimage">
+                                          <abbr class="slds-avatar__initials br-circle actionbg-color slds-icon-standard-user noimagetext br-circle noimagetext-contlist" title="{! ActContwrapper.contactName }">{!ActContwrapper.shortNameCode}</abbr>
+                                       </span>
+                                    </aura:if>
+                                    <aura:if isTrue="{! ActContwrapper.hasPictureURL }">
+                                       <img src="{! ActContwrapper.pictureURL }" alt="{! ActContwrapper.contactName }"
+                                          class="userimage" />
+                                    </aura:if>
+                                 <div class="home-screen-messages-message-content">
+                                    <div class="home-screen-messages-message-content-top">
+                                       <h4 class="flxcontact slds-truncate text-overflow-elipsis">{!ActContwrapper.contactName}</h4>
+                                       <aura:if isTrue="{! !empty(ActContwrapper.inboxrecord) }">
+                                             <lightning:formattedDateTime class="text-black"
+                                                value="{!ActContwrapper.inboxrecord.Latest_Message_Received_At__c}" month="short"
+                                                day="2-digit" hour="2-digit" minute="2-digit" />
+                                       </aura:if>
+                                       <span></span>
+                                    </div>
+                                    
+                                    <div class="home-screen-messages-message-content-bottom">
+                                       <!-- Start Onload Latest Activity Message -->
+                                       <h4 class="slds-truncate max-width-80 notifyblock">
+                                          {!ActContwrapper.newMessage}
+                                       </h4>
+                                       <!-- End Latest Activity Message -->
+                                       <!-- Start Latest Activity Count -->
+                                       <aura:if isTrue="{! ( ActContwrapper.unreadMessagesCount != 0 ) }">
+                                          <aura:if isTrue="{! ( ( ActContwrapper.contactPhoneNumber != v.SelectedContactPhone ) ) }">
+                                             <span>{!ActContwrapper.unreadMessagesCount}</span>
+                                          </aura:if>
+                                       </aura:if> 
+                                       <!-- End Latest Activity Count -->
+                                       
+                                    </div>
+                                 </div>
+                              </div>
+                           </aura:iteration>
+                        </aura:if>
+                        <!-- End Members List -->
+
+                        <!-- Start No Contact Found -->
+                        <aura:if isTrue="{! empty(v.activitywrapper)}">
+                           <div class="home-screen-messages-message message">
+                              <div class="home-screen-messages-message-content">
+                                 <div class="home-screen-messages-message-content-top d-flex-column d-flex-justify-content-center py-15px">
+                                    <h4>{!$Label.c.No_Contacts_Found}</h4>
+                                    <!-- 
+                                    <aura:if isTrue="{! (v.showSendMessagetoNewPhone)}">
+                                          <div class="sendQuickMessageNewPhone">{!$Label.c.Send_New_Message_To}</div> 
+                                          <div class="py-15px">
+                                             <button class="slds-button slds-button_brand" data-uuid="" data-contactPhoneNumber="{! v.searchText}" data-objectApiName="" data-latestActivityNumber="0" onclick="{!c.OpenMessageDetails}">Send Message</button>
+                                          </div>
+                                    </aura:if>
+                                    -->
+                                 </div>
+                              </div>
+                           </div>
+                        </aura:if>
+                        <!-- End No Contact Found -->
+                     </div>
+
+                  </div>
+
+               </div>
+
+         </div>
+      </div>
+  
+</aura:component>

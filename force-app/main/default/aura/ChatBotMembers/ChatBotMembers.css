@@ -1,0 +1,361 @@
+.THIS .sf-wrapper-main .main-screen {
+    /* height: 550px; */
+    width: 100%;
+    background: white;
+    border-radius: 5px;
+    /* overflow: overlay; */
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen {
+    height: 100%;
+    display: block;
+    padding: 0;
+    /* position: relative; */
+    -webkit-animation: fadein 2s;
+    /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadein 2s;
+    /* Firefox < 16 */
+    -ms-animation: fadein 2s;
+    /* Internet Explorer */
+    -o-animation: fadein 2s;
+    /* Opera < 12.1 */
+    animation: fadein 2s;
+}
+
+.THIS .sf-wrapper-main .main-screen .search-screen-header {
+    padding: 0.51rem;
+    width: 100%;
+    background: white;
+}
+
+.THIS .sf-wrapper-main .main-screen .search-screen-header input {
+    width: 90% !important;
+    padding: 0.8rem;
+    border-radius: 2rem;
+    border: none;
+    background: #f4f4f4;
+}
+
+.THIS .sf-wrapper-main .main-screen .divider {
+    width: 90% !important;
+    margin: 0.8rem 0;
+    border-color: #f4f4f4;
+    border-width: 2px;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages {
+    /* height: 450px; */
+    overflow: hidden auto;
+    /* padding-right: 10px; */
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin-bottom: 0.3rem;
+    cursor: pointer;
+    position: relative;
+    padding: 0 0.5rem;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message.active {
+    background: #e9e9ea;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message img {
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.1rem;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content-top h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.THIS .sf-wrapper-main .text-overflow-elipsis {
+    width: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content-top span {
+    font-size: 14px;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content-bottom h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: #868ca0;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message-content-bottom span {
+    font-size: 14px;
+    width: 30px;
+    text-align: center;
+    background: #4753c7;
+    color: white;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    width: 98%;
+    height: 1px;
+    background: #e3e4e8;
+    right: 0;
+}
+
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Custom Scrollbar */
+.THIS .main-screen::-webkit-scrollbar,
+.THIS .home-screen-messages::-webkit-scrollbar,
+.THIS .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.THIS .main-screen::-webkit-scrollbar-track,
+.THIS .home-screen-messages::-webkit-scrollbar-track,
+.THIS .custom-scrollbar::-webkit-scrollbar-track {
+    background: #BBB;
+}
+
+.THIS .main-screen::-webkit-scrollbar-thumb,
+.THIS .home-screen-messages::-webkit-scrollbar-thumb,
+.THIS .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.THIS .home-screen-messages::webkit-scrollbar-thumb:hover,
+.THIS .custom-scrollbar::webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+/* Custom Css */
+.THIS .flxcontact {
+    flex: 1;
+}
+.THIS .d-flex {
+    display: flex !important;
+}
+
+.THIS .flex-direction_row {
+    flex-direction: row !important;
+}
+
+.THIS .d-flex-column {
+    flex-direction: column !important;
+}
+
+.THIS .d-flex-justify-content-start {
+    justify-content: flex-start !important;
+}
+
+.THIS .d-flex-justify-content-end {
+    justify-content: flex-end !important;
+}
+
+.THIS .d-flex-justify-content-center {
+    justify-content: center !important;
+}
+
+.THIS .d-flex-justify-content-space-between {
+    justify-content: space-between !important;
+}
+
+.THIS .d-flex-align-items-center {
+    align-items: center !important;
+}
+
+.THIS .d-flex-min-w-0{
+    min-width: 0!important;
+}
+.THIS .d-flex-w-100{
+    flex: 0 0 100% !important;
+}
+
+.THIS .py-15px {
+    padding: 15px 0;
+}
+.THIS .max-width-80{
+    max-width: 80%!important;
+}
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message > span{
+    width: 40px;
+    height: 40px;
+    max-width: 40px;
+    min-width: 40px;
+    max-height: 40px;
+    overflow: unset;
+}
+
+/* .THIS .sf-wrapper-main .main-screen .home-screen-messages-message > span > abbr{
+    width: 30px;
+    height: 30px;
+    overflow: unset;
+} */
+
+.THIS .sf-wrapper-main .main-screen .home-screen-messages-message > span > abbr{
+    align-self: flex-end;
+    font-weight: 700;
+}
+
+.THIS .br-circle {
+    border-radius: 50%;
+}
+
+.THIS .actionbg-color {
+    background-color: #7c75e4;
+}
+
+.THIS .action-color {
+    color: #7c75e4;
+}
+/* responsive css*/
+@media only screen and (max-width: 768px){
+    .THIS .memberslisttab.activetab{
+        display: block!important;
+      }
+    .THIS .memberslisttab{
+      display: none!important;
+    }
+}
+
+.THIS .inbox-wrapper-height {
+    height: 75vh !important;
+}
+
+/* Large screens ----------- */
+@media only screen and (min-width : 1824px) {
+    .THIS .inbox-wrapper-height {
+        height: 80vh !important;
+    }
+}
+
+@media (min-width : 1823px) and (max-width:1224px) {
+    .THIS .inbox-wrapper-height {
+        height: 80vh !important;
+    }
+}
+
+/* Desktops and laptops ----------- */
+/* No less than 992px, no greater than 1223px */
+@media (min-width:992px) and (max-width:1223px) {
+    .THIS .inbox-wrapper-height {
+        height: 80vh !important;
+    }
+}
+
+/* Tablets ----------- */
+/* No less than 769px, no greater than 991px */
+@media (min-width:769px) and (max-width:991px) {
+    .THIS .inbox-wrapper-height {
+        height: 70vh !important;
+    }
+}
+
+/* Mobiles ----------- */
+/* No less than 480px, no greater than 768px */
+@media (min-width:480px) and (max-width:768px) {
+    .THIS .inbox-wrapper-height {
+        height: 80vh !important;
+    }
+}
+
+/* Small Screen Mobiles ----------- */
+/* No less than 320px, no greater than 479px */
+@media (min-width:320px) and (max-width:479px) {
+    .THIS .inbox-wrapper-height {
+        height: 95vh !important;
+    }
+}
+
+/* Small Screen Mobiles ----------- */
+/* Screens less than 319px */
+@media only screen and (max-width:319px) {
+    .THIS .inbox-wrapper-height {
+        height: 95vh !important;
+    }
+}

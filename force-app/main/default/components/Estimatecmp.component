@@ -1,0 +1,159 @@
+<apex:component controller="EstimateController" allowDML="true">
+   <apex:stylesheet value="{! URLFOR($Resource.Estimate, '/invoice.css')}"/>
+   <apex:includeScript value="{! URLFOR($Resource.Estimate, '/Estimate.js')}" />
+   <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/jquery.min.js') }" />
+   <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
+  
+   <apex:attribute name="sObject-todo" description="" type="ToDo__c" assignTo="{!todorecord}" />
+   <apex:attribute name="memberId" description="" type="String"  default="0039H000003zaMcQAI" assignTo="{!memberrecordid}"/>
+   <apex:attribute name="AccountId" description="" type="String"  default="" assignTo="{!Accountrecordid}"/>
+   <!--apex:attribute name="memberId" description="" type="String"  default="0039H000003zaMcQAI" assignTo="{!memberrecordid}"/-->
+   <apex:form >
+      <!-- Define the JavaScript function 'init' -->
+      <apex:actionFunction name="init" action="{!EstimateOrderdata}" rerender="outputPanel">
+         <apex:param name="recordid" value="{!memberId}" />
+      </apex:actionFunction>
+      <apex:actionFunction name="Estimatecancle" action="{!cancelOrderdata}" rerender="outputPanel">
+         <apex:param name="orderid" value="{!orderdata.Id}" />
+      </apex:actionFunction>
+   </apex:form>
+   <!-- Call the 'init' JavaScript function after a delay (e.g., 2000 milliseconds) -->
+  
+   <head>
+      <meta charset="utf-8"/>
+      <title>Estimate</title>
+     
+   </head>
+   <apex:outputPanel id="outputPanel">
+
+      <body>
+ <apex:outputPanel rendered="{!orderdata != null  }">
+      <header>
+          
+           <div style="display:flex;justify-content: space-between;">
+            <div>
+            <h1>Estimate</h1>
+            <address class="headeraddress" >
+               <p class="textpropercase">{!orderdata.Member__r.Name}</p>
+               <p>101 E. Chapman Ave<br>Orange, CA 92866 </br></p>
+               <p>{!orderdata.Member__r.Formatted_Phone_Number__c}</p>
+            </address>
+             </div>
+             <div>
+            <span ><img  alt=""  style="width:100%" src="https://municorn.ai/assets/img/logo/logo-m.svg"/>
+            <!--input type="file" accept="image/*"/--></span>
+            </div>
+            </div>
+       </header>
+         <apex:outputPanel rendered="{!cancelorder.Status__c != 'Cancelled' }">
+            <!--h1>Recipient</h1-->
+        <div>
+            <div style="display:flex;">
+               <div class="headeraddress"> 
+                  <address >
+                     <p>Some Company<br>c/o Some Guy</br></p>
+                  </address>
+               </div>
+               <div>
+                  <table class="meta">
+                     <tr>
+                        <th><span >Invoice #</span></th>
+                        <td><span >
+                           {!orderdata.Name}
+                           </span>
+                        </td>
+                     </tr>
+                     <tr>
+                        <th><span >Date</span></th>
+                        <td><span>
+                           <apex:outputText value="{0,date,dd-MM-YYYY}">
+                           <apex:param value="{!orderdata.CreatedDate}"/>
+                        </apex:outputText></span>
+                        </td>
+                     </tr>
+                     <tr>
+                        <th><span >Amount Due</span></th>
+                        <td><span id="prefix" >$</span><span>{!orderdata.Total_Price__c}</span></td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+           
+           <div class ="Dflex"></div>
+           <div></div>
+            <table class="inventory">
+               <thead>
+                  <tr>
+                     <th><span >Item</span></th>
+                     <th><span >Description</span></th>
+                     <th><span >Rate</span></th>
+                     <th><span >Quantity</span></th>
+                     <th><span >Price</span></th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <apex:repeat value="{!orderdata.Order_Items__r}" var="orderIineItem" id="theRepeat">
+                  <tr>
+                     <td><a class="cut">-</a><span >{!orderIineItem.Product_Name__c}</span></td>
+                     <td><span >{!orderIineItem.Notes__c}</span></td>
+                     <td><span>$</span><span >{!orderIineItem.List_Price__c}</span></td>
+                     <td><span >{!orderIineItem.Quantity__c}</span></td>
+                     <td><span>$</span><span>{!orderIineItem.Line_Total_Price__c}</span></td>
+                  </tr>
+               </apex:repeat>
+               </tbody>
+            </table>
+            <!--a class="add">+</a-->
+            <table class="balance">
+               <tr>
+                  <th><span >Total</span></th>
+                  <td><span>$</span><span>{!orderdata.Total_Price__c}</span></td>
+               </tr>
+               <tr>
+                  <th><span >Amount Paid</span></th>
+                  <td><span>$</span><span >0.00</span></td>
+               </tr>
+               <tr>
+                  <th><span >Balance Due</span></th>
+                  <td><span>$</span><span>{!orderdata.Total_Price__c}</span></td>
+               </tr>
+            </table>
+         
+         <div>
+            <button type="button" class="buttoncard payment-card-button" onclick="handlePay">Pay</button>
+            <button type="button" class="buttonCanclecard" onclick="CancelEstimate()">Cancel</button>
+      </div>
+   </div>
+</apex:outputPanel>
+  </apex:outputPanel>
+  <apex:outputpanel rendered="{!cancelorder.Status__c == 'Cancelled'}">
+   <table border="0" width="150" height="50" bgcolor="#0000ff" style="color:aliceblue" >
+     <tr><td>Thank you </td></tr>
+  </table>
+</apex:outputpanel>
+<apex:outputpanel rendered="{!cancelorder.Status__c == 'Cancelled'}">
+   <table border="0" width="150" height="50" bgcolor="#0000ff" style="color:aliceblue" >
+     <tr><td>Thank you </td></tr>
+  </table>
+</apex:outputpanel>
+<apex:outputPanel >
+   <apex:outputPanel rendered="{!orderdata == null }">
+   <div class="displaycenter" id="loader">
+      <apex:image url="{!URLFOR($Resource.Estimate,
+         'loader_animation.gif')}" width="200px" height="150px"/>
+   
+   </div>
+</apex:outputPanel>
+     </apex:outputPanel>     
+
+</body>
+   </apex:outputPanel>
+<script> 
+showLoading();
+window.setTimeout(init, 2000);
+var orderdata = '{!orderdata}';
+console.log('orderdata +++== ' + orderdata);
+//document.getElementById("loader").style.display = "none";
+//hideLoading();
+</script>
+</apex:component>

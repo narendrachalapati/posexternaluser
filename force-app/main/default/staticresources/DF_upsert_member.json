@@ -1,0 +1,83 @@
+{
+    "detectIntentResponseId": "5e94e58d-20b4-413d-ac33-2d95266fc4cb",
+    "intentInfo": {
+        "lastMatchedIntent": "projects/smbenterprise/locations/global/agents/180b195a-f568-479b-a010-fcf794089ad9/intents/cd9e4ed4-88bb-4e17-9407-e69f153e78b5",
+        "displayName": "prebuilt_components_confirmation_yes",
+        "confidence": 1.0
+    },
+    "pageInfo": {
+        "currentPage": "projects/smbenterprise/locations/global/agents/180b195a-f568-479b-a010-fcf794089ad9/flows/119c4666-486e-4bfb-ad66-d1a21fafa4f0/pages/69fde751-bb5c-4414-8d8e-2087861b5f6c",
+        "displayName": "Upsert Member API"
+    },
+    "sessionInfo": {
+        "session": "projects/smbenterprise/locations/global/agents/180b195a-f568-479b-a010-fcf794089ad9/sessions/16ed48-657-934-237-c56f280d1",
+        "parameters": {
+            "accountname": "James Gunn",
+            "additional_action": "",
+            "announce_services": true,
+            "appointment_date": "2023-11-17 12:35:23-0800",
+            "company_name": "Municorn Care",
+            "company_phone": "(216) 367-3252",
+            "company_website": "municorn.ai",
+            "confirm_input": true,
+            "current_flow": "upsert_member",
+            "currentSessionId": "16ed48-657-934-237-c56f280d1",
+            "dateofbirth": "1995-01-01",
+            "dob_date": "1995-01-01",
+            "dob_date_object": {
+                "year": 1995.0,
+                "month": 1.0,
+                "day": 1.0,
+                "hours": 0.0,
+                "minutes": 0.0,
+                "seconds": 0.0,
+                "nanos": 0.0
+            },
+            "firstname": "James",
+            "ismemberfound": false,
+            "isphoneverified": true,
+            "lastname": "Gunn",
+            "leadsource": "Call",
+            "name_collection_firstname": "James",
+            "name_collection_lastname": "Gunn",
+            "next_flow": "",
+            "number_of_days_forward_to_fetch": 90.0,
+            "phonenumber": "14153905925",
+            "resource_path": "memberupsert",
+            "salesforcerecorduuid": "0039H000007shtbQAA-sdhjsjdhsjdh",
+            "selected_service": "Consultation P1",
+            "selected_service_uuid": "bf1e30eb-7203-3339-9e12-150456df6fa4",
+            "services_count": 1.0,
+            "services_name_delimited": "Consultation P1",
+            "services_name_list": [
+                "Consultation P1"
+            ],
+            "services_offered_name_ssml": " Consultation P1 \u003cbreak time\u003d\"300ms\" /\u003e",
+            "services_offered_name_text": "Consultation P1",
+            "services_uuid_delimited": "bf1e30eb-7203-3339-9e12-150456df6fa4",
+            "services_uuid_list": [
+                "bf1e30eb-7203-3339-9e12-150456df6fa4"
+            ],
+            "spell_out_name": null,
+            "stage": "Verified",
+            "telephone_number_collection_complete_phonenumber": "",
+            "telephone_number_collection_country_code": "1",
+            "telephone_number_collection_telephone_number": "4153905925"
+        }
+    },
+    "fulfillmentInfo": {
+        "tag": "upsertmember"
+    },
+    "messages": [
+        {
+            "responseType": "ENTRY_PROMPT",
+            "outputAudioText": {
+                "ssml": "\u003cspeak\u003e\n\u003cprosody rate\u003d\"slow\" pitch\u003d\"-2st\"\u003ePlease wait while I am fetching your details.\u003c/prosody\u003e\n\u003caudio src\u003d\"https://storage.googleapis.com/hold_music/Mellow_D_Music.ogg\"\u003e\nPlaying Hold Music\n\u003c/audio\u003e\n\u003c/speak\u003e",
+                "allowPlaybackInterruption": true
+            },
+            "source": "VIRTUAL_AGENT"
+        }
+    ],
+    "text": "y",
+    "languageCode": "en"
+}

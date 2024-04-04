@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Lead</fullName>
+        <default>true</default>
+        <label>Lead</label>
+    </customValue>
+    <customValue>
+        <fullName>Verified</fullName>
+        <default>false</default>
+        <label>Verified</label>
+    </customValue>
+    <customValue>
+        <fullName>Appointment Scheduled</fullName>
+        <default>false</default>
+        <label>Appointment Scheduled</label>
+    </customValue>
+    <customValue>
+        <fullName>Appointment No Show</fullName>
+        <default>false</default>
+        <label>Appointment No Show</label>
+    </customValue>
+    <customValue>
+        <fullName>Appointment Completed</fullName>
+        <default>false</default>
+        <label>Appointment Completed</label>
+    </customValue>
+    <customValue>
+        <fullName>Active Customer</fullName>
+        <default>false</default>
+        <label>Active Customer</label>
+    </customValue>
+    <description>Used to track new member qualifying progress</description>
+    <masterLabel>Member Stage</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

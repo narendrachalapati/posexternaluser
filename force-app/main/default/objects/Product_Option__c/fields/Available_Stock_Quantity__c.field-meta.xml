@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Available_Stock_Quantity__c</fullName>
+    <externalId>false</externalId>
+    <label>Available Stock Quantity</label>
+    <summarizedField>Product_Option_Component__c.Available_Stock_Quantity__c</summarizedField>
+    <summaryForeignKey>Product_Option_Component__c.Product_Option__c</summaryForeignKey>
+    <summaryOperation>min</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

@@ -1,0 +1,113 @@
+<aura:component description="Image Preview" controller="ImageController" implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+  <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="imageURL" type="String" />
+  <aura:attribute name="Shortcode" type="String" />
+  <aura:attribute name="FullName" type="String" />
+  <aura:attribute name="shape" type="String" default="square" />
+  <aura:attribute name="imgWidth" type="integer" default="200" />
+  <aura:attribute name="imgHeight" type="integer" default="200" />
+  <aura:attribute name="Age" type="integer" />
+  <aura:attribute name="isLoading" type="Boolean" default="false"/>
+  <lightning:layout>
+    <lightning:layoutItem>
+      <div class="">
+        <!-- <section ><div class="cardfind card-container" id="demo"><div class="card"><div class="card-img skeleton"></div><div class="card-title first skeleton"></div><div class="card-title second skeleton"></div></div></div></section> -->
+        <!-- <div class="slds-col slds-grid slds-var-m-bottom_medium"><lightning:select
+                 aura:id="select"
+                 name="select"
+                 label="Select a Style"
+                 onchange="{! c.changeImageStyle }"
+               ><option value="">Style...</option><option value="square">Square</option><option value="round">Rounded</option><option value="fullwidth">Full Width</option></lightning:select></div> -->
+        <!-- <div class="slds-grid slds-size_1-of-2 slds-var-m-bottom_medium"><div
+                 class="slds-col slds-size_1-of-2 slds-var-m-bottom_medium slds-var-m-right_medium"
+               ><ui:inputNumber
+                   label="Image Width: "
+                   value="{!v.imgWidth}"
+                   aura:id="imageWidth"
+                   change="{! c.changeImageWidth }"
+                   updateOn="change"
+                 /><br /></div><div class="slds-col slds-size_1-of-2 slds-var-m-bottom_medium"><ui:inputNumber
+                   label="Image Height: "
+                   value="{!v.imgHeight}"
+                   aura:id="imageHeight"
+                   change="{! c.changeImageHeight }"
+                   updateOn="change"
+                 /><br /></div></div> -->
+        <!-- <aura:if isTrue="{!not(empty(v.imageURL))}"><div class="slds-col slds-grid slds-size_1-of-2"><div class="imagewrapper"><img
+                     src="{!v.imageURL}"
+                     alt="{!v.recordId}"
+                     class="{!'image-' + v.shape}"
+                     style="{!'Width:'+v.imgWidth+'px; height:'+v.imgHeight+'px'}"
+                   /></div></div></aura:if> -->
+        <aura:if isTrue="{!not(empty(v.imageURL))}">
+          <div class="">
+            <div class="product-wrapper"  style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+              <div class="overflow-hidden mx-auto image-wrapper max-height slds-is-relative" style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+                <span class="slds-avatar noimage" style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+                    <img src="{!v.imageURL}" alt="{!v.recordId}" class="{!'image-' + v.shape}" style="{!'Width:'+v.imgWidth+'px; height:'+v.imgHeight+'px'}" />
+                  
+                    <!--
+					<abbr class="slds-avatar__initials slds-icon-standard-user noimagetext" style="{!'Width:'+v.imgWidth+'px; height:'+v.imgHeight+'px'}">
+                  </abbr>
+                    -->
+                </span>
+                <aura:if isTrue="{! (v.Age le 18 ) }">
+                  <span class="slds-theme_error member-age-label">{!v.Age }</span>
+                </aura:if>
+                <aura:if isTrue="{! and( (v.Age gt 18 ), (v.Age lt 21 )) }">
+                  <span class="slds-theme_warning member-age-label">{!v.Age }</span>
+                </aura:if>
+                <aura:if isTrue="{! (v.Age ge 21 ) }">
+                  <span class="slds-theme_success member-age-label">{!v.Age }</span>
+                </aura:if>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+        <aura:if isTrue="{!and(not(empty(v.Shortcode)),empty(v.imageURL))}">
+          <!-- <section class="section-loading dark"><div class="card-container"><div class="card"><div class="card-img skeleton"></div><div class="card-title first skeleton"></div><div class="card-title second skeleton"></div><div class="card-button skeleton"></div></div></div></section> -->
+          <div class="">
+            <div class="product-wrapper" style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+              <div class="overflow-hidden mx-auto image-wrapper max-height slds-is-relative" style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+                <span class="slds-avatar noimage" style="{!'Width:'+v.imgWidth+'px; height:'+v.imgHeight+'px'}">
+                  <abbr class="slds-avatar__initials slds-icon-standard-user noimagetext">{!v.Shortcode}</abbr>
+                </span>
+                <aura:if isTrue="{! (v.Age le 18 ) }">
+                  <span class="slds-theme_error member-age-label">{!v.Age }</span>
+                </aura:if>
+                <aura:if isTrue="{! and( (v.Age gt 18 ), (v.Age lt 21 )) }">
+                  <span class="slds-theme_warning member-age-label">{!v.Age }</span>
+                </aura:if>
+                <aura:if isTrue="{! (v.Age ge 21 ) }">
+                  <span class="slds-theme_success member-age-label">{!v.Age }</span>
+                </aura:if>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+          
+           <aura:if isTrue="{!v.isLoading}">
+            <img src="https://media.giphy.com/media/npCmk0VCFHyUM/giphy.gif"/>
+          </aura:if>
+          
+          
+          
+          <!--<aura:if isTrue="{!v.isLoading}">
+            <div class="slds-card my-2">
+               <div class="spinnercontain" style="height:6rem;position:relative">
+                  <div class="slds-spinner_container">
+                     <div role="status"
+                        class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </aura:if> -->
+      </div>
+    </lightning:layoutItem>
+  </lightning:layout>
+</aura:component>

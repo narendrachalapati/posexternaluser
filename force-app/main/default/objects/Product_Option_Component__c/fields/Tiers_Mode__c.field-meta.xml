@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tiers_Mode__c</fullName>
+    <description>Defines if the tiering price should be graduated or volume based.
+In volume-based tiering, the maximum quantity within a period determines the per-unit price. 
+In graduated tiering, pricing can change as the quantity grows</description>
+    <externalId>false</externalId>
+    <label>Tiers Mode</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>graduated</fullName>
+                <default>false</default>
+                <label>Graduated</label>
+            </value>
+            <value>
+                <fullName>volume</fullName>
+                <default>false</default>
+                <label>Volume</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

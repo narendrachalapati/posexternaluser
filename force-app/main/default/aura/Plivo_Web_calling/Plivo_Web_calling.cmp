@@ -1,0 +1,20 @@
+<aura:component
+   implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,forceCommunity:searchInterface,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable"
+   access="global">
+   <aura:attribute name="messageToJSApp" type="String" />
+   <aura:attribute name="messageFromJSApp" type="String" />
+    <lightning:card title="Plivo webcalling">    
+    
+        <lightning:container aura:id="WebcallingApp" src="{!$Resource.Plivo_package + '/index.html'}" 
+        onmessage="{!c.handleMessage}" 
+            onerror="{!c.handleError}"/>
+
+    </lightning:card>
+
+
+   
+
+   
+
+
+</aura:component>

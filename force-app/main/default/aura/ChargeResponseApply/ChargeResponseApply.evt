@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Apply Charge Response">
+	 <aura:attribute name="paymentStatus" type="String" description="Apply Charge Response"/>
+     <aura:attribute name="event" type="String" description="Event type"/>
+</aura:event>

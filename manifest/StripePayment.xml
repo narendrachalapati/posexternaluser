@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+	<types>
+		<members>SearchController</members>
+		<members>SearchControllerTest</members>
+		<name>ApexClass</name>
+	</types>
+		<types>
+		<!--  Start Helper Components  -->
+		<members>SearchBox</members>
+		<members>SearchBoxResult</members>
+
+		<members>SearchBoxResultApply</members>
+		<members>SearchBoxResultSelection</members>
+		<members>SerchEvent</members>
+        
+		<members>componentCommunicationEvent</members>
+		<!--  End Helper Components  -->
+		<!--  Start Stripe Charge Components  -->
+		<members>Charge</members>
+		<members>ChargeResponseApply</members>
+		<!--  End Stripe Charge Components  -->
+		<name>AuraDefinitionBundle</name>
+	</types>
+    <types>
+		<members>StripeIframeGuestsrc</members>
+		<members>StripeIframeSF</members>
+		<members>StripeIframeSrtipeJS</members>
+		<members>StripeIframeVF</members>
+		<name>CspTrustedSite</name>
+	</types>
+    <types>
+		<members>StripeCardUIIframeSrc</members>
+		<members>StripeIframeVF</members>
+		<members>StripeToken</members>
+		<name>RemoteSiteSetting</name>
+	</types>
+    <types>
+        <members>no_saved_cards_available</members>
+        <name>CustomLabel</name>
+    </types>
+    <types>
+        <members>GuestForm_Site_Link</members>
+        <members>search_prefix</members>
+        
+        <members>credit_or_debit_card</members>
+        <members>no_saved_cards_available</members>
+        <members>process_cart_items</members>
+        <name>CustomLabel</name>
+    </types>
+     <types>
+        <members>success_icon</members>
+        
+        <members>failure_icon</members>
+        <members>success_icon</members>
+    
+    
+    
+        <name>StaticResource</name>
+    </types>
+    <version>56.0</version>
+</Package>

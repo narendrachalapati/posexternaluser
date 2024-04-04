@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+ 
+     <types>
+      <members>Appointment_Scheduling__c.hangoutLink__c</members>
+      <members>Appointment_Scheduling__c.Location__c</members>
+       <members>Product__c.Location__c</members>
+      <members>Product__c.Virtual_Appointment__c</members>
+      <name>CustomField</name>
+    </types>
+ <types>
+    <members>FieldSetting.OB_Appointment_Location</members>
+    <members>FieldSetting.IB_Appointment_Location</members>
+    <members>FieldSetting.OB_Appointment_requestId</members>
+    <members>FieldSetting.IB_Appointment_Meetlink</members>
+    <members>FieldSetting.OB_Appointment_hangouttype</members>
+    <name>CustomMetadata</name>
+ </types>
+  <!-- <types>
+		<members>CustomCalendar</members>
+		<name>StaticResource</name>
+	</types> -->
+   <!--  <types>
+		<members>CalendarUtility</members>
+		<name>ApexClass</name>
+	</types> -->
+     
+    <!-- <types>
+        <members>Calendar</members>
+        <name>ApexPage</name>
+    </types> -->
+  <version>56.0</version>
+</Package>

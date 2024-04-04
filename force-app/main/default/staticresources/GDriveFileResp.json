@@ -1,0 +1,95 @@
+{ "kind": "drive#file",
+  "userPermission": {
+    "id": "me",
+    "type": "user",
+    "role": "owner",
+    "kind": "drive#permission",
+    "selfLink": "https://www.googleapis.com/drive/v2/files/1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw/permissions/me",
+    "etag": "\"OBnuNIaYOoOWL5E_jxD0qKQPzbA\"",
+    "pendingOwner": false
+  },
+  "fileExtension": "png",
+  "md5Checksum": "d0704d631e857acb1b286e55a9e1c2b1",
+  "selfLink": "https://www.googleapis.com/drive/v2/files/1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw",
+  "ownerNames": [
+    "Webmaster Adisols"
+  ],
+  "lastModifyingUserName": "Webmaster Adisols",
+  "editable": true,
+  "writersCanShare": true,
+  "downloadUrl": "https://www.googleapis.com/drive/v2/files/1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw?alt=media&source=downloadUrl",
+  "mimeType": "image/png",
+  "parents": [
+    {
+      "selfLink": "https://www.googleapis.com/drive/v2/files/1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw/parents/14Pm57Dmd2ugt70IJ1mNyyL45iHEPtB17",
+      "id": "14Pm57Dmd2ugt70IJ1mNyyL45iHEPtB17",
+      "isRoot": false,
+      "kind": "drive#parentReference",
+      "parentLink": "https://www.googleapis.com/drive/v2/files/14Pm57Dmd2ugt70IJ1mNyyL45iHEPtB17"
+    }
+  ],
+  "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AKHj6E4GTXXwbXYKo5D_irdF5hxhtS-ku2K_UTQZNORB39jIRmAI8Ha_d1ePDy5PhYRzHaldWWTMcWO00sZ_4lRz4FVwjJ-ppkxXhmLGdD6POg=s220",
+  "appDataContents": false,
+  "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/image/png",
+  "shared": false,
+  "lastModifyingUser": {
+    "displayName": "Webmaster Adisols",
+    "kind": "drive#user",
+    "isAuthenticatedUser": true,
+    "permissionId": "01590765924423329547",
+    "emailAddress": "webmaster@adisols.com",
+    "picture": {
+      "url": "https://lh3.googleusercontent.com/a/default-user=s64"
+    }
+  },
+  "owners": [
+    {
+      "displayName": "Webmaster Adisols",
+      "kind": "drive#user",
+      "isAuthenticatedUser": true,
+      "permissionId": "01590765924423329547",
+      "emailAddress": "webmaster@adisols.com",
+      "picture": {
+        "url": "https://lh3.googleusercontent.com/a/default-user=s64"
+      }
+    }
+  ],
+  "headRevisionId": "0B3jE8dyLZeF8ck9icExJTjFqQmw5ZEZNeDZuOXAyeklWZm9jPQ",
+  "copyable": true,
+  "etag": "\"MTY5OTg5Nzc0OTYyMw\"",
+  "alternateLink": "https://drive.google.com/file/d/1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw/view?usp=drivesdk",
+  "embedLink": "https://drive.google.com/file/d/1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw/preview?usp=drivesdk",
+  "webContentLink": "https://drive.google.com/uc?id=1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw&export=download",
+  "fileSize": "1680",
+  "copyRequiresWriterPermission": false,
+  "spaces": [
+    "drive"
+  ],
+  "id": "1BtmgK5-2TAnDwBRJRf9_2FxAtCU34bEw",
+  "title": "checkin.png",
+  "labels": {
+    "viewed": true,
+    "restricted": false,
+    "starred": false,
+    "hidden": false,
+    "trashed": false
+  },
+  "explicitlyTrashed": false,
+  "createdDate": "2023-11-13T17:49:09.623Z",
+  "modifiedDate": "2023-11-13T17:49:09.623Z",
+  "modifiedByMeDate": "2023-11-13T17:49:09.623Z",
+  "lastViewedByMeDate": "2023-11-13T17:49:09.623Z",
+  "markedViewedByMeDate": "1970-01-01T00:00:00.000Z",
+  "quotaBytesUsed": "1680",
+  "version": "1",
+  "originalFilename": "checkin.png",
+  "capabilities": {
+    "canEdit": true,
+    "canCopy": true
+  },
+  "imageMediaMetadata": {
+    "width": 100,
+    "height": 100,
+    "rotation": 0
+  }
+}

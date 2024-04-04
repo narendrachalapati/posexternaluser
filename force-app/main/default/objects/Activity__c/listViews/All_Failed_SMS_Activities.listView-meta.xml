@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Failed_SMS_Activities</fullName>
+    <columns>NAME</columns>
+    <columns>Type__c</columns>
+    <columns>Direction__c</columns>
+    <columns>Customer__c</columns>
+    <columns>Phone__c</columns>
+    <columns>External_Number__c</columns>
+    <columns>Status__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>When__c</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>UPDATEDBY_USER</columns>
+    <columns>Message__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Type__c</field>
+        <operation>equals</operation>
+        <value>sms</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Failed</value>
+    </filters>
+    <filters>
+        <field>Error_Message__c</field>
+        <operation>notEqual</operation>
+    </filters>
+    <label>All Failed SMS Activities</label>
+</ListView>

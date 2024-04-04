@@ -1,0 +1,71 @@
+
+{
+    "detectIntentResponseId": "a615f3bc-63ef-472c-8be9-6eb9d9b41c7d",
+    "intentInfo": {
+        "lastMatchedIntent": "projects/smbenterprise/locations/global/agents/2e2562a7-28ed-47e1-b0f0-0c8ee7c54e94/intents/4f295e7e-69c3-48af-8f6a-0d2207eba399",
+        "displayName": "prebuilt_components_confirmation_yes",
+        "confidence": 1.0
+    },
+    "pageInfo": {
+        "currentPage": "projects/smbenterprise/locations/global/agents/2e2562a7-28ed-47e1-b0f0-0c8ee7c54e94/flows/00000000-0000-0000-0000-000000000000/pages/04b01f6e-7af8-46b3-87f4-c81e8291bd3d",
+        "displayName": "Check and Fetch Upcoming Appointments"
+    },
+    "sessionInfo": {
+        "session": "projects/smbenterprise/locations/global/agents/2e2562a7-28ed-47e1-b0f0-0c8ee7c54e94/environments/-/sessions/065zPppT02wRq6MYU3CZiFxMA",
+        "parameters": {
+            "appointment_date": "2070-05-16 00:00:00-0000",
+            "authorize_attempt": 1.0,
+            "authorize_attempt_remaining": 2.0,
+            "company_name": "Modern HealthCare",
+            "current_flow": "service_existing",
+            "currentSessionId": "065zPppT02wRq6MYU3CZiFxMA",
+            "dateofbirth": "1990-03-01",
+            "day": null,
+            "dob": null,
+            "findrecord": true,
+            "firstname": "John",
+            "incorrect_part": null,
+            "isauthorized": true,
+            "isExistingMember": true,
+            "isleadverified": true,
+            "lastname": "Don",
+            "leadsource": "Call",
+            "month": null,
+            "number_of_days_forward_to_fetch": 90.0,
+            "objectapiname": "Account",
+            "patient_type": "Existing Patient",
+            "phonenumber": "14153905925",
+            "productid_list": [
+                "a839e84c-6eae-c9b6-218f-692553cabf14",
+                "bc2b1a8f-916a-e9c6-6afe-07e6079757ec"
+            ],
+            "productidstring": "a839e84c-6eae-c9b6-218f-692553cabf14,bc2b1a8f-916a-e9c6-6afe-07e6079757ec",
+            "productname_list": [
+                "Consultation",
+                "Botox Tx"
+            ],
+            "productnamestring": "Consultation,Botox Tx",
+            "productscount": 2.0,
+            "resource_type": "cancelappointment",
+            "resource_path": "cancelappointment",
+            "salesforceRecordId": "001Dn00000chl9TIAQ",
+            "scheduling_mode": "existing",
+            "selected_service": "Consultation",
+            "selected_service_index": "",
+            "selected_service_uuid": "0039H000007shtbQAA-sdhjsjdhsjdh-service",
+            "services_offered_ssml": "\u003cspeak\u003efor Consultation press \u003cemphasis level\u003d\u0027strong\u0027\u003e1\u003c/emphasis\u003e or say \u003csay-as interpret-as\u003d\u0027cardinal\u0027\u003e1\u003c/say-as\u003e \u003cbreak time\u003d\u0027100ms\u0027 /\u003e,for Botox Tx press \u003cemphasis level\u003d\u0027strong\u0027\u003e2\u003c/emphasis\u003e or say \u003csay-as interpret-as\u003d\u0027cardinal\u0027\u003e2\u003c/say-as\u003e \u003cbreak time\u003d\u0027100ms\u0027 /\u003e,\u003c/speak\u003e",
+            "services_offered_text": "for Consultation enter 1,for Botox Tx enter 2,",
+            "year": null
+        }
+    },
+    "fulfillmentInfo": {
+        "tag": "CheckAndFetchUpcomingAppointments"
+    },
+    "payload": {
+        "telephony": {
+            "caller_id": "+14153905925"
+        }
+    },
+    "transcript": "Yep.",
+    "languageCode": "en-US"
+}

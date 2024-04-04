@@ -1,0 +1,13 @@
+<aura:component >
+    <aura:attribute name="object" type="SObject" />
+    <aura:attribute name="fieldName" type="String" />
+    <aura:attribute name="fieldValue" type="String" />
+    <aura:attribute name="Id" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="select" type="c:SearchBoxResultSelection"/>
+    <li class="search-result slds-dropdown__item" role="presentation" onmousedown="{!c.onSelect}">
+        <a href="javascript:void(0);" role="menuitem" tabindex="0">
+          <span class="slds-truncate" title="{!v.fieldValue}">{!v.fieldValue}</span>
+        </a>
+    </li>
+</aura:component>

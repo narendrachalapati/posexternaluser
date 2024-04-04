@@ -1,0 +1,67 @@
+.THIS .preview-body {
+    font-family: helvetica;
+    display: flex ;
+    flex-direction: column;
+    align-items: center;
+
+  }
+.THIS .preview-header {
+    text-align: center;
+    font-size: medium;
+    font-weight: bold;
+}
+  
+.THIS .chat {
+    width: 300px;
+    border: solid 1px #EEE;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+ .THIS  .messages {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+ .THIS .message {
+    border-radius: 20px;
+    padding: 8px 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+  }
+  
+ .THIS .yours {
+    align-items: flex-start;
+  }
+  
+ .THIS .yours .message {
+    margin-right: 25%;
+    background-color: #eee;
+    position: relative;
+  }
+  
+ .THIS .yours .message.last:before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    left: -7px;
+    height: 20px;
+    width: 20px;
+    background: #eee;
+    border-bottom-right-radius: 15px;
+  }
+ .THIS .yours .message.last:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: -10px;
+    width: 10px;
+    height: 20px;
+    background: white;
+    border-bottom-right-radius: 10px;
+  }

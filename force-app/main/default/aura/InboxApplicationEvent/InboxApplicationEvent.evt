@@ -1,0 +1,9 @@
+<aura:event type="APPLICATION" description="Inbox Pooling Event">
+	<aura:attribute name="aurcomponentname" type="String" default=""></aura:attribute>
+	<aura:attribute name="showLoader" type="Boolean" default="false"></aura:attribute>
+	<aura:attribute name="controllermethod" type="String" default=""></aura:attribute>
+	<aura:attribute name="searchkey" type="String" default=""></aura:attribute>
+	<aura:attribute name="storedActivityNumber" type="Double" default="0"></aura:attribute>
+	<aura:attribute name="contactPhoneNumber" type="String" default=""></aura:attribute>
+	<aura:attribute name="currentContactId" type="String" default=""></aura:attribute>
+</aura:event>

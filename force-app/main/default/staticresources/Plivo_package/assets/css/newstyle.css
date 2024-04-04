@@ -1,0 +1,570 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:300);
+@import url(https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css);
+
+body{
+  background: no-repeat center center;
+  background-image: url(../img/background.svg);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+body
+{
+    margin: 0;
+    padding: 0;
+    font-family: soleil,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    background-size: 100%;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: none;
+    color: #212933;
+    background-color: #f8f9fa;
+}
+
+p
+{
+    margin: 0;
+    padding: 0 0 10px 0;
+    line-height: 20px;
+}
+
+.borderline{
+  border-bottom: 1px solid black;
+}
+
+.loginscreen{
+  position: relative;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 0 14px 0 #dee5eb;
+  border: solid 1px #d7e1ec;
+  display: inline-block;
+  padding-left: 80px;
+  padding-right: 80px;
+  /* margin-top:5%;
+  margin-bottom: 120px; */
+}
+
+.span4
+{
+    width: 80px;
+    float: left;
+    margin: 0 8px 10px 8px;
+}
+
+@media (min-width: 768px)
+{
+  .phone, .row2 {
+    width: 380px;
+  }
+
+  .row1 {
+    width: 550px;
+  }
+}
+
+.phone
+{
+    /* margin-top: 15px; */
+    /* background: rgba(150, 209, 150, 0.09); */
+}
+
+.callanswerpad{
+  width:100%;
+}
+
+.callinfo
+{
+    margin-top: 15px;
+    /* background: rgba(150, 209, 150, 0.09); */
+    width: 50%;
+}
+
+.callinfoIcon{
+  font-size: 2em !important;
+}
+
+.callinfoPid{
+  margin-left: 20px !important;
+}
+
+.incomingCallDefault {
+  margin-top: 15px;
+  /* background: rgba(150, 209, 150, 0.09); */
+  width: 40%;
+}
+
+.incomingCallBtnSecondary{
+  width: 50%;
+}
+
+.tel
+{
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: black;
+  font-weight: 600;
+}
+.num-pad
+{
+    padding-left: 15px;
+}
+
+.num
+{
+    /*border: 1px solid #9e9e9e;*/
+    -webkit-border-radius: 999px;
+    border-radius: 999px;
+    -moz-border-radius: 999px;
+    height: 80px;
+    /*background-color: #fff;*/
+    cursor: pointer;
+}
+
+.num:hover
+{
+    background-color: #d9edf7;
+    transition-property: background-color .2s linear 0s;
+    -moz-transition: background-color .2s linear 0s;
+    -webkit-transition: background-color .2s linear 0s;
+    -o-transition: background-color .2s linear 0s;
+}
+
+.num-star{
+  font-size:55px !important;
+  margin-top:-5px;
+}
+
+.txt
+{
+    font-size: 30px;
+    text-align: center;
+    font-family: 'Lato' , sans-serif;
+}
+
+.small
+{
+    font-size: 13px;
+}
+
+.btn
+{
+    font-weight: bold;
+    -webkit-transition: .1s ease-in background-color;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: 1px;
+}
+
+.btn-lg{
+  width: 80%;
+}
+
+.btn:hover
+{
+    transition-property: background-color .2s linear 0s;
+    -moz-transition: background-color .2s linear 0s;
+    -webkit-transition: background-color .2s linear 0s;
+    -o-transition: background-color .2s linear 0s;
+}
+
+.active
+{
+    color: #3498db;
+}
+
+.metrics{
+    margin-bottom: 7px;
+    padding: 10px;
+    background: rgba(244, 67, 54, 0.75);
+    color: #fff;
+    font-size: 13px;
+    text-align: center;
+    border-radius: 3px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    outline: 0;
+    top: 0;
+    right:0;
+    font-family: monospace; 
+}
+
+.oncallalertmsg{
+  position: absolute !important;
+  top: 30% !important;
+  right: 10% !important;
+  z-index: 100000 !important;
+  left: 60% !important;
+}
+
+.mediaalertmsg{
+    position: absolute;
+    top: 30%;
+    right: 10%;
+    z-index: 100000;
+}
+
+.alertmsg{
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 100000;
+}
+
+.AfterAnswer, .callinfo, .lowQualityRadios, .feedback, .loader, .fadein-effect{
+    display: none;
+}
+
+.customAlert{
+    margin-bottom: 10px;
+    padding: 10px;
+    z-index: 10000;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 3px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    outline: 0;
+    top: 0;
+    right: 0;
+    font-family: monospace;  
+}
+
+.alertwarn{
+  color: red;
+  border: 1px solid red;
+}
+
+.alertinfo{
+  color: green;
+  border: 1px solid green;
+}
+
+.black{
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.caption{
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.loginUser, .loginPwd{
+  font-size: initial;
+}
+
+.middleLabel{
+  margin-top: 5px;
+}
+
+#answerkeypad{
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.feedback{
+    transform: rotate(90deg);
+    position: absolute;
+    top: 50%;
+    left: -2%;    
+}
+
+.monospace{
+    font-family: monospace;
+}
+
+#clickLogin{
+  width:40%;
+}
+
+.white-shadow{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);    
+}
+
+.lead{
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.text-success{
+  color: #05006D;
+}
+
+.label-value{
+  font-size: 18px;
+}
+
+.loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #D4D4D4;
+  border-radius: 50%;
+  border-top: 16px solid #05006D;
+  width: 120px;
+  height: 120px;
+  background-color: transparent;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-success, .btn-primary{
+  background-color: #05006d !important;
+  border-color: rgba(0,0,0,.0001) !important;  
+}
+
+.btn-success:hover, .btn-success:active, .btn-success:focus, .btn-success:visited, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:visited{
+  background-color: #080188 !important;
+  border-color: rgba(0,0,0,.0001) !important;  
+}
+
+.btn-primary{
+  padding: 8px 16px;
+}
+
+.btn-outline-primary{
+  border: solid 1px #05006d;
+  padding: 8px 15px;
+  color: #05006d;
+  border-radius: 4px;
+}
+
+.navbar-text{
+  color: black;
+  font-weight: 400;
+}
+
+.modal-footer{
+  text-align: center;
+}
+
+.iti__flag{
+  background-image: url("../img/flags.png");
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .iti__flag {background-image: url("../img/flags@2x.png");}
+}
+
+.iti{
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+#callerid {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000000;
+  outline:none;
+  box-shadow:none;
+  text-align: center;
+  margin-bottom: 10px;
+  color: black;
+  width: 190px;
+}
+
+.calleridRemove{
+  cursor:pointer;
+  margin-left:3px;
+}
+
+.micsettingslink{
+  margin-bottom: 10px;
+  margin-top: 10px;
+  text-decoration: underline;
+}
+
+.micsettingsLabel{
+  font-size: 15px !important;
+}
+
+.micLabel{
+  font-weight: 200;
+}
+
+.toggleLabel{
+  margin-left:10px;
+}
+
+a, a:focus, a:hover, a:visited {
+  color: black;
+  font-weight: 600;
+}
+
+.pidinput{
+  width: calc(10% - 60px);
+  height: 10px;
+  display: inline-block;
+  margin: 5px;
+}
+
+.pidspeakeroutput, .pidringoutput{
+  width: calc(10% - 60px);
+  height: 10px;
+  display: inline-block;
+  margin: 5px;
+  background-color: #e6e7e8;
+}
+
+.pidlocalaudio, .pidremoteaudio{
+  width: calc(10% - 20px);
+  height: 10px;
+  display: inline-block;
+  margin: 5px;
+  background-color: #e6e7e8;
+}
+
+.miclink, .speakerlink{
+  margin-left: 20px;
+  font-size: 15px;
+  position: absolute;
+  text-decoration: underline;
+}
+
+.audio-btn{
+  margin-right: 15px;
+  width: 104px;
+  margin-bottom: 25px;
+}
+
+.audio-text {
+  margin-right: 15px; 
+  margin-bottom: 15px;
+  font-size: 15px;
+}
+
+.hangup{
+  width: 60%;
+  margin-bottom: 10px;
+  margin-top: 15px;
+}
+
+.rejectIncoming, .ignoreIncoming{
+  width:227%;
+  margin-top:5px;
+}
+
+.answerIncoming, .makecall{
+  width: 100%;
+  background-color: #43A047 !important;
+  border-color: #43A047 !important;
+}
+
+.answerIncoming:hover, .answerIncoming:active, .answerIncoming:focus, .answerIncoming:visited, .makecall:hover, .makecall:active, .makecall:focus, .makecall:visited{
+  background-color: rgb(16, 128, 22) !important;
+  border-color: rgb(16, 128, 22) !important;
+}
+
+.answerIncoming{
+  margin-top: 40px;
+}
+
+.btn-default, .btn-default:active, .btn-default:focus {
+  background-color: rgba(150, 209, 150, 0.09);
+  border-color: black;
+}
+
+.logout, .config{
+  padding-left: 368px;
+  font-size: large;
+  cursor: pointer;
+  color: #43A047;
+  font-weight: 500;
+  margin-right: 2px;
+}
+
+.config-cog{
+  cursor: pointer;
+  color: #43A047;
+  font-weight: 500;
+  margin-right: 2px;
+  font-size: 1.4em !important;
+  line-height: 1.1em !important;
+}
+
+.config-login{
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.config-div{
+  margin-left: 95px;
+  font-size: 16px;
+}
+
+.config-update{
+  width:15%;
+}
+
+.config-reset{
+  width:15%;
+  margin-left:10px;
+}
+
+.feedbackTextArea{
+  width: 100%;
+}
+
+.feedbackComment{
+  width: 50%;
+}
+
+.feedbackIssue{
+  width: 45%;
+  margin-top: -15px;
+  margin-left: 10px;
+}
+
+#sendFeedback, #ignoreFeedback {
+  width: 15%;
+}
+
+/* Rating Star Widgets Style */
+.rating-stars ul {
+  list-style-type:none;
+  padding:0;
+  -moz-user-select:none;
+  -webkit-user-select:none;
+}
+.rating-stars ul > li.star {
+  display:inline-block;
+}
+
+/* Idle State of the stars */
+.rating-stars ul > li.star > i.fa {
+  font-size:2.5em; /* Change the size of the stars */
+  color:#ccc; /* Color on idle state */
+}
+
+/* Hover state of the stars */
+.rating-stars ul > li.star.hover > i.fa {
+  color:#FFCC36;
+}
+
+/* Selected state of the stars */
+.rating-stars ul > li.star.selected > i.fa {
+  color:#FF912C;
+}
+
+.feedback-status{
+  color: #afaf00;
+  font-weight: 600;
+  font-family: sans-serif;
+  text-align: center;
+  margin-right: 25%;
+}

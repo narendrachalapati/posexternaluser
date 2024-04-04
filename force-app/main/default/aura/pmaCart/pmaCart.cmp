@@ -1,0 +1,664 @@
+<aura:component
+   implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+   access="global" controller="PMA_ProductsController">
+   <!--Aura Attributes START-->
+   <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+   <lightning:navigation aura:id="navigate" />
+   <!--Init Parent Component Values-->
+   <!-- Todo Refactor Attributes -->
+   <aura:attribute name="todorecord" type="ToDo__c"/>
+   <aura:attribute name="uuidstring" type="String"/>
+   <aura:attribute name="memberId" type="String"/>
+   <aura:attribute name="AccountId" type="string" />
+   <aura:attribute name="isLoggedIn" type="Boolean"/>
+   <!-- Todo Refactor Attributes -->
+  
+   <aura:attribute name="orderUUID" type="String" />
+   <aura:attribute name="memberName" type="String" />
+   <aura:attribute name="pmaContainer" type="Aura.Component"/>
+   <aura:attribute name="isLoading" type="Boolean" default="false"/>
+   <!-- Init ActivityId from Inbox Component -->
+   <aura:attribute name="activityRecordid" type="String" default="" />
+   <aura:attribute name="walletRemainAmount" type="String" default="" />
+   <!-- Init() Loggend in User Record Details -->
+   <aura:attribute name="userInfo" type="User"/>
+   <aura:attribute name="userContactWrap" type="PMA_SearchController.CurrentUserWrap"/>
+   <aura:attribute name="orderRecord" type="Order__C" />
+   <aura:attribute name="orderItemRecord" type="List" />
+   <aura:attribute name="IntegrationMetadata" type="Map" />
+   <aura:attribute name="transactionId" type="String" />
+   <aura:attribute name="showCartComponent" type="Boolean" default="true" />
+   <!-- Store Incoming Message of Map<Id,Wrapper> -->
+   <aura:attribute name="selectedproductsString" type="String" />
+   <!-- **EventVariable** Store Selected Products Values to Itereate over Products and Set This for inbound-->
+   <aura:attribute name="selectedProductsValues" type="List" />
+   <aura:attribute name="totalChargeAmount" type="Decimal" default="0"/>
+   <!-- Info:: Log Incoming Event Message-->    
+   <aura:attribute name="messageFromEvent" type="String"/>
+   <!-- Register for Cart Product Deletion Application Event -->
+   <aura:registerEvent name="cartEvent" type="c:cartCommunicationEvent"/>
+   <!-- Handler for Products Selection Application Event -->
+   <aura:handler event="c:posCommunicationEvent" action="{!c.handleProductSelectionEvent}"/>
+   <!-- Register for Communications Application Event -->
+   <aura:registerEvent name="communicateEvent" type="c:componentCommunicationEvent"/>
+   <!-- Attributes for ChargeResponseApply Application Event -->
+   <aura:attribute name="paymentStatus" type="String" default=""/>
+   <aura:attribute name="event" type="String" default=""/>
+   <!-- Handler for ChargeResponseApply Application Event -->
+   <aura:handler event="c:ChargeResponseApply" action="{!c.handleChargeResponseApplyEvent}"/>
+   <!--  Order Notes -->
+   <aura:attribute name="editNotesTag" type="String" default="" />
+   <!--Charge Retry Aura Attributes-->
+   <aura:attribute name="isChargeRetryPopupOpen" type="boolean" default="false"/>
+   <aura:attribute name="isFailedTransaction" type="boolean" default="false"/>
+   <aura:attribute name="contactRecordId" type="String" default=""/>
+   <aura:attribute name="OrderrecordId" type="String" default=""/>
+   <aura:attribute name="PaymentAmount" type="double" default="0.0" />
+   <aura:attribute name="initStatus" type="String" default=""/>
+   <!--Tip Calculate Aura Attributes-->
+   <aura:attribute name="isAddTipPopupOpen" type="boolean" default="false"/>
+   <aura:attribute name="tipValues" type="Decimal[]" default="15,20,25"/>
+   <aura:attribute name="selectedTipPercent" type="Decimal" default="20" />
+   <aura:attribute name="TipAmount" type="Decimal" default="0.0" />
+   <aura:attribute name="TotalAmount" type="Decimal" default="0.0" />
+   <!-- Wallet specific Component Values-->
+   <aura:attribute name="TotalbillableAmountbeforecommit" type="Decimal" default="0.0"/>
+   <aura:attribute name="TotalbillableAmountAfterCommit" type="Decimal" default="0.0"/>
+   <aura:attribute name="funddeductfromgateway" type="Decimal" default="0.0"/>
+   <aura:attribute name="WalletDeduction" type="Decimal" default="0.0"/>
+   <aura:attribute name="BankDeduction" type="Decimal" default="0.0"/>
+   <aura:attribute name="UserCards" type="list" default="[]"/>
+   <aura:attribute name="SelectedPaymentSource" type="String" />
+   <aura:attribute name="ShowSavedCards" type="boolean" default="false" />
+   <aura:attribute name="Tippercentageshow" type="boolean" default="True" />
+   <!-- Wallet specific Component Values-->
+   <aura:attribute name="QtyofinputBox" type="double" />
+
+      <!-- Register for Communications Application Event -->
+      <aura:registerEvent name="contactsearchEvent" type="c:ContactcommunicationEvent"/>
+
+   <!--Aura Attributes END-->
+   <!--Start aura:if tag to display/hide isAddTip Popup based on  value-->
+   <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.toasterLib + '/toastr.min.css')}"  
+   scripts="{!$Resource.toasterLib + '/toastr.min.js'}"/>
+   <aura:if isTrue="{!v.isAddTipPopupOpen}">
+      <div class="ts-back-wrap" onclick="{!c.communicationforcontactsearch}">
+         <div class="smoothscroll-back">                  
+             <i class="fa fa-arrow-left"></i>
+         </div>
+     </div>
+      <section class="slds-grid slds-wrap slds-grid_align-center possearch d-flex-width-100">
+         <div class="container">
+            <!-- <div class="title" style="font-family: Inter,sans-serif;">
+               <h2>Order Summary</h2>
+            </div> -->
+            <div class="d-flex d-flex-justify-content-center">
+               <div class="Yorder">
+                  <!-- <div style="font-weight: 700;font-size: 16px;text-align:end;font-family: Inter,sans-serif;"> -->
+                     <!-- <input type="radio" name="dbt" value="dbt"  /> Direct Bank Transfer -->
+                     <!-- <span>Wallet <i class='fas fa-wallet' style='color:#6368ab'></i>${!v.orderRecord.Member__r.Balance__c}</span> -->
+                     <!--<span><i class='fas fa-wallet' style='color:#6368ab'></i></span>-->
+                  <!-- </div> -->
+                  <table class="tableset">
+                     <tr class="Borderbox ">
+                        <th class ="Borderbottom" colspan="2">ORDER SUMMARY</th>
+                     </tr>
+                    
+                     <tr class ="Borderboxnobold">
+                        <td>
+                            Tip 
+                            <!-- <aura:if isTrue="{!v.TipAmount>0.0}">
+                              
+                                <span style="padding-right: 2px;">
+                                    <lightning:icon iconName='action:remove' alternativeText='remove' size='xx-small' title='remove' onclick="{! c.Notipgiven }" />
+                                </span>
+                            </aura:if> -->
+                            <!-- <aura:if isTrue="{!v.Tippercentageshow == false}">
+                            <button class="btn btn-md tipval-buttons custom-tip percent" onclick="{!c.Backtopercentage}">
+                               Percent
+                         </button>
+                        </aura:if> -->
+                        </td>
+                        <td >
+                       
+                            <div class=" d-flex-justify-content-end input-symbol-dollar">
+                                <input class=" tipamountinput" type="text" aura:id="tipamountinput" name="TipAmount" value="{!v.TipAmount}" onkeyup="{!c.onEnterTipAmount}" pattern="[0-9]+"/>
+                            </div>
+                      
+                     </td>
+                     </tr>
+                     <tr>
+                     <td >
+                        <div class="slds-grid  Tippercentagebtn">
+                            <!-- <aura:if isTrue="{!v.Tippercentageshow}"> -->
+                                <aura:iteration items="{!v.tipValues}" var="tipval" >
+                                    <button class="{! div(tipval,v.selectedTipPercent) == 1? 'btn btn-md tipval-buttonsbackgd' : 'btn btn-md tipval-buttons' }" data-tipval="{! tipval }" onclick="{! c.reCalculateTip }">
+                                        {! tipval } %
+                                       
+                                    </button>
+
+                                </aura:iteration>
+                                <button class="btn btn-md tipval-buttons custom-tip percent" onclick="{!c.editTipAmount}">
+                                     Custom Tip
+                                </button>
+                                <button class="btn btn-md tipval-buttons custom-tip percent" onclick="{! c.Notipgiven }">
+                                 No Tip
+                            </button>
+                            <!-- </aura:if>-->
+                        </div> 
+                       
+                     </td>
+                  </tr>
+                  <tr class ="Borderboxnobold" style="border-top:0.5px solid #8f8b8b ;">
+                     <td style="border-top:0.5px solid #8f8b8b ;">SubTotal</td>
+                     <td >${!v.orderRecord.Total_Price__c}</td>
+                   </tr>
+                     <tr class="Borderboxnobold">
+                        <td>Order Total</td>
+                        <td >${!v.TotalAmount}</td>
+                     </tr>
+                     <tr class="Borderbox">
+                        <th class="Borderbox" colspan="2">Payment Section</th>
+                     </tr>
+                     <tr class ="Borderboxnobold">
+                        <td>Amount From your Wallet</td>
+                        <td class="" style="color: red;">- ${!v.WalletDeduction}</td>
+                     </tr>
+                     <tr class ="Borderboxnobold">
+                        <td>Amount Payable</td>
+                        <td class="" >${!v.BankDeduction}</td>
+                     </tr>
+                     <tr class="Borderbox">
+                        <th class="Borderbox" colspan="2">Products</th>
+                     </tr>
+                      <aura:iteration items="{!v.orderItemRecord}" var="orderLineItem" indexVar="key">
+                        <tr class ="Borderboxnobold  ">
+                   
+                                <td class ="dflex">  
+                                 <c:imagePreview recordId="{!orderLineItem.Product_Option__c}" FullName ="{!orderLineItem.Product_Name__c}" shape = "square" imgWidth = "50" imgHeight = "50"/>
+          
+                                <p class="paddright"> {!orderLineItem.Product_Name__c}<br></br>
+                        Qty {!orderLineItem.Quantity__c}</p> 
+                        </td>
+                        <td >${!orderLineItem.Total_Price__c}</td>     
+                       
+                </tr>  
+                     <!-- <tr style="text-align: left;"> Qty {!orderLineItem.Quantity__c}</tr>   -->
+                   
+                     </aura:iteration>
+                    
+                  </table>
+                 
+                  <!-- =================
+                     Payment cards display section
+                     ==================
+                     paymentcards display -->
+                    
+                     <div class="card-button">
+                        <div style="font-weight: 700;font-family: Inter,sans-serif;font-size: 17px;">
+                           <!-- <input type="radio" name="dbt" value="dbt"  /> Direct Bank Transfer -->
+                           <span>Total ${!v.BankDeduction}</span>
+                         
+                           <!--<span><i class='fas fa-wallet' style='color:#6368ab'></i></span>-->
+                        </div>
+                        <div>
+                        <lightning:layoutItem flexibility="grow" class="payment-options-pane">
+                            <lightning:tabset selectedTabId="two">  
+                              <aura:if isTrue="{!and(v.BankDeduction>0, !empty(v.UserCards))}">
+                                <aura:if isTrue="{!v.ShowSavedCards}">
+                                    <lightning:tab label="Saved Cards" id="two">
+                                        <aura:if isTrue="{!v.isLoading}">
+                                            <lightning:spinner alternativeText="Loading" size="small" />
+                                        </aura:if>
+                                        <aura:if isTrue="{!empty(v.UserCards)}">
+                                            <label style="margin-left: 20px">{!$Label.c.no_saved_cards_available}</label>
+                                        </aura:if>
+                                        <aura:if isTrue="{! !empty(v.UserCards)}">
+                                            <div class="payment-group cardflex">
+                                                <aura:iteration items="{!v.UserCards}" var="card">
+                                                    <!-- Cards -->
+                                                   
+                                                    <div class="cardbox d-flex-align-center">
+                                                     
+                                                         <div class="{! 'credit-card selectable ' + card.brandstylename}"
+                                                         onclick="{!c.selectPaymentSource}" id="{!card.id}" data-id="{!card.id}"
+                                                         title="{!card.name}">
+                                                         <input type="radio" name="payment-source" value="{!card.id}"
+                                                             class="{! (card.id == v.SelectedPaymentSource)? 'checkbox default-source' : 'checkbox' }" checked="{! (card.id == v.SelectedPaymentSource)? 'checked' : '' }" />
+         
+                                                         <div class="option_inner">
+                                                             <div class="tickmark"></div>
+                                                         </div>
+                                                         <div class="credit-card-last4">
+                                                             {!card.last4}
+                                                         </div>
+                                                         <div class="credit-card-expiry">
+                                                             {!card.exp_month}/{!card.exp_year}
+                                                         </div>
+                                                     </div>
+                                                
+                                                       
+                                                        <div class="button-container">
+                                                            <aura:if isTrue="{!card.id == v.SelectedPaymentSource}">
+                                                                <div  class="slds-text-align_center">
+                                                                   	<button type="button" class="buttoncard payment-card-button" onclick="{! c.PaymentHandling }">Pay</button>
+																	<button type="button" class="buttonCanclecard" onclick="{! c.closeTipModule }">Cancel</button>
+                                                                </div>
+                                                            </aura:if>
+                                                        </div>
+                                                    </div>
+            
+                                                </aura:iteration>
+                                            </div>
+                                        </aura:if>
+                                    </lightning:tab>
+                                </aura:if>
+                                <aura:set attribute="else">
+                                <div  class="slds-text-align_center button-Padding">
+                                 <button type="button" class="button payment-card-button" onclick="{! c.PaymentHandling }">Pay</button>
+                               <button type="button" class="buttonCancle" onclick="{! c.closeTipModule }">Cancel</button>
+                                </div>
+                                </aura:set>
+                              </aura:if>
+                                <!-- <lightning:tab label="{!'New ' + $Label.c.credit_or_debit_card}" id="two">
+                                    <aura:if isTrue="{!v.StripeCardUILoading}">
+                                        <lightning:spinner alternativeText="Loading" size="small" />
+                                    </aura:if>
+                                    <iframe id="stripeCardUI" src="{!v.StripeCardUI}" onload="{!c.stripeCardLoaded}" />
+                                </lightning:tab> -->
+                            </lightning:tabset>
+                        </lightning:layoutItem>
+                     </div>
+
+                     <!-- =================
+                     Payment cards display section END
+                     ==================
+                     paymentcards display -->
+                     
+               </div>
+               </div>
+               <!-- Yorder -->
+            </div>
+         </div>
+            </section>
+   </aura:if>
+   <aura:if isTrue="{!v.isChargeRetryPopupOpen}">
+      <div class="slds-var-m-around_xx-large">
+         <!-- Charge Retry/Popup Box starts here-->
+         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+               <!-- Charge/Popup Box Header Starts here-->
+               <header class="slds-modal__header">
+                  <lightning:buttonIcon iconName="utility:close" onclick="{! (v.paymentStatus == 'Success') ? c.returnBacktoSearch : c.closeChargeRetryPopup }"
+                     alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+               </header>
+               <!--Charge/Popup Box Body Starts here-->
+               <div class="slds-modal__content slds-var-p-around_medium">
+                  <c:Charge recordId="{!v.contactRecordId}" OrderrecordId="{!v.OrderrecordId}" 
+                     PaymentAmount="{!v.PaymentAmount}" closeUrlPath=""
+                     isFailedTransaction="{!v.isFailedTransaction}" initStatus="{!v.initStatus}" AccountId="{!v.AccountId}"/>
+               </div>
+               <!--Charge/Popup Box Footer Starts here-->
+               <footer class="slds-modal__footer">
+                  <aura:if isTrue="{! (v.paymentStatus != 'Success') }">
+                     <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                        onclick="{! c.closeChargeRetryPopup }" />
+                  </aura:if>
+                  <lightning:button variant="neutral" label="Close Tab" title="Close Tab"
+                     onclick="{! c.returnBacktoSearch }" />
+               </footer>
+            </div>
+         </section>
+         <div class="slds-backdrop slds-backdrop_open"></div>
+      </div>
+   </aura:if>
+   <!--Start Bootstrap Cart markup -->
+   <div class="{! (v.showCartComponent == true) ? 'sfappwrapper cart-component bg-white h-100p d-flex-basis-auto' : 'sfappwrapper slds-hide cart-component bg-white h-100p d-flex-basis-auto' }">
+      <!--  <div class="slds-card cartcontainer contained-element">-->
+      <section class="h-100 h-custom">
+                <div >
+            <h5 class="mb-3 text-body text-center">{!v.memberName}</h5>
+            <h5 class="mb-3 text-body text-center">Cart Items</h5>
+            <hr/>
+         </div>
+         <div class="slds-grid slds-wrap slds-grid_align-center py-3 py-3" style="font-size:1rem">
+            <div class="slds-grid slds-wrap slds-grid_align-center slds-grid_vertical-align-center flex-shrink-1 flex-row-gap-10px " style="width:100%" >
+               <aura:if isTrue="{! !empty(v.selectedProductsValues)}">
+                  <button class="btn btn-info btn-md mx-2" onclick="{! c.handleFinialize }" style="font-size:0.8rem;">
+                  <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                  Add Order    
+                  </button>
+               </aura:if>
+               <aura:if isTrue="{! and( (v.isFailedTransaction == true) , (v.orderItemRecord.length > 0) )  }">
+                  <button class="btn btn-success btn-md mx-2" onclick="{! c.openChargeRetryPopup }" style="font-size:0.8rem;">
+                  <i class="fa fa-credit-card" aria-hidden="true"></i>
+                  Retry Payment   
+                  </button>
+               </aura:if>
+               <aura:if isTrue="{! ( empty(v.selectedProductsValues) &amp;&amp; (v.selectedProductsValues.length == 0 ) &amp;&amp; (v.orderItemRecord.length > 0) &amp;&amp; (v.isFailedTransaction == false) )}">
+                  <button class="btn btn-success btn-md mx-2 cartclosetabbutton" onclick="{! c.handleChargeTipsCollectionPopup }" style="font-size:0.8rem;">
+                  <i class="fa fa-credit-card" aria-hidden="true"></i>
+                  Close Tab   
+                  </button>
+               </aura:if>
+               <aura:if isTrue="{! empty(v.activityRecordid) }">
+                  <button class="btn btn-danger btn-md"
+                     style="font-size:0.8rem;"
+                     onclick="{! c.returnBacktoSearch }">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                  Cancel
+                  </button>
+               </aura:if>
+               <aura:if isTrue="{! ( (v.userContactWrap != null ) &amp;&amp; (v.userContactWrap.contactRecord != null ) &amp;&amp; (v.userContactWrap.contactRecord.RecordType.Name != 'Vendor' ) )}" >
+                  <button class="btn btn-danger btn-md mx-2" onclick="{! c.deletePOSTab }" style="font-size:0.8rem;">
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                  Delete Tab     
+                  </button> 
+               </aura:if>
+            </div>
+         </div>
+         <!--   <div class="cartitemsList custom-scrollbar listscroll-y " New items>-->
+          <!-- <aura:if isTrue="{! and(!empty(v.selectedProductsValues),(v.selectedProductsValues.length > 0 ) )}">
+            <h6 class="mb-3 text-body text-center">New Items</h6>
+            <div class="h-20p custom-scrollbar overflow-x-hidden-y-auto" style="display:flex;flex-direction:column-reverse;">
+               <aura:iteration items="{!v.selectedProductsValues}" var="selectedproduct" indexVar="key">
+                  <div class="card mb-3 border-0">
+                     <div class="card-body p-0">
+                        <div class="slds-grid slds-grid_align-spread">
+                           <div class="slds-grid slds-wrap slds-grid_align-start flex-shrink-1 w-100">
+                              <div class="cartitemname">
+                               
+                                 <div class="Displayfelx">
+                                    <div>
+                                       <h5 class="mb-1 sm-text-highlight skyblue-text pl-5px">{!selectedproduct.product.Name}
+                                            
+                                       </h5>
+                                    </div>
+                                    <div class="_1uc2IE">
+                                       <div class="incrementbutton"  >
+                                          <div data-id="{!selectedproduct.product.Id}"  onclick="{!c.productDeleteHandler}">
+                                             <button class="pluseicon" fdprocessedid="drcl1c"> - </button>
+                                          </div>
+                                         
+                                          <div class="middlenumberdiv"><input type="text" class="middlenumber"  data-productid="{!selectedproduct.product.Id}"  value="{!selectedproduct.quantity}"  onkeyup="{!c.productquantityhandler}" />
+                                          </div>
+                                          <div  data-prodid="{!selectedproduct.product.Id}"  onclick="{!c.IncrementorderlineitemNew}" >
+                                          <button class="pluseicon"> + </button>
+                                       </div>
+                                       </div>
+                                       </div>
+                                    <div class="slds-text-color_destructive cursor-pointer" data-id="{!selectedproduct.product.Id}" onclick="{!c.AllselectedproductDeleteHandler}">
+                                       <lightning:icon iconName='utility:delete' alternativeText='delete' variant='error' size='small' title='delete'></lightning:icon>                                    
+                                    </div>
+                                   
+                                 </div>
+                                 <div onclick="{!c.EditNotes}" data-id="{!selectedproduct.product.Id}" class="{! v.showErrorClass == true ? 'slds-grid slds-grid_align-spread slds-cell-edit slds-has-error' : 'slds-grid slds-grid_align-spread slds-cell-edit'}">
+                                    <aura:if isTrue="{! !empty(selectedproduct.orderNotes) }">
+                                       <span class="maxwidth-80p pl-5px" title="Order Notes"> {!selectedproduct.orderNotes}</span>
+                                       <aura:set attribute="else">
+                                          <div class="mr-auto">
+                                             <button
+                                                data-id="{!selectedproduct.product.Id}"
+                                                onclick="{!c.EditNotes}"
+                                                class="slds-grid w-100 btn btn-sm btn-info btn-md mx-2"
+                                                tabindex="0"
+                                                style="font-size:0.8rem">
+                                                <span class="slds-p-right_xx-small text-white">Add Notes</span>
+                                                <lightning:icon
+                                                   iconName="utility:add"
+                                                   size="xx-small"
+                                                   class="addltng-icn"
+                                                   alternativeText="add" />
+                                             </button>
+                                          </div>
+                                       </aura:set>
+                                    </aura:if>
+                                    <aura:if isTrue="{! (v.editNotesTag != selectedproduct.product.Id + 'inputId') }">
+                                       <aura:if isTrue="{! !empty(selectedproduct.orderNotes) }">
+                                          <button data-id="{!selectedproduct.product.Id}" onclick="{!c.EditNotes}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small pr-15px" tabindex="0" title="Edit Name">
+                                             <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit" />
+                                          </button>
+                                       </aura:if>
+                                       <aura:set attribute="else">
+                                          <section tabindex="0"
+                                             class="slds-popover slds-popover_edit" role="dialog" style="position: absolute;top: 15px;z-index: 99999;">
+                                             <div class="slds-popover__body">
+                                                <div class="slds-form-element slds-grid slds-wrap">
+                                                   <div class="slds-form-element__control slds-grow" tabindex="0">
+                                                      <ui:inputText
+                                                         class="{! 'slds-input input-customheight ' + selectedproduct.product.Id + 'inputId'}"
+                                                         aura:id="{!selectedproduct.product.Id + 'inputId'}"
+                                                         blur="{!c.closeNotesBox}"
+                                                         change="{!c.onNotesChange}"
+                                                         value="{!selectedproduct.orderNotes}" 
+                                                         />
+                                                   </div>
+                                                </div>
+                                             </div>
+                                             <span tabindex="1"></span>
+                                          </section>
+                                       </aura:set>
+                                    </aura:if>
+                                 </div>
+                                
+
+                                 
+                              </div>
+                           </div>
+                           <div class="slds-grid slds-wrap slds-grid_align-end slds-grid_vertical-align-center w-100 px-1">
+                              <h5 class="mb-0 px-2 sm-text-highlight grey-text">
+                                 $ 
+                                 <lightning:formattedNumber value="{!selectedproduct.totalProductPrice}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/>
+                              </h5>
+                             
+                           </div>
+                        </div>
+                      
+                     </div>
+                  </div>
+                  <hr/>
+               </aura:iteration>
+            </div>
+         </aura:if> -->
+            
+              <div class="h-20p custom-scrollbar overflow-x-hidden-y-auto" >
+               <aura:if isTrue="{! and(!empty(v.selectedProductsValues),(v.selectedProductsValues.length > 0 ) )}">
+                  <h6 class="mb-3 text-body text-center">New Items</h6>
+               <!--new aitems adding-->
+               <aura:iteration items="{!v.selectedProductsValues}" var="selectedproduct" indexVar="key">
+                  <div class="card mb-3 border-0">
+                     <div class="card-body p-0">
+                        <div class="slds-grid slds-grid_align-spread">
+                           <div class="slds-grid slds-wrap slds-grid_align-start flex-shrink-1 w-100">
+                              <div class="cartitemname">
+                                 <!-- <div data-prodid="{!selectedproduct.product.Id}" onclick="{!c.IncrementorderlineitemNew}">
+                                    <button   >Add</button>
+                                 </div> -->
+                                 <div class="Displayfelx">
+                                    <div>
+                                       <h5 class="mb-1 sm-text-highlight skyblue-text pl-5px">{!selectedproduct.product.Name}
+                                          <!-- <span> x </span>{!selectedproduct.quantity} -->
+                                         
+                                       </h5>
+                                    </div>
+                                    <div class="_1uc2IE">
+                                       <div class="incrementbutton"  >
+                                          <div data-id="{!selectedproduct.product.Id}"  onclick="{!c.productDeleteHandler}">
+                                             <button class="pluseicon" fdprocessedid="drcl1c"> - </button>
+                                          </div>
+                                         
+                                          <div class="middlenumberdiv"><input type="text" class="middlenumber"  data-productid="{!selectedproduct.product.Id}"  value="{!selectedproduct.quantity}"  onkeyup="{!c.productquantityhandler}" />
+                                          </div>
+                                          <div  data-prodid="{!selectedproduct.product.Id}"  onclick="{!c.IncrementorderlineitemNew}" >
+                                          <button class="pluseicon"> + </button>
+                                       </div>
+                                       </div>
+                                       </div>
+                                    <div class="slds-text-color_destructive cursor-pointer" data-id="{!selectedproduct.product.Id}" onclick="{!c.AllselectedproductDeleteHandler}">
+                                       <lightning:icon iconName='utility:delete' alternativeText='delete' variant='error' size='small' title='delete'></lightning:icon>                                       <!-- <i class="fas fa-trash-alt"></i> -->
+                                    </div>
+                                   
+                                 </div>
+                                 <div onclick="{!c.EditNotes}" data-id="{!selectedproduct.product.Id}" class="{! v.showErrorClass == true ? 'slds-grid slds-grid_align-spread slds-cell-edit slds-has-error' : 'slds-grid slds-grid_align-spread slds-cell-edit'}">
+                                    <aura:if isTrue="{! !empty(selectedproduct.orderNotes) }">
+                                       <span class="maxwidth-80p pl-5px" title="Order Notes"> {!selectedproduct.orderNotes}</span>
+                                       <aura:set attribute="else">
+                                          <div class="mr-auto" style="padding: 6px;">
+                                             <button
+                                                data-id="{!selectedproduct.product.Id}"
+                                                onclick="{!c.EditNotes}"
+                                                class="slds-grid w-100 btn btn-sm btn-info btn-md mx-2"
+                                                tabindex="0"
+                                                style="font-size:0.8rem">
+                                                <span class="slds-p-right_xx-small text-white">Add Notes</span>
+                                                <lightning:icon
+                                                   iconName="utility:add"
+                                                   size="xx-small"
+                                                   class="addltng-icn"
+                                                   alternativeText="add" />
+                                             </button>
+                                          </div>
+                                       </aura:set>
+                                    </aura:if>
+                                    <aura:if isTrue="{! (v.editNotesTag != selectedproduct.product.Id + 'inputId') }">
+                                       <aura:if isTrue="{! !empty(selectedproduct.orderNotes) }">
+                                          <button data-id="{!selectedproduct.product.Id}" onclick="{!c.EditNotes}" class="slds-button slds-button_icon slds-cell-edit__button slds-m-left_x-small pr-15px" tabindex="0" title="Edit Name">
+                                             <lightning:icon iconName="utility:edit" size="xx-small" alternativeText="edit" />
+                                          </button>
+                                       </aura:if>
+                                       <aura:set attribute="else">
+                                          <section tabindex="0"
+                                             class="slds-popover slds-popover_edit" role="dialog" style="position: absolute;top: 15px;z-index: 99999;">
+                                             <div class="slds-popover__body">
+                                                <div class="slds-form-element slds-grid slds-wrap">
+                                                   <div class="slds-form-element__control slds-grow" tabindex="0">
+                                                      <ui:inputText
+                                                         class="{! 'slds-input input-customheight ' + selectedproduct.product.Id + 'inputId'}"
+                                                         aura:id="{!selectedproduct.product.Id + 'inputId'}"
+                                                         blur="{!c.closeNotesBox}"
+                                                         change="{!c.onNotesChange}"
+                                                         value="{!selectedproduct.orderNotes}" 
+                                                         />
+                                                   </div>
+                                                </div>
+                                             </div>
+                                             <span tabindex="1"></span>
+                                          </section>
+                                       </aura:set>
+                                    </aura:if>
+                                 </div>
+                                
+
+                                 
+                              </div>
+                           </div>
+                           <div class="slds-grid slds-wrap slds-grid_align-end slds-grid_vertical-align-center w-100 px-1">
+                              <h5 class="mb-0 px-2 sm-text-highlight grey-text">
+                                 $ 
+                                 <lightning:formattedNumber value="{!selectedproduct.totalProductPrice}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/>
+                              </h5>
+                             
+                           </div>
+                        </div>
+                      
+                     </div>
+                  </div>
+                  <hr/>
+               </aura:iteration>
+             </aura:if>
+               <!--new items ending-->
+               <aura:if isTrue="{! (v.orderItemRecord.length > 0 ) }">
+               <h6 class="mb-3 text-body text-center">Served Items</h6>
+              <hr/>
+               <aura:iteration items="{!v.orderItemRecord}" var="orderLineItem" indexVar="key">
+                  <div class="card mb-3 border-0 orderlineitem-container" data-id="{!orderLineItem.Product__c}">
+                     <div class="card-body p-0">
+                        <div class="slds-grid slds-grid_align-spread">
+                           <div class="slds-grid slds-wrap slds-grid_align-start flex-shrink-1 w-100">
+                              <div class="cartitemname">
+                                 <!-- <div>
+                                 <button>Add</button>
+                                </div> -->
+
+                              </div>
+                              <h5 class="mb-1 sm-text-highlight skyblue-text pl-5px">{!orderLineItem.Product_Name__c}
+                                  <span> x </span>{!orderLineItem.Quantity__c}
+                                   
+                              </h5>
+                            
+                           </div>
+
+                               <div class="_1uc2IE">
+                                  <div class="incrementbutton"  >
+                                    <div  data-proditemitemid="{!orderLineItem.Product_Option__c}" data-Productid="{!orderLineItem.Product_Option__r.	Product__c}" data-proditemquantity="{!orderLineItem.Quantity__c}"  onclick="{!c.RepeatitemHandler}" >
+                                       <lightning:icon iconName='standard:loop' alternativeText='Repeat' size='small' title='Repeat'></lightning:icon>
+                                    </div>
+                                    <!-- <button class="pluseicon" fdprocessedid="drcl1c"> - </button>
+                                    <div class="middlenumberdiv middlenumber">{!orderLineItem.Quantity__c}</div>
+                                 <div  data-orderitemid="{!orderLineItem.Id}"  onclick="{!c.AddOrderItemHandler}" >
+                                    <button class="pluseicon"> + </button> 
+                                 </div> -->
+                         
+                                 </div>
+                              
+                           </div>
+                           <div class="slds-grid slds-grid_align-end slds-grid_vertical-align-center w-100 px-1">
+                              <h5 class="mb-0 px-2 sm-text-highlight grey-text">
+                                 $ 
+                                 <lightning:formattedNumber value="{!orderLineItem.Total_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/>
+                              </h5>
+                              <aura:if isTrue="{! ( (v.userContactWrap != null ) &amp;&amp; (v.userContactWrap.contactRecord != null ) &amp;&amp; ( (v.userContactWrap.contactRecord.RecordType.Name == 'Manager' ) || (v.userContactWrap.userRecord.Email == 'staff@aoapma.com') ) )}" >
+                                 <div class="slds-text-color_destructive cursor-pointer" data-orderitemid="{!orderLineItem.Id}" data-id="{!orderLineItem.Order__c}" onclick="{!c.deleteOrderItemHandler}">
+                                    <i class="fas fa-trash-alt"></i>
+                                 </div>
+                              </aura:if>
+                           </div>
+                        </div>
+                        <div class="slds-grid slds-grid_align-spread slds-cell-edit">
+                           <span class="maxwidth-80p pl-5px" title="Order Notes"> {!orderLineItem.Notes__c}</span>
+                        </div>
+                     </div>
+                  </div>
+                  <hr/>
+               </aura:iteration>
+            </aura:if>
+            <aura:if isTrue="{! ( empty(v.selectedProductsValues) &amp;&amp; (v.isLoading == false ) &amp;&amp; ( (v.orderItemRecord.length == 0)||(v.orderItemRecord==undefined) )  ) }">
+               <div class="card mb-3 border-0">
+                  <div class="card-body px-1 py-1">
+                     <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-grid slds-wrap slds-grid_align-center flex-shrink-1">
+                           <div class="ms-3">
+                              <h5 class="slds-truncate mb-0 sm-text-highlight skyblue-text">Cart is Empty</h5>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <hr/>
+            </aura:if>
+              </div>
+             
+            
+         <!--  </div>-->
+         <!-- <aura:if isTrue="{!v.isLoading}">
+            <div class="slds-card my-2">
+               <div class="spinnercontain" style="height:6rem;position:relative">
+                  <div class="slds-spinner_container">
+                     <div role="status"
+                        class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </aura:if> -->
+       
+    
+      </section>
+     
+   </div>
+  
+</aura:component>

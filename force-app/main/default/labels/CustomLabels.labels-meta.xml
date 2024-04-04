@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>ADS_InvalidMemberuuid</fullName>
+        <categories>MunicornScheduler</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ADS InvalidMemberuuid</shortDescription>
+        <value>Oops! No Member found missing parameter</value>
+    </labels>
+    <labels>
+        <fullName>ADS_InvalidProductUrl</fullName>
+        <categories>MunicornScheduler</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ADS InvalidProductUrl</shortDescription>
+        <value>Oops! No scheduling product found an invalid product parameter. Please select a product to Schedule an Appointment</value>
+    </labels>
+    <labels>
+        <fullName>ADS_NoMemberFound</fullName>
+        <categories>MunicornScheduler</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ADS NoMemberFound</shortDescription>
+        <value>Oops! No Member found</value>
+    </labels>
+    <labels>
+        <fullName>ADS_SelectProductForScheduling</fullName>
+        <categories>MunicornScheduler</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ADS SelectProductForScheduling</shortDescription>
+        <value>Please Select &lt;b&gt;Product&lt;/b&gt; for Booking a Appointment</value>
+    </labels>
+    <labels>
+        <fullName>ADS_booking_threshold</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ADS_booking_threshold</shortDescription>
+        <value>1</value>
+    </labels>
+</CustomLabels>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+<!-- FEEDBACK CHANGES -->
+    <types>
+		<members>Feedback__c</members>
+		<name>CustomObject</name>
+	</types>
+	<types>
+		<members>Feedback__c-Feedback Layout</members>
+		<name>Layout</name>
+	</types>
+    <types>
+        <members>Custom_Form__c.WhatId__c</members>
+		<name>CustomField</name>
+	</types>
+    <types>
+		<members>Feedback__c</members>
+		<name>CustomTab</name>
+	</types>
+    <types>
+		<members>customFormTrigger</members>
+		<name>ApexTrigger</name>
+	</types>
+    <types>
+		<members>fieldLayout</members>
+		<members>formJSONTree</members>
+		<members>formMapper</members>
+		<members>jsonViewer</members>
+		<members>lookup</members>
+		<name>LightningComponentBundle</name>
+	</types>
+    <types>
+		<members>SYS_FieldMapperController</members>
+        <members>SYS_FieldMapperService</members>
+		<members>CF_FieldMapperService</members>
+        <members>SYS_Transformer</members>
+        <members>SYS_Helper</members>
+        <members>SYS_DataCache</members>
+        <members>SYS_DataCacheFactory</members>
+        <members>FormController</members>
+        <members>FormBuilderController</members>
+		<name>ApexClass</name>
+	</types>
+
+     <types>
+        <members>FormBuilderVf</members>
+        <members>FormVf</members>
+        <name>ApexPage</name>
+    </types>
+
+     <types>
+		<members>Integration_Metadata.FieldMapper</members>
+		<name>CustomMetadata</name>
+	</types>
+    
+<!-- THIS ONE IS USED TO DEPLOY SURVEYJS CHANGES -->
+    
+    <types>
+        <members>GETWebService</members>
+        <members>FormController</members>
+        <members>FormControllerTest</members>
+        <members>FormBuilderController</members>
+        <members>FormBuilderControllerTest</members>
+        <members>SF_ApplicationService</members>
+        <members>SF_GenerateSurveyLinkInvocable</members>
+        <members>CF_FieldMapperService</members>
+        <members>CF_FieldMapperServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>FormBuilderVf</members>
+        <members>FormVf</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>lookup</members>
+        <members>formMapper</members>
+        <members>formJSONTree</members>
+        <members>customForm</members>
+        <name>LightningComponentBundle</name>
+    </types> 
+    <types>
+        <members>Survey__c.Create_Mapping</members>
+        <name>QuickAction</name>
+    </types>
+    <types>
+        <members>surveyjs</members>
+        <members>formresource</members>
+        <name>StaticResource</name>
+    </types>
+
+    <types>
+        <members>Survey_Form</members>
+        <name>CustomApplication</name>
+    </types>
+
+    <types>
+        <members>Custom_Form__c</members>
+        <members>Survey__c</members>
+        <members>Pages__c</members>
+        <members>Survey_Elements__c</members>
+        <members>Form_Mapper</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+		<members>FieldSetting.SF_logoPosition</members>
+        <members>FieldSetting.SF_sfid</members>
+        <members>FieldSetting.SF_title</members>
+        <members>FieldSetting.SF_logo</members>
+        <members>FieldSetting.SF_questionsOnPageMode</members>
+        <members>FieldSetting.SF_logoFit</members>
+        <members>FieldSetting.SF_completeText</members>
+        <members>FieldSetting.SF_description</members>
+        <members>FieldSetting.SF_pages_name</members>
+        <members>FieldSetting.SF_pages_lookup</members>
+        <members>FieldSetting.SF_pages_title</members>
+        <members>FieldSetting.SF_element_name</members>
+        <members>FieldSetting.SF_element_title</members>
+        <members>FieldSetting.SF_element_type</members>
+        <members>FieldSetting.SF_element_isRequired</members>
+        <members>FieldSetting.SF_element_lookup</members>
+        <members>FieldSetting.SF_element1_lookup</members>
+        <members>FieldSetting.SF_element1_name</members>
+        <members>FieldSetting.SF_element1_title</members> 
+        <members>FieldSetting.SF_element1_isRequired</members>
+        <members>FieldSetting.SF_element1_type</members>
+
+        <members>Integration_Metadata.FieldMapper</members>
+        <members>Integration_Metadata.Patient_Profile_Update</members>
+		<members>IntegrationEnablement.Form</members>
+		<members>ObjectSetting.Survey</members>
+		<members>IntegrationSetting.Form</members>
+		<name>CustomMetadata</name>
+	</types>
+    <types>
+        <members>Survey__c</members>
+        <members>Survey_Elements__c</members>
+        <members>Pages__c</members>
+        <members>Custom_Form__c</members>
+
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Survey__c-Survey Layout New</members>
+        <members>Survey_Elements__c-Survey Elements Layout</members>
+        <members>Pages__c-Pages Layout</members>
+        <members>Custom_Form__c-Custom Form Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+		<members>Survey__c.All</members>
+		<members>Survey__c.standard_view</members>
+		<name>ListView</name>
+	</types>
+
+    <types>
+        <members>Survey__c.Completed_Html__c</members>
+        <members>Survey__c.Complete_Text__c</members>
+        <members>Survey__c.Description__c</members>
+        <members>Survey__c.Focus_First_Question_Automatic__c</members>
+        <members>Survey__c.Form_JSON__c</members>
+        <members>Survey__c.Hash__c</members>
+        <members>Survey__c.Logo__c</members>
+        <members>Survey__c.Logo_Fit__c</members>
+        <members>Survey__c.Logo_Position__c</members>
+        <members>Survey__c.Questions_On_Page_Mode__c</members>
+        <members>Survey__c.Show_Preview_Before_Complete__c</members>
+        <members>Survey__c.Show_Question_Numbers__c</members>
+        <members>Survey__c.Status__c</members>
+        <members>Survey__c.Title__c</members>
+        <members>Survey__c.UUID__c</members>
+        <members>Survey__c.Width__c</members>
+        <members>Survey__c.Autofill_Configuration__c</members>
+        <members>Survey__c.Object_Setting__c</members>
+        <members>Survey__c.Integration_Setting__c</members>
+        <members>Survey__c.Form_Type__c</members>
+        <name>CustomField</name>
+    </types>
+    
+    <types>
+		<members>Survey_Record_Page</members>
+		<members>Survey_Elements_Record_Page</members>
+		<members>Pages_Record_Page</members>
+		<members>Custom_Form_Record_Page</members>
+        <members>Survey_Form_UtilityBar</members>
+		<name>FlexiPage</name>
+	</types>
+    <types>
+        <members>Survey_Status</members>
+        <name>PathAssistant</name>
+    </types>
+    <types>
+        <members>Survey_Form_Guest_Permission_Set</members>
+        <members>Survey_Form_Permission_Set</members>
+        <name>PermissionSet</name>
+    </types>
+
+    
+    <types>
+        <members>GETWebService</members>
+        <members>FormController</members>
+        <members>FormBuilderController</members>
+        <members>FormBuilderController</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>FormBuilderVf</members>
+        <members>FormVf</members>
+        <name>ApexPage</name>
+    </types>
+
+    <types>
+        <members>formresource</members>
+        <members>customwidget</members>
+        <name>StaticResource</name>
+    </types>
+    
+    
+    <!--### PS needs some manual changes I retrived use the below fields to replace>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Completed_Html__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Complete_Text__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Description__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Focus_First_Question_Automatic__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Form_JSON__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Hash__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Logo__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Logo_Fit__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Logo_Position__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Questions_On_Page_Mode__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Show_Preview_Before_Complete__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Show_Question_Numbers__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Status__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Survey_Link__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Title__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.UUID__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Width__c</field><readable>true</readable></fieldPermissions>
+        <fieldPermissions><editable>true</editable><field>Survey__c.Width_Mode__c</field><readable>true</readable></fieldPermissions>    
+    ####-->
+    <types>
+		<members>GuestSiteLink</members>
+		<name>CustomLabel</name>
+	</types>
+    <version>55.0</version>
+</Package>

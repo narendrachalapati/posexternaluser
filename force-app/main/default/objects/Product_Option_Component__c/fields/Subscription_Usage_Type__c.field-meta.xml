@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subscription_Usage_Type__c</fullName>
+    <description>licensed automatically bills the quantity set when adding it to a subscription. 
+metered aggregates the total usage based on usage records. Defaults to licensed</description>
+    <externalId>false</externalId>
+    <label>Subscription Usage Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>metered</fullName>
+                <default>false</default>
+                <label>Metered</label>
+            </value>
+            <value>
+                <fullName>licensed</fullName>
+                <default>true</default>
+                <label>Licensed</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

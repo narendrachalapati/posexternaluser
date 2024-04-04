@@ -1,0 +1,260 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,forceCommunity:searchInterface,force:lightningQuickActionWithoutHeader"
+    controller="PMA_SearchController" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!-- Todo Refactor Attributes -->
+    <aura:attribute name="todorecord" type="ToDo__c"/>
+    <aura:attribute name="uuidstring" type="String"/>
+    <aura:attribute name="memberId" type="String"/>
+    <aura:attribute name="AccountId" type="string" />
+    <aura:attribute name="isLoggedIn" type="Boolean"/>
+    <!-- Todo Refactor Attributes -->
+    
+    <aura:attribute name="currentUser" type="User"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    <aura:attribute name="searchText" type="String" default="" />
+    <aura:attribute name="searchResult" type="List" />
+    <aura:attribute name="selected" type="boolean" default="false" />
+    <aura:attribute name="subscriptioncatlog" type="List" />
+    <lightning:navigation aura:id="navigate" />
+
+    <aura:attribute name="showPosContainer" type="boolean" default="false" />
+    <aura:attribute name="orderUUID" type="String" default="" />
+    <!-- Init() Products Map<Id, Wrapper> from Apex Controller -->
+        <aura:attribute name="allProductsMap" type="Map" />
+   <!-- Init() Extract Values form allProductsMap to Itereate over Products -->
+   <aura:attribute name="productData" type="List" />  
+   <aura:attribute name="productsfromcontactserch" type="boolean" default="false" />
+    <aura:attribute name="openTabMembers" type="List" />
+    <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.toasterLib + '/toastr.min.css')}"  
+    scripts="{!$Resource.toasterLib + '/toastr.min.js'}"/>
+<!--work in progress-->
+    <aura:handler event="c:ContactcommunicationEvent" action="{!c.handleproductevents}"/>
+
+    <aura:if isTrue = "{! !(v.showPosContainer) }">
+    <section class="slds-grid slds-wrap slds-grid_align-center possearch">
+        <div class="slds-card slds-col slds-size_1-of-1 slds-medium-size_10-of-12 slds-large-size_10-of-12 slds-grid_pull-padded slds-var-p-bottom_medium">
+            <div class="slds-var-p-around_small">
+                <h1 class="slds-text-heading_medium slds-text-align_center">Search Members</h1>
+                <div style="text-align:end">
+                    <lightning:helptext
+                    content="subscription colours"/> 
+                        
+                     <aura:iteration items="{!v.subscriptioncatlog}" var="subcatlog">
+                        <div class="tooltip dot"  style="{!'background-color:' + subcatlog.Subscription_colour__c }">
+                            <span class="tooltiptext">{! subcatlog.Name }</span>
+                          </div> 
+                   <!--<span class="dot" style="{!'background-color:' + subcatlog.Subscription_colour__c }"  title="{! subcatlog.Name }"></span> --> 
+                </aura:iteration>
+                  </div>
+            </div>
+            <div class="slds-grid slds-nowrap slds-grid_align-center slds-var-p-bottom_medium">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12 slds-large-size_10-of-12 slds-grid slds-grid_vertical slds-nowrap">
+                    <div class="slds-var-p-vertical_x-small slds-var-p-around_xx-small slds-shrink-none slds-theme_shade">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-assistive-text">Search</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
+                                            role="none">
+                                            <input type="text" aura:id="search-box"
+                                                class="slds-input slds-combobox__input" onkeyup="{!c.onEnterText}"
+                                                value="{!v.searchText}" autoComplete="off"
+                                                placeholder="Search Members" />
+                                            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right pointer-none">
+                                                <lightning:buttonIcon iconName="utility:search" variant="bare" alternativeText="Search" class="slds-input__icon" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{! (v.searchText != '' )}">
+                            <div class="slds-text-title slds-var-m-top_x-small slds-var-p-horizontal_large" aria-live="polite"> {!v.searchResult.length} Member(s) Found For {!v.searchText}</div>
+                        </aura:if>
+                    </div>
+                    <div class="slds-scrollable slds-grow">
+                        <div class="slds-scrollable_none">
+                            <div class="slds-grid slds-wrap slds-var-p-around_xx-small">
+                                <aura:if isTrue="{! (v.searchText != '' )}">
+                                    <div class="slds-section slds-col slds-size_1-of-1" aura:id="searchResultSection">
+                                        <h3 class="slds-section__title slds-col slds-size_1-of-1 slds-nowrap">
+                                            <button aria-controls="searchResultSectioncontrol" aria-expanded="false" class="slds-button slds-section__title-action section-title-tab"  onclick="{!c.toggleSection}" data-auraId="searchResultSection">
+                                            <lightning:icon iconName="utility:switch" size="x-small" title="switch" class="slds-section__title-action-icon slds-button__icon_left" />
+                                            <span class="slds-truncate" title="Search Members">Search Members</span>
+                                            </button>
+                                        </h3>
+                                        <div aria-hidden="true" class="slds-section__content slds-grid slds-wrap slds-var-p-around_xx-small" id="searchResultSectioncontrol">
+                                            <aura:if isTrue="{! !empty(v.searchResult)}">
+                                                <aura:iteration items="{!v.searchResult}" var="memberwrap" indexVar="key">
+                                                    <div class="slds-col slds-grid slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center" data-memberid="{!memberwrap.member.Id}" onclick="{!c.CreateOrder}">
+                                                        <div class="product-wrapper">
+                                                            <div class="overflow-hidden mx-auto image-wrapper max-height slds-is-relative">
+                                                                <c:imagePreview recordId="{!memberwrap.member.Id}" FullName ="{! memberwrap.member.Name }" shape = "square" imgWidth = "140" imgHeight = "140" Age = "{! memberwrap.member.Age__c }"/>
+
+                                                                <!-- <aura:if isTrue="{! !(memberwrap.hasPictureURL) }">
+                                                                    <span class="slds-avatar noimage">
+                                                                        <abbr class="slds-avatar__initials slds-icon-standard-user noimagetext" title="{! memberwrap.member.Name }">{! memberwrap.shortNameCode }</abbr>
+                                                                    </span>
+                                                                    <c:imagePreview recordId="{!memberwrap.member.Id}" FullName ="{! memberwrap.member.Name }" shape = "round" imgWidth = "" imgHeight = ""/>
+                                                                </aura:if>    
+                                                                <aura:if isTrue="{! memberwrap.hasPictureURL }">
+                                                                    <img src="{! memberwrap.pictureURL }" alt="{! memberwrap.member.Name }" class="prodctimage"/>
+                                                                </aura:if> -->
+                                                                <!-- <aura:if isTrue="{! (memberwrap.member.Age__c le 18 ) }">
+                                                                    <span class="slds-theme_error member-age-label">{! memberwrap.member.Age__c }</span>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{! and( (memberwrap.member.Age__c gt 18 ), (memberwrap.member.Age__c lt 21 )) }">
+                                                                    <span class="slds-theme_warning member-age-label">{! memberwrap.member.Age__c }</span>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{! (memberwrap.member.Age__c ge 21 ) }">
+                                                                    <span class="slds-theme_success member-age-label">{! memberwrap.member.Age__c }</span>
+                                                                    
+                                                                </aura:if> -->
+                                                              
+                                                               
+                                                            </div>
+                                                            <div class="product-title text-center slds-text-align_center slds-var-p-bottom_x-small">
+                                                                <p class="slds-truncate">{!memberwrap.member.Name}</p></div>
+                                                           
+                                                        </div>
+                                                    </div>
+                                                </aura:iteration>
+                                            </aura:if>
+                                            <aura:if isTrue="{! empty(v.searchResult)}"> 
+                                                <div class="slds-col slds-size_1-of-1 slds-grid slds-var-p-around_xx-small slds-grid_align-center slds-wrap">
+                                                    <div class="product-title text-center slds-text-align_center slds-var-p-bottom_x-small">
+                                                        No Members Are there.. Search to Start Adding
+                                                    </div>
+                                                </div>
+                                            </aura:if>  
+                                            
+                                        </div>
+                                    </div>
+                                </aura:if>
+                                <!--- ++++++++++++++++++++++++++++++
+                                   +++++++++++++  open tabs +++++++++++++++++++++++++++
+                                    +++++++++++++++++++++++++++++
+                                
+                                -->
+                                <div class="slds-section slds-col slds-size_1-of-1 slds-is-open" aura:id="opentabMemberSection">
+                                    <h3 class="slds-section__title slds-col slds-size_1-of-1 slds-nowrap">
+                                        <button aria-controls="opentabMemberSectioncont" aria-expanded="true" class="slds-button slds-section__title-action section-title-tab" onclick="{!c.toggleSection}" data-auraId="opentabMemberSection">
+                                        <lightning:icon iconName="utility:switch" size="x-small" title="switch" class="slds-section__title-action-icon slds-button__icon_left" />
+                                        <span class="slds-truncate" title="Open Tabs">Open Tabs</span>
+                                        </button>
+                                    </h3>
+                                    <div aria-hidden="false" class="slds-section__content slds-grid slds-wrap slds-var-p-around_xx-small" id="opentabMemberSectioncont">
+                                            <!-- Start Contacts Results -->
+                                        <aura:if isTrue="{! !empty(v.openTabMembers)}">
+                                            <aura:iteration items="{!v.openTabMembers}" var="member" indexVar="key">
+                                                <!-- <div class="slds-col slds-grid slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center" data-orderuuid="{!member.order.UUID__c}" onclick="{!c.openPOSOrderScreen}">
+
+                                                    <c:imagePreview recordId="{! member.order.Member__c }" FullName ="{! member.order.Member__r.Name }" shape = "square" imgWidth = "150" imgHeight = "150" />
+                                                    <div class="product-title text-center slds-truncate slds-text-align_center slds-var-p-bottom_x-small">{!member.order.Member__r.Name}</div>
+                                                    
+                                                </div> -->
+                                                             <div class="slds-col slds-grid slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center" data-orderuuid="{!member.order.UUID__c}" onclick="{!c.openPOSOrderScreen}">
+                                                    <div class= "product-wrapper">
+                                                        <div class="overflow-hidden mx-auto image-wrapper max-height slds-is-relative" style="{!'border-color:' + member.order.Member__r.Subscribed_Products_Catalog__r.Subscription_colour__c }">
+                                                            <!-- <aura:if isTrue="{! !(member.hasPictureURL) }">
+                                                                <span class="slds-avatar noimage">
+                                                                    <abbr class="slds-avatar__initials slds-icon-standard-user noimagetext" title="{! member.order.Member__r.Name }">{! member.shortNameCode }</abbr>
+                                                                </span>
+                                                            </aura:if>    
+                                                            <aura:if isTrue="{! member.hasPictureURL }">
+                                                                <img src="{! member.pictureURL }" alt="{! member.order.Member__r.Name }" class="prodctimage"/>
+                                                            </aura:if> -->
+                                                            <c:imagePreview recordId="{! member.order.Member__c }" FullName ="{! member.order.Member__r.Name }" shape = "square" imgWidth = "140" imgHeight = "140"  Age = "{! member.order.Member__r.Age__c }"/>
+
+                                                            <!-- <aura:if isTrue="{! (member.order.Member__r.Age__c le 18 ) }">
+                                                                <span class="slds-theme_error member-age-label">{! member.order.Member__r.Age__c }</span>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! and( (member.order.Member__r.Age__c gt 18 ), (member.order.Member__r.Age__c lt 21 )) }">
+                                                                <span class="slds-theme_warning member-age-label">{! member.order.Member__r.Age__c }</span>
+                                                            </aura:if>
+                                                            <aura:if isTrue="{! (member.order.Member__r.Age__c ge 21 ) }">
+                                                                <span class="slds-theme_success member-age-label">{! member.order.Member__r.Age__c }</span>
+                                                            </aura:if> -->
+                                                        </div>
+                                                        <div class="product-title text-center slds-text-align_center slds-var-p-bottom_x-small slds-col slds-m-around_x-small">
+                                                            <p class="slds-truncate wrapped-content">{!member.order.Member__r.Name}</p>
+                                                            </div>
+                                                        
+                                                      
+
+                                                       
+                                                    </div>
+                                                </div>
+                                            </aura:iteration>
+                                        </aura:if>
+                                        <aura:if isTrue="{! empty(v.openTabMembers)}"> 
+                                            <div class="slds-col slds-size_1-of-1 slds-grid slds-var-p-around_xx-small slds-grid_align-center slds-wrap">
+                                                <div class="product-title text-center slds-text-align_center slds-var-p-bottom_x-small">
+                                                    No Open Tab Members Are there Search to Start Adding
+                                                </div>
+                                            </div>
+                                        </aura:if>  
+                                        
+                                    </div>
+                                </div>
+                                
+
+                                <!-- End Contacts Results -->    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </aura:if>
+    <aura:if isTrue = "{!v.showPosContainer}">
+        <c:pmaContainer orderUUID="{!v.orderUUID}"
+         productData="{!v.productData}" 
+         productsfromcontactserch="{!v.productsfromcontactserch}" 
+         allProductsMap="{!v.allProductsMap}" 
+         todorecord="{!v.todorecord}"
+          uuidstring="{!v.uuidstring}" isLoggedIn="{!v.isLoggedIn}"  memberId="{!v.memberId}" AccountId="{!v.AccountId}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.isLoading}">
+            <div class="slds-card my-2">
+               <div class="spinnercontain" style="height:6rem;position:relative">
+                  <div class="slds-spinner_container">
+                     <div role="status"
+                        class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <ul class="o-vertical-spacing o-vertical-spacing--l">
+                <li class="blog-post o-media">
+                  <div class="o-media__figure">
+                    <span class="skeleton-box" style="width:100px;height:100px;"></span>
+                  </div>
+                  <div class="o-media__body">
+                    <div class="o-vertical-spacing">
+                      <h3 class="blog-post__headline">
+                        <span class="skeleton-box" style="width:55%;"></span>
+                      </h3>
+                      <p>
+                        <span class="skeleton-box" style="width:80%;"></span>
+                        <span class="skeleton-box" style="width:90%;"></span>
+                        <span class="skeleton-box" style="width:83%;"></span>
+                        <span class="skeleton-box" style="width:80%;"></span>
+                      </p>
+                      <div class="blog-post__meta">
+                        <span class="skeleton-box" style="width:70px;"></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+               </ul>
+         </aura:if>
+        
+</aura:component>

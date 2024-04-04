@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    
+    <types>
+    <members>Contact.BrandName__c</members>
+     <members>Contact.GoogleDriveFolderId__c</members>
+      <members>Contact.GDriveSync__c</members>
+     <members>Account.GoogleDriveFolderId__c</members>
+     <members>Account.GDriveSync__c</members>
+    <members>Contact.Gsheetsync__c</members>
+    <members>Contact.SpreadSheet__c</members>
+     <members>Contact.Range__c</members>
+    <members>Contact.SpreadSheet_Id__c</members>
+    <members>Activity__c.GDriveSync__c</members>
+    <members>Activity__c.GoogleDriveFolderId__c</members>
+     <members>Activity__c.Thread_id__c</members>
+     <name>CustomField</name>
+    </types>
+ <types>
+        <members>SpreadSheet__c</members>
+        <members>GoogleDriveFolder__c</members>
+        <members>GoogleDriveFile__c</members>
+       <name>CustomObject</name>
+    </types>
+    <types>
+        <members>G_suite</members>
+       <name>PermissionSet</name>
+    </types>
+     <types>
+        <members>SpreadSheet__c</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+		<members>GDriveFileResp</members>
+		<members>GDriveFolderResp</members>
+		<members>GDrivePermissionResp</members>
+		<members>GDriveFileEditResp</members>
+		<members>SpreadsheetResp</members>
+		<members>SpreadsheetEmptyresp</members>
+		<members>Municorn_Resource</members>
+		<members>license_org_json</members>
+		<members>OAuth_Test_Records</members>
+		<members>SYS_Test_Inbound_Body_Very_Large</members>
+		<name>StaticResource</name>
+	</types>
+
+ <types>
+ <!--Spreadsheet field settings start -->
+     <members>FieldSetting.SpreadSheet_Contact_Active</members>
+    <members>FieldSetting.SpreadSheet_Contact_majorDimension</members>
+    <members>FieldSetting.SpreadSheet_Contact_Metadataident</members>
+    <members>FieldSetting.SpreadSheet_Contact_Name</members>
+    <members>FieldSetting.SpreadSheet_Contact_range</members>
+    <members>FieldSetting.SpreadSheet_ContactUpdatemajorDimension</members>
+    <members>FieldSetting.SpreadSheet_Contactupdate_Metadataident</members>
+    <members>FieldSetting.SpreadSheet_ContactUpdate_Name</members>
+    <members>FieldSetting.SpreadSheet_Contactupdate_range</members>
+    <members>FieldSetting.SpreadSheet_Id</members>
+    <members>FieldSetting.SpreadSheet_Name</members>
+    <members>FieldSetting.SpreadSheet_Url</members>
+    <members>HttpHeaders.spreadsheetContent_Type</members>
+    <members>IntegrationEnablement.SpreadSheet</members>
+    <members>IntegrationSetting.SpreadSheet</members>
+    <members>ObjectSetting.SpreadSheet</members>
+    <members>ObjectSetting.SpreadSheetValues_Contact</members>
+    <members>ObjectSetting.SpreadSheetValues_Contact_Update</members>
+    <members>ObjectSetting.SpreadSheet</members>
+     <!--Spreadsheet field settings End -->
+   <name>CustomMetadata</name>
+    </types>
+   <!--Gmail Meta data start -->
+    <types>
+    <members>FieldSetting.Gmail_Body</members>
+    <members>FieldSetting.Gmail_Content_Type</members>
+    <members>FieldSetting.Gmail_From_Email_Account</members>
+    <members>FieldSetting.Gmail_From_Email_Contact</members>
+    <members>FieldSetting.Gmail_From_Email_Lead</members>
+    <members>FieldSetting.Gmail_htmlBody</members>
+    <members>FieldSetting.Gmail_raw</members>
+    <members>FieldSetting.Gmail_replyto</members>
+    <members>FieldSetting.Gmail_status</members>
+    <members>FieldSetting.Gmail_Subject</members>
+    <members>FieldSetting.Gmail_threadid</members>
+    <members>FieldSetting.Gmail_toemail</members>
+    <members>FieldSetting.Gmail_uuid</members>
+    <members>HttpHeaders.Gmail_Content_Type</members>
+    <members>IntegrationEnablement.Gmail</members>
+    <members>IntegrationSetting.Gmail</members>
+    <members>ObjectSetting.Gmailsend</members>
+   <name>CustomMetadata</name>
+    </types>
+    <!-- Gmail metadata END --> 
+     <!-- GDrive metadata start --> 
+     <types>
+        <members>IntegrationSetting.GoogleDrive</members>
+        <members>ObjectSetting.DriveFolder_Object_Setting</members>
+        <members>ObjectSetting.GoogleFile_Object_Setting</members>
+        <members>HttpHeaders.Gdrive_Content_Type</members>
+        <members>IntegrationEnablement.GoogleDrive</members>
+        <members>FieldSetting.TO_DriveFolder_ID</members>
+        <members>FieldSetting.TO_DriveFolder_mimeType</members>
+        <members>FieldSetting.TO_DriveFolder_Name</members> 
+         <members>FieldSetting.TO_DriveFolder_ParentId</members>
+        <name>CustomMetadata</name>
+    </types>
+      <!-- GDrive metadata END--> 
+       <types>
+        <members>CustomFileUploaderCmp</members>
+        <members>G_imagepreview</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+     <types>
+        <members>CustomfileuploaderController</members>
+        <members>GoogleDrive_sys_Applicationservice</members>
+        <members>GDrive_MokServer</members>
+        <members>GoogleDrive_Datafactory</members>
+         <members>GDriveinvocablehandler</members>
+        <members>GoogleDrive_sys_ApplicationserviceTest</members>
+        <members>GoogleDrive_TestClass</members>
+        	 <members>CustomActivityService</members>
+             <members>CustomActivityServiceTest</members>
+             <members>CustomfileuploaderController</members>
+            <members> GDrive_MokServer</members>
+            <members> GDriveinvocablehandler</members>
+           <members>  GDriveinvocablehandlerTest</members>
+            <members> Gmail_OB_SYS_ApplicationService</members>
+            <members> Gmail_OB_SYS_ApplicationServiceTest</members>
+            <members> GoogleDrive_Datafactory</members>
+            <members> GoogleDrive_TestClass</members>
+            <members> GoogleDrive_sys_Applicationservice</members>
+             <members>GoogleDrive_sys_ApplicationserviceTest</members>
+             <members>Gspreadsheet_Datafactory</members>
+             <members>Gspreadsheet_sys_Applicationservice</members>
+             <members>Gspreadsheet_sys_ApplicationserviceTest</members>
+            <members> GsuiteTestDatafactory</members>
+            <members> InboundEmailSerives</members>
+             <members>InboundEmailSerivesTest</members>
+        <name>ApexClass</name>
+    </types>
+      <types>
+        <members>G_Spreadsheet_creation_flow</members>
+        <members>Spreadsheet_values_update</members>
+        <name>Flow</name>
+    </types>
+     <types>
+     <members>Gmail_Send_flow</members>
+    <name>Flow</name>
+    </types>
+      <types>
+        <members>GoogleDrive_Folder_Flow</members>
+         <members>GoogleDrive_FolderId_update</members>
+         <members>Account_GoogleDrive_sync</members>
+        <members>GDrive_Enablement</members>
+        <name>Flow</name>
+    </types>
+   <version>56.0</version>
+</Package>

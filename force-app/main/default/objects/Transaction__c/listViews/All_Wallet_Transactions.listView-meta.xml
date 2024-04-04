@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Wallet_Transactions</fullName>
+    <columns>NAME</columns>
+    <columns>Amount__c</columns>
+    <columns>Contact__c</columns>
+    <columns>Status__c</columns>
+    <columns>TransactionReference__c</columns>
+    <columns>TransactionDate__c</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Transaction_Type__c</field>
+        <operation>equals</operation>
+        <value>Wallet</value>
+    </filters>
+    <label>All Wallet Transactions</label>
+</ListView>

@@ -1,0 +1,148 @@
+<aura:component controller="MapProductWithGoogleCalendar" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doint}" />
+    <!-- Is AccountBased Mapper -->
+    <aura:attribute name="isAccountBasedMapper" type="boolean" default="true"/>
+    <!-- Accounnt Record Id -->
+    <aura:attribute name="accountRecordId" type="String" default=""/>
+    <!-- Product Record Id -->
+    <aura:attribute name="recordId" type="String"/>
+    <!-- Product Record -->
+    <aura:attribute name="productRecord" type="Object" />
+    <!-- Calendar Timezone -->
+    <aura:attribute name="configTimeZone" type="String"/>
+    <!--  Calendar Form Title -->
+    <aura:attribute name="CreateCalendarTitle" type="String" default="" />
+    <!--  Calendar Name Prefix -->
+    <aura:attribute name="CalendarNamePrefix" type="String" default="" />
+    <!--  Calendar Type Booking or Shift Calendar -->
+    <aura:attribute name="CalendarType" type="String" default="" />
+
+    <!--  Selected Booking Calendar Id -->
+    <aura:attribute name="selectedProductBookingCalendarId" type="String" default="" />
+    <!--  Selected Shift Calendar Id -->
+    <aura:attribute name="selectedProductShiftCalendarId" type="String" default="" />
+
+    <!-- Calendars List -->
+    <aura:attribute name="calendarList" type="List" />
+
+    <!-- 'showLoadingSpinner' attribute for show/hide Progress -->
+    <aura:attribute name="isLoading" type="boolean" default="false" />
+    <!-- Show Existing Calendars Boolean -->
+    <aura:attribute name="showExistingCalendars" type="Boolean" default="true"/>
+    <!-- Booking Calendar Associated with Product Boolean --> 
+    <aura:attribute name="isBookingCalendarAssociated" type="Boolean" default="false"/>
+    <!-- Shift Calendar Associated with Product Boolean --> 
+    <aura:attribute name="isShiftCalendarAssociated" type="Boolean" default="false"/>
+    <!-- Show Create Calendar Popup Boolean -->
+    <aura:attribute name="showCreateCalendar" type="Boolean" default="false"/>
+    
+    <aura:if isTrue="{!v.isLoading}">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{! and(!empty(v.productRecord), v.showExistingCalendars ) }">
+        <div class="componentroot">
+            <article class="slds-card">
+                <div class="slds-card__header slds-grid slds-wrap gridgap-5px slds-grid_align-center">
+                    <lightning:button variant="brand" label="Create Shift Calendar" title="Create Shift Calendar"
+                        onclick="{! c.CreateShiftCalendar }" />
+                    <lightning:button variant="brand" label="Create Booking Calendar" title="Create Booking Calendar"
+                        onclick="{! c.CreateBookingCalendar }" />
+                </div>
+
+                <!-- Start Error Message for Booking Calendar is Associated with Product -->
+                <!-- 
+                <aura:if isTrue="{! v.isBookingCalendarAssociated }">
+                    <div class="slds-text-align_center slds-var-m-bottom_medium">
+                        <span>Select a Booking Calendar to Update for <b>{! v.productRecord.Name }</b></span> 
+                    </div>
+                </aura:if> 
+                -->
+                <aura:if isTrue="{! !(v.isBookingCalendarAssociated) }">
+                    <div class="slds-text-align_center slds-var-m-bottom_medium">
+                        <span>Oops! No Booking Calendar Selected. Select to Associate with <b>{! v.productRecord.Name }</b></span> 
+                    </div>
+                </aura:if>
+                <!-- End Error Message for Booking Calendar is Associated with Product -->
+
+                <!-- Start Error Message for Shift Calendar is Associated with Product -->
+                <!-- 
+                <aura:if isTrue="{! v.isShiftCalendarAssociated }">
+                    <div class="slds-text-align_center slds-var-m-bottom_medium">
+                        <span>Select a Shift Calendar to Update for <b>{! v.productRecord.Name }</b></span> 
+                    </div>
+                </aura:if>
+                 -->
+                <aura:if isTrue="{! !(v.isShiftCalendarAssociated) }">
+                    <div class="slds-text-align_center slds-var-m-bottom_medium">
+                        <span>Oops! No Shift Calendar Selected. Select to Associate with <b>{! v.productRecord.Name }</b></span> 
+                    </div>
+                </aura:if>
+                <!-- End Error Message for Shift Calendar is Associated with Product -->
+            </article>
+
+            <lightning:tabset selectedTabId="Booking-Calendar-Tab">
+                <lightning:tab label="Map Booking Calendar" id="Booking-Calendar-Tab">
+                    <!-- Start Iterate Calendar Options for Association with Product --> 
+                    <aura:if isTrue="{! !empty(v.calendarList) }">
+                        <div class="button-flex">
+                            <aura:iteration items="{!v.calendarList}" var="calendarRecord" indexVar="key">
+                                <aura:if isTrue="{! (calendarRecord.Calendar_Type__c == 'Booking Calendar') }">
+                                    <button type="button" class="{! (v.selectedProductBookingCalendarId == calendarRecord.Google_Calendar_Id__c) ? 'button-outline active' : 'button-outline' }" title="{! calendarRecord.Calendar_Name__c }" data-calendartype="Booking" data-calendarid="{! calendarRecord.Id }" data-calendarkey="{! calendarRecord.Google_Calendar_Id__c}" onclick="{! c.associateCalendarWithProduct }">
+                                        <span>{!calendarRecord.Calendar_Name__c}</span>
+                                    </button>
+                                </aura:if>
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                    <!-- End Iterate Calendar Options for Association with Product -->                 
+                </lightning:tab>
+                <lightning:tab label="Map Shift Calendar" id="Shift-Calendar-Tab">
+                    <!-- Start Iterate Calendar Options for Association with Product --> 
+                    <aura:if isTrue="{! !empty(v.calendarList) }">
+                        <div class="button-flex">
+                            <aura:iteration items="{!v.calendarList}" var="calendarRecord" indexVar="key">
+                                <aura:if isTrue="{! (calendarRecord.Calendar_Type__c == 'Shift Calendar') }">
+                                    <button type="button" class="{! (v.selectedProductShiftCalendarId == calendarRecord.Google_Calendar_Id__c) ? 'button-outline active' : 'button-outline' }" title="{! calendarRecord.Calendar_Name__c }" data-calendartype="Shift" data-calendarid="{! calendarRecord.Id }" data-calendarkey="{! calendarRecord.Google_Calendar_Id__c}" onclick="{! c.associateCalendarWithProduct }">
+                                        <span>{!calendarRecord.Calendar_Name__c}</span>
+                                    </button>
+                                </aura:if>
+                            </aura:iteration>
+                        </div>
+                    </aura:if>
+                    <!-- End Iterate Calendar Options for Association with Product -->   
+                </lightning:tab>
+            </lightning:tabset>
+        </div>   
+    </aura:if>
+
+    <!-- Create Booking | Shift Calendar  -->
+    <aura:if isTrue="{!v.showCreateCalendar}">
+        <div class="formwrapper">
+            <div class="formactions slds-text-align_center">
+                <h2 class="slds-text-heading_medium slds-hyphenate">{! v.CreateCalendarTitle}</h2>
+            </div>
+            <div class="slds-var-p-around_medium">
+                <lightning:input name="Calendar_Name__c" aura:id="summary" value=""
+                    label="Calendar Name" placeholder="Enter Calendar Name" maxlength="255" required="true" 
+                    message-when-value-missing="Please Enter Calendar Name" 
+                    message-when-too-long="Calendar Name exceeded Maximum Length 255" />
+            </div>
+            <div class="slds-grid slds-grid_align-end formfooteractions">
+                <lightning:button variant="neutral" label="Cancel" title="Cancel"
+                    onclick="{! c.hideCreateCalendar }" />
+                <lightning:button variant="brand" label="Save" title="Save"
+                    onclick="{!c.handleCreateCalendarSubmit}" />
+            </div>
+        </div>
+    </aura:if>
+
+</aura:component>

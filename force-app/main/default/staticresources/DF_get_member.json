@@ -1,0 +1,54 @@
+{
+  "detectIntentResponseId": "970addb4-b8f0-46f8-82ef-9e0300961371",
+  "pageInfo": {
+    "currentPage": "projects/smbenterprise/locations/global/agents/5987b046-dac9-4e91-9e6f-871d81770de0/flows/96ea7ac8-ea1f-4fca-be9b-caa16b49f141/pages/112a97fc-1e0e-4e38-b0fb-4c16e205d80d",
+    "displayName": "\u003eFind Member API Invoke"
+  },
+  "sessionInfo": {
+    "session": "projects/smbenterprise/locations/global/agents/5987b046-dac9-4e91-9e6f-871d81770de0/sessions/bfc637-3e1-7e6-04b-90fd16647",
+    "parameters": {
+      "additional_action": "findmember",
+      "announce_services": true,
+      "appointment_date": "2023-10-28 09:08:51-0700",
+      "confirm_input": false,
+      "current_flow": "member_lookup",
+      "currentSessionId": "bfc637-3e1-7e6-04b-90fd16647",
+      "dateofbirth": "1990-01-01",
+      "dob_date": "1990-01-01",
+      "dob_date_object": {
+        "year": 1990.0,
+        "month": 1.0,
+        "day": 1.0,
+        "hours": 0.0,
+        "minutes": 0.0,
+        "seconds": 0.0,
+        "nanos": 0.0
+      },
+      "firstname": "john",
+      "ismemberfound": false,
+      "lastname": "doe",
+      "leadsource": "Website Chat",
+      "name_collection_firstname": "john",
+      "name_collection_lastname": "doe",
+      "next_flow": "",
+      "number_of_days_forward_to_fetch": 90.0,
+      "phonenumber": null,
+      "productid_list": ["a839e84c-6eae-c9b6-218f-692553cabf14", "c189a347-044b-893b-ac9c-a50be407702c", "54a615d4-a008-a380-4ca2-f523431fcbf6"],
+      "productidstring": "a839e84c-6eae-c9b6-218f-692553cabf14,c189a347-044b-893b-ac9c-a50be407702c,54a615d4-a008-a380-4ca2-f523431fcbf6",
+      "productname_list": ["Consultation", "Cosmetology", "Surgery"],
+      "productnamestring": "Consultation,Cosmetology,Surgery",
+      "productscount": 3.0,
+      "resource_path": "memberandservice",
+      "selected_service": "Consultation",
+      "selected_service_index": "",
+      "selected_service_uuid": "a839e84c-6eae-c9b6-218f-692553cabf14",
+      "services_offered_ssml": "\u003cspeak\u003efor Consultation press \u003cemphasis level\u003d\u0027strong\u0027\u003e1\u003c/emphasis\u003e or say \u003csay-as interpret-as\u003d\u0027cardinal\u0027\u003e1\u003c/say-as\u003e \u003cbreak time\u003d\u0027100ms\u0027 /\u003e,for Cosmetology press \u003cemphasis level\u003d\u0027strong\u0027\u003e2\u003c/emphasis\u003e or say \u003csay-as interpret-as\u003d\u0027cardinal\u0027\u003e2\u003c/say-as\u003e \u003cbreak time\u003d\u0027100ms\u0027 /\u003e,for Surgery press \u003cemphasis level\u003d\u0027strong\u0027\u003e3\u003c/emphasis\u003e or say \u003csay-as interpret-as\u003d\u0027cardinal\u0027\u003e3\u003c/say-as\u003e \u003cbreak time\u003d\u0027100ms\u0027 /\u003e,\u003c/speak\u003e",
+      "services_offered_text": "for Consultation enter 1,for Cosmetology enter 2,for Surgery enter 3,"
+    }
+  },
+  "fulfillmentInfo": {
+    "tag": "findmember"
+  },
+  "text": "1",
+  "languageCode": "en"
+}

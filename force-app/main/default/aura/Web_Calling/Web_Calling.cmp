@@ -1,0 +1,29 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+               controller="Webcalling_Controller" access="global">
+                <lightning:utilityBarAPI aura:id="utilitybar" /> 
+     <!-- <aura:handler name="init" value="{!this}" action="{!c.doint}" />
+   <aura:attribute name="PlivoIncomingPhonenum" type="String" /> -->
+   <aura:attribute name="ContactByphnNumb" type="Sobject" />
+
+          <!--Lead record creation  -->
+           <!-- Specify the pageReference type. Only object is supported. -->
+           <aura:attribute name="pageReference" type="Object"/>
+          <!-- Implement the navigation service. -->
+           <lightning:navigation aura:id="navService"/>
+       
+           <!-- pageReferenceUtil component -->
+           <lightning:pageReferenceUtils aura:id="pageRefUtils"/>
+   <!--navigation calling-->
+<!-- <aura:handler name="init" value="{!this}" action="{!c.handleMessage}" /> -->
+
+ <lightning:card >    
+          <!-- Launch an account record create page -->
+          <lightning:button onclick="{!c.handleClick}" >See Whois calling</lightning:button>
+          <!-- <lightning:button onclick="{!c.handleContact}" > contact</lightning:button> -->
+
+   <lightning:container aura:id="WebcallingApp" src="{!$Resource.Plivo_package + '/index.html'}" 
+        onmessage="{!c.handlePlivoSDKMessage}" 
+            onerror="{!c.handleError}"/>
+          </lightning:card>
+
+</aura:component>

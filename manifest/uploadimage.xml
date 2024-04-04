@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+	<types>
+		<!-- Start Image Controller Classes -->
+		<members>ImageController</members>
+		<!-- End Image Controller Classes -->
+        <name>ApexClass</name>
+	</types>
+	<types>
+        <members>imagePreview</members>
+		<members>imageUploader</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
+    <types>
+		<members>SYS_Tracker__c</members>
+		<name>CustomObject</name>
+	</types>
+	<types>
+		<members>SYS_Tracker__c</members>
+		<name>CustomTab</name>
+	</types>
+    <types>
+		<members>SYS_Tracker__c.All</members>
+		<members>SYS_Tracker__c.All_Image_SYS_Trackers</members>
+		<name>ListView</name>
+	</types>
+	<types>
+		<members>SYS_Tracker__c-SYS_Tracker Layout</members>
+		<name>Layout</name>
+	</types>
+    <version>56.0</version>
+</Package>

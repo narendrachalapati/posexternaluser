@@ -1,0 +1,1085 @@
+<apex:page showHeader="false" sidebar="false" showChat="false" showQuickActionVfHeader="false"
+           controller="TransactionController" action="{!initCards}" docType="html-5.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment Page</title>
+    <body>
+        <apex:slds />
+        <div class="payment-form-body" style="display:block">
+            <div id="spinner" class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+
+            <apex:form >
+                <apex:actionFunction name="resetStripeError" action="{!resetStripeError}" rerender="fetchStripeErrorscriptBlock" />
+            </apex:form>
+            <div class="stripeErrorBlock">
+                <apex:outPutPanel id="fetchStripeErrorscriptBlock">
+                    <input type="hidden" value="{!stripeError}" id="stripeError" />
+                    <apex:pageBlock rendered="{!(stripeError != '')}">
+                        <apex:pageMessage summary="{!stripeError}" severity="ERROR" />
+                        <div style="text-align: center">
+                            <button class="payment-button retrypaymentexception" id="retrypaymentexception"
+                                name="retry" type="button" onclick="hidestripeErrorBlock();">Retry Payment</button>
+                        </div>
+                    </apex:pageBlock>
+                </apex:outPutPanel>
+            </div>
+
+            <apex:form id="payment_form" styleClass="payment-form">
+                <input type="hidden" value="{!stripePublishableKey}" id="stripePublishableKey"/>
+                <input type="hidden" value="{!labelsJson}" id="customLabels"/>
+                <input type="hidden" value="{!appMode}" id="app-mode"/>  
+                        
+                <apex:pageBlock rendered="{!not(isblank(error))}">
+                    <apex:pageMessage summary="{!error}" severity="error"/>
+                </apex:pageBlock>
+                <apex:pageBlock rendered="{!appMode == True}">
+                    <apex:pageMessage summary="{!$Label.test_mode_message}" severity="info"/>
+                </apex:pageBlock>
+                
+                <apex:pageBlock rendered="{!isblank(error)}">
+                    <h3 style="margin-bottom: 20px;">{!$Label.stripe_payment_page_org_name_prefix}
+                        <span>{!organization}</span></h3>
+                    <apex:pageBlockTable value="{!paymentRequests}" var="req" id="theTable" styleClass="payment-summary">
+                        <apex:column >
+                            <apex:facet name="header">{!$ObjectType.Payment_Intent__c.fields.Payment_Type__c.Label}</apex:facet>
+                            <apex:outputlabel value="{!req.Order__r.Order_Type__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">{!$ObjectType.Payment_Intent__c.fields.Amount__c.Label}</apex:facet>
+                            <apex:outputText value="{0, number, currency}">
+                                <apex:param value="{!req.Amount__c}" />
+                            </apex:outputText>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <div id="tabs">
+                        <ul>
+                            <li id="cards-tab-header"><a href="#cards-tab">{!$Label.saved_cards}</a></li>
+                            <!--
+							<li id="banks-tab-header"><a href="#ach-tab">{!$Label.ach_saved_accounts}</a></li>
+							-->	
+                        </ul>
+                        <div id="cards-tab">
+                            <apex:pageBlockSection columns="1">
+                                <apex:pageBlockSectionItem rendered="{!(cards != null && NOT(cards.empty))}">
+                                    <apex:outputPanel >
+                                        <div class="payment-group">
+                                            <apex:repeat value="{!cards}" var="card">
+                                                <div class="payment-option">
+                                                    <div class="saved-payment-method cards">
+                                                        <apex:panelGrid columns="4">
+                                                            <apex:outputPanel >
+                                                                <input type="radio" name="payment-source" value="{!card.id}"
+                                                                       class="{!IF(card.default_source, 'default-source', '')}"/>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel >
+                                                                <span class="card-brand-logo">
+                                                                    <apex:image rendered="{!contains(card.brand, 'Visa')}" value="{!$Resource.visa}"
+                                                                                width="35" height="35" alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'MasterCard')}"
+                                                                                value="{!$Resource.Mastercard}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'Maestro')}"
+                                                                                value="{!$Resource.Maestro}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'Cirrus')}"
+                                                                                value="{!$Resource.Cirrus}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'American Express')}"
+                                                                                value="{!$Resource.AmericanExpress}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'Discover')}"
+                                                                                value="{!$Resource.Discover}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'Diners Club')}"
+                                                                                value="{!$Resource.DinersClub}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'JCB')}" value="{!$Resource.JCB}"
+                                                                                width="35" height="35" alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'UnionPay')}"
+                                                                                value="{!$Resource.UnionPay}" width="35" height="35"
+                                                                                alt="{!card.brand}"/>
+                                                                    <apex:image rendered="{!contains(card.brand, 'unknown') || isBlank(card.brand)}"
+                                                                                value="{!$Resource.UnknownCard}" width="35" height="35"
+                                                                                alt="{!card.brand}"/></span>
+                                                                <span>xxxx xxxx xxxx {!card.last4}</span>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel >
+                                                                <apex:outputText value="{!card.exp_month}/{!card.exp_year}"/>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel >
+                                                                <apex:outputText value="{!card.name}"/>
+                                                            </apex:outputPanel>
+                                                        </apex:panelGrid>
+                                                        <div class="button-container">
+                                                            <apex:commandbutton id="payment-button"
+                                                                                styleClass="payment-button pay"
+                                                                                value="{!$Label.process_cart_items}"
+                                                                                onclick="pay()"
+                                                                                reRender="none"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </apex:repeat>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputPanel >
+                                        <div class="payment-group">
+                                            <div class="payment-option">
+                                                <div id="pouet">
+                                                    <span class="{!IF(cards == null || cards.empty, 'slds-hide', 'slds-show')}">
+                                                        <input type="radio" name="payment-source" id="new-card-radio"
+                                                            value="new" />
+                                                    </span>
+                                                    <section class="stripe-wrap-float-labels">
+                                                        <div class="cardwrapper">
+                                                            <div>
+                                                                <div class="stripe-label-row">
+                                                                    <div class="stripelabel-field">
+                                                                        <div id="stripe-card-number" class="stripe-label-input empty"></div>
+                                                                        <label for="stripe-card-number">Card Number</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="stripe-label-row">
+                                                                    <div class="stripelabel-field half-width">
+                                                                        <div id="stripe-card-expiry" class="stripe-label-input empty"></div>
+                                                                        <label class="stripe-label" for="stripe-card-expiry">Expiration</label>
+                                                                    </div>
+                                                                    <div class="stripelabel-field half-width">
+                                                                        <div id="stripe-card-cvc" class="stripe-label-input empty"></div>
+                                                                        <label for="stripe-card-cvc">CVC</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+
+                                                </div>
+                                                <!-- Handle Errors  -->
+                                                <div id="card-errors" class="stripe-error error" role="alert"></div>
+                                                <div class="button-container">
+                                                    <!-- Handle Outcome  -->
+                                                    <div class="outcome">
+                                                        <span class="save-card-cb-container">
+                                                            <label for="save-card">
+                                                                <input type="checkbox" id="save-card" checked="checked" disabled="disabled" />
+                                                                {!$Label.save_card_for_future_checkouts}
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                    <div style="text-align: center">
+                                                        <apex:commandbutton id="payment-button"
+                                                                            styleClass="payment-button pay"
+                                                                            value="{!$Label.process_cart_items}"
+                                                                            onclick="pay()" reRender="none"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                        </div>
+                        <div id="ach-tab">
+                        </div>
+                    </div>
+                </apex:pageBlock>
+                <apex:actionFunction name="performCharge" action="{!charge}" reRender="charge-output, payment-form, fetchStripeErrorscriptBlock"
+                                     oncomplete="chargeComplete()">
+                    <apex:param name="request" assignTo="{!stripePaymentRequestJson}" value=""/>
+                </apex:actionFunction>
+            </apex:form>
+
+<!-- Start Fetch Old Payment Receipt-->            
+            <apex:outputPanel styleClass="charge-output">
+                <apex:repeat value="{!paymentReceipt.payments}" var="paymentrecp">
+                    <apex:outputPanel styleClass="charge-output-panel">
+                        <apex:outputPanel rendered="{!if(paymentrecp.type=='TXN' , true ,false)}">
+                            <!-- Store Transaction Record Details-->
+                            <apex:variable var="rcptTxn" value="{!paymentrecp.txn}"/>
+<!-- Start Custom Receipt Design Starts Here-->
+<div class="bg-lightgrey">
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="border-box">
+                                                    <div class="companyname-highlight">
+                                                        <div class="companyname-wrapper"><span class="text-white">{!rcptTxn.Payment_Intent__r.Account__r.Name}</span></div>
+                                                        <div class="transaction-status-wrapper mt-16px pt-12px pb-12px bg-color-white text-align-center">
+                                                            <div class="transactionstatus-icon margin-left-right-auto">
+                                                            <img src="{!if( (rcptTxn.Status__c != 'failed') , $Resource.success_icon , $Resource.failure_icon )}" alt="{!if( (rcptTxn.Status__c != 'failed') , 'Success' , 'Failed'  )}" class="custom-image-default" ></img>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-dblue fw-900 pt-12px pb-12px bg-color-white text-align-center">
+                                                    <div class="margin-left-right-auto transaction-price">
+                                                        <span>
+                                                            <span class="fw-900 transactionprice-amount">
+                                                                <apex:outputField value="{!rcptTxn.Amount__c}" />
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="margin-left-right-auto transaction-status-message text-lightgrey">
+                                                        {!if( (rcptTxn.Status__c == 'succeeded') , 'Paid Successfully' , 'Failed: ' + rcptTxn.FailureMessage__c  )}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.TransactionReference__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!rcptTxn.TransactionReference__c}</div>
+                                                    </div>
+                                                    <apex:outputPanel rendered="{!if(rcptTxn.PaymentMethodType__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentMethodType__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue text-capitalize">{!rcptTxn.PaymentMethodType__c}</div>
+                                                            <!-- <div class="transaction-itemlabel text-lightgrey">&nbsp;</div>
+                                                            <div class="transaction-itemvalue text-lightblue"></div> -->
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!if(rcptTxn.PaymentCardLast4Digits__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentCardLast4Digits__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue">xxxx xxxx xxxx {!rcptTxn.PaymentCardLast4Digits__c}</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!if(rcptTxn.PaymentBankLast4Digits__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentBankLast4Digits__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue">{!rcptTxn.PaymentBankLast4Digits__c}</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!if(rcptTxn.PaymentBankName__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentBankName__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue">{!rcptTxn.PaymentBankName__c}</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.TransactionDate__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            <apex:outputText value="{0,date,MMM/dd/yyyy HH:mm:ss}">
+                                                                <apex:param value="{!rcptTxn.TransactionDate__c}" />
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            {!rcptTxn.Payment_Intent__r.Contact__r.Name}
+                                                        </div>
+                                                    </div>
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.fields.Email.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                        <a href="mailto:{!rcptTxn.Payment_Intent__r.Contact__r.Email}" target="_blank">{!rcptTxn.Payment_Intent__r.Contact__r.Email}</a>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.fields.Phone_Number__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!rcptTxn.Payment_Intent__r.Contact__r.Phone_Number__c}</div>
+                                                    </div> 
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="fs-14px text-align-center lh-1-5 text-lightblue">For any order related queries please reach out to
+                                                        {!rcptTxn.Payment_Intent__r.Account__r.Name}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-align-center p-td-10px-p-lr12px fs-12px text-lightgrey">
+                                                    <!-- <div class="mt-16px-mb-16px">
+                                                        <span class="text-lightgrey fs-12px lh-1-5">
+                                                            Please report this payment if you find it to be suspicious<br></br>
+                                                            <span class="text-lightgrey fs-12px lh-1-5">or fraudulent&nbsp;</span>
+                                                            <a href="mailto:" class="custom-link" target="_blank"></a>
+                                                        </span>
+                                                    </div> -->
+                                                    <div class="mt-16px-mb-16px">
+                                                        <div>
+                                                            <div class="d-inlineblock v-align-middle">CopyRight @ {!rcptTxn.Payment_Intent__r.Account__r.Name}</div>
+                                                            <div class="d-inlineblock v-align-middle ml-5px"></div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- End Custom Receipt Design Starts Here-->    
+
+                        </apex:outputPanel> 
+                       
+                    </apex:outputPanel>
+                </apex:repeat>
+            </apex:outputPanel>
+<!-- End Fetch Old Payment Receipt-->   
+
+<!-- Start Fetch Receipt After Immediate Payemnt -->  
+            <apex:outputPanel id="charge-output" styleClass="charge-output" rendered="{!isblank(error)}">
+                <apex:outputText value="{!error}"/>
+                <apex:repeat value="{!payments.payments}" var="payment">
+                    <apex:variable var="req" value="{!payment.paymentRequest}"/>
+                    <apex:variable var="txn" value="{!payment.txn}"/>
+                    <apex:outputPanel styleClass="charge-output-panel" rendered="{!payment.type == 'OTHER'}">
+                        <!-- <apex:outputPanel styleClass="charge-output-panel" > -->
+<!-- Start Payment Intent Immediate Payment Receipt Design Starts Here-->
+<div class="bg-lightgrey">
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="border-box">
+                                                    <div class="companyname-highlight">
+                                                        <div class="companyname-wrapper"><span class="text-white">{!req.Account__r.Name}</span></div>
+                                                        <div class="transaction-status-wrapper mt-16px pt-12px pb-12px bg-color-white text-align-center">
+                                                            <div class="transactionstatus-icon margin-left-right-auto">
+                                                            <img src="{!if( (req.Status__c != 'payment_failed') , $Resource.success_icon , $Resource.failure_icon )}" alt="{!if( (req.Status__c != 'payment_failed') , 'Success' , 'Failed'  )}" class="custom-image-default" ></img>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-dblue fw-900 pt-12px pb-12px bg-color-white text-align-center">
+                                                    <div class="margin-left-right-auto transaction-price">
+                                                        <span>
+                                                            <span class="fw-900 transactionprice-amount">
+                                                                <apex:outputField value="{!req.Amount__c}" />
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="margin-left-right-auto transaction-status-message text-lightgrey">
+                                                        {!if( (req.Status__c != 'payment_failed') , 'Paid Successfully' , 'Failed: '  )}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Payment_Intent__c.fields.Payment_Reference_Id__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!req.Payment_Reference_Id__c}</div>
+                                                    </div>
+
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Payment_Intent__c.fields.First_Charge_Date__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            <apex:outputText value="{0,date,MMM/dd/yyyy HH:mm:ss}">
+                                                                <apex:param value="{!req.First_Charge_Date__c}" />
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            {!req.Contact__r.Name}
+                                                        </div>
+                                                    </div>
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.fields.Email.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                        <a href="mailto:{!req.Contact__r.Email}" target="_blank">{!req.Contact__r.Email}</a>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.fields.Phone_Number__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!req.Contact__r.Phone_Number__c}</div>
+                                                    </div> 
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="fs-14px text-align-center lh-1-5 text-lightblue">For any order related queries please reach out to
+                                                        {!req.Account__r.Name}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-align-center p-td-10px-p-lr12px fs-12px text-lightgrey">
+                                                    <!-- <div class="mt-16px-mb-16px">
+                                                        <span class="text-lightgrey fs-12px lh-1-5">
+                                                            Please report this payment if you find it to be suspicious<br></br>
+                                                            <span class="text-lightgrey fs-12px lh-1-5">or fraudulent&nbsp;</span>
+                                                            <a href="mailto:" class="custom-link" target="_blank"></a>
+                                                        </span>
+                                                    </div> -->
+                                                    <div class="mt-16px-mb-16px">
+                                                        <div>
+                                                            <div class="d-inlineblock v-align-middle">CopyRight @ {!req.Account__r.Name}</div>
+                                                            <div class="d-inlineblock v-align-middle ml-5px"></div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- End Payment Intent Immediate Payment Receipt Design Starts Here-->                         
+
+                    </apex:outputPanel>
+                    <apex:outputPanel styleClass="charge-output-panel" rendered="{!payment.type == 'TXN'}">
+
+<!-- Start Immediate Payment Receipt Design Starts Here-->
+<div class="bg-lightgrey">
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="border-box">
+                                                    <div class="companyname-highlight">
+                                                        <div class="companyname-wrapper"><span class="text-white">{!txn.Payment_Intent__r.Account__r.Name}</span></div>
+                                                        <div class="transaction-status-wrapper mt-16px pt-12px pb-12px bg-color-white text-align-center">
+                                                            <div class="transactionstatus-icon margin-left-right-auto">
+                                                            <img src="{!if( (txn.Status__c != 'failed') , $Resource.success_icon , $Resource.failure_icon )}" alt="{!if( (txn.Status__c != 'failed') , 'Success' , 'Failed'  )}" class="custom-image-default" ></img>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-dblue fw-900 pt-12px pb-12px bg-color-white text-align-center">
+                                                    <div class="margin-left-right-auto transaction-price">
+                                                        <span>
+                                                            <span class="fw-900 transactionprice-amount">
+                                                                <apex:outputField value="{!txn.Amount__c}" />
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="margin-left-right-auto transaction-status-message text-lightgrey">
+                                                        {!if( (txn.Status__c == 'succeeded') , 'Paid Successfully' , 'Failed: ' + txn.FailureMessage__c  )}
+                                                    </div>
+                                                    <apex:outputPanel rendered="{!if( (txn.Status__c != 'succeeded') , true ,false)}">
+                                                        <div style="text-align: center">
+                                                            <button class="payment-retry-button" id="retrypayment" name="retry" type="button" onclick="hidestripeErrorBlock();">Retry Payment</button>
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.TransactionReference__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!txn.TransactionReference__c}</div>
+                                                    </div>
+                                                    <apex:outputPanel rendered="{!if(txn.PaymentMethodType__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentMethodType__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue text-capitalize">{!txn.PaymentMethodType__c}</div>
+                                                            <!-- <div class="transaction-itemlabel text-lightgrey">&nbsp;</div>
+                                                            <div class="transaction-itemvalue text-lightblue"></div> -->
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!if(txn.PaymentCardLast4Digits__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentCardLast4Digits__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue">xxxx xxxx xxxx {!txn.PaymentCardLast4Digits__c}</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!if(txn.PaymentBankLast4Digits__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentBankLast4Digits__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue">{!txn.PaymentBankLast4Digits__c}</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!if(txn.PaymentBankName__c != null , true ,false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.PaymentBankName__c.Label}</div>
+                                                            <div class="transaction-itemvalue text-lightblue">{!txn.PaymentBankName__c}</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Transaction__c.fields.TransactionDate__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            <apex:outputText value="{0,date,MMM/dd/yyyy HH:mm:ss}">
+                                                                <apex:param value="{!txn.TransactionDate__c}" />
+                                                            </apex:outputText>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            {!txn.Payment_Intent__r.Contact__r.Name}
+                                                        </div>
+                                                    </div>
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.fields.Email.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                        <a href="mailto:{!txn.Payment_Intent__r.Contact__r.Email}" target="_blank">{!txn.Payment_Intent__r.Contact__r.Email}</a>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">{!$ObjectType.Contact.fields.Phone_Number__c.Label}</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!txn.Payment_Intent__r.Contact__r.Phone_Number__c}</div>
+                                                    </div> 
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="fs-14px text-align-center lh-1-5 text-lightblue">For any order related queries please reach out to
+                                                        {!txn.Payment_Intent__r.Account__r.Name}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-align-center p-td-10px-p-lr12px fs-12px text-lightgrey">
+                                                    <!-- <div class="mt-16px-mb-16px">
+                                                        <span class="text-lightgrey fs-12px lh-1-5">
+                                                            Please report this payment if you find it to be suspicious<br></br>
+                                                            <span class="text-lightgrey fs-12px lh-1-5">or fraudulent&nbsp;</span>
+                                                            <a href="mailto:" class="custom-link" target="_blank"></a>
+                                                        </span>
+                                                    </div> -->
+                                                    <div class="mt-16px-mb-16px">
+                                                        <div>
+                                                            <div class="d-inlineblock v-align-middle">CopyRight @ {!txn.Payment_Intent__r.Account__r.Name}</div>
+                                                            <div class="d-inlineblock v-align-middle ml-5px"></div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- End Immediate Payment Receipt Design Starts Here-->                         
+
+                    </apex:outputPanel>
+                </apex:repeat>
+            </apex:outputPanel>
+<!-- Start Fetch Receipt After Immediate Payemnt -->  
+
+        </div>
+    </body>
+    <apex:stylesheet value="{!$Resource.transaction_css}"/>
+    <script type="text/javascript" src="//js.stripe.com/v3/">
+    </script>
+    <apex:includeScript value="{!$Resource.jquery}"/>
+    <style>
+        #tabs .ui-tabs-nav .ui-state-active {
+        background: transparent url('{!$Resource.tab_panel_arrow_image}') no-repeat bottom center;
+        border: none;
+        }
+    </style>
+    <script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.js">
+    </script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+    <apex:includeScript value="{!$Resource.transaction_js}"/>
+</apex:page>

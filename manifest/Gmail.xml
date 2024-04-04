@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    
+    <types>
+    <!-- <members>Activity__c.G_Gmail_id__c</members> -->
+     <name>CustomField</name>
+    </types>
+    <types>
+        <members>FieldSetting.Gmail_Body</members>
+    <members>FieldSetting.Gmail_Content_Type</members>
+    <members>FieldSetting.Gmail_From_Email_Account</members>
+    <members>FieldSetting.Gmail_From_Email_Contact</members>
+    <members>FieldSetting.Gmail_From_Email_Lead</members>
+    <members>FieldSetting.Gmail_htmlBody</members>
+    <members>FieldSetting.Gmail_raw</members>
+    <members>FieldSetting.Gmail_replyto</members>
+    <members>FieldSetting.Gmail_status</members>
+    <members>FieldSetting.Gmail_Subject</members>
+    <members>FieldSetting.Gmail_threadid</members>
+    <members>FieldSetting.Gmail_toemail</members>
+    <members>FieldSetting.Gmail_uuid</members>
+    <members>HttpHeaders.Gmail_Content_Type</members>
+     <members>IntegrationEnablement.Gmail</members>
+      <members>IntegrationSetting.Gmail</members>
+         <members>ObjectSetting.Gmailsend</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>Integration_Type</members>
+         <name>GlobalValueSet</name>
+  </types>
+     <types>
+     <members>Gmail_Send_flow</members>
+    <name>Flow</name>
+    </types>
+    <types>
+         <members>Gmail_OB_SYS_ApplicationService</members>
+         <members>InboundEmailSerives</members>  
+          <members>CustomActivityService</members>
+          <members>InboundEmailSerivesTest</members>
+          <members>CustomActivityServiceTest</members>   
+          <members>GsuiteTestDatafactory</members>
+        <name>ApexClass</name>
+    </types>
+  
+    <version>56.0</version>
+</Package>

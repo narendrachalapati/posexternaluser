@@ -1,0 +1,239 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global" controller="PMA_ProductsController">
+
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+
+    <!--Aura Attributes START-->
+    <!-- Todo Refactor Attributes -->
+    <aura:attribute name="todorecord" type="ToDo__c"/>
+    <aura:attribute name="uuidstring" type="String"/>
+    <aura:attribute name="memberId" type="String"/>
+    <aura:attribute name="AccountId" type="string" />
+    <aura:attribute name="isLoggedIn" type="Boolean"/>
+    <!-- Todo Refactor Attributes -->
+    <!--Init Parent Component Values-->
+    <aura:attribute name="orderUUID" type="String" />
+    <aura:attribute name="memberName" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+
+    <!-- Init() Loggend in User Record Details -->
+    <aura:attribute name="userInfo" type="User"/> 
+	<aura:attribute name="userContactWrap" type="PMA_SearchController.CurrentUserWrap"/> 
+
+    <!-- Init() Products Map<Id, Wrapper> from Apex Controller -->
+    <aura:attribute name="allProductsMap" type="Map" />
+    <aura:attribute name="selectedproductMap" type="Map" />
+    <aura:attribute name="selectedproductoptionMap" type="Map" />
+    <!-- Init() Extract Values form allProductsMap to Itereate over Products -->
+    <aura:attribute name="productData" type="List" />  
+    <!-- selectedProductsData contains filtered Products from productData -->
+    <aura:attribute name="selectedProductsData" type="List" />    
+    
+    <!-- Search Input Attributes -->
+    <aura:attribute name="searchText" type="String" default="" /> 
+    
+    <!-- Store Incoming Message of Map<Id,Wrapper> -->
+    <aura:attribute name="selectedproductsString" type="String" />
+    <!-- **EventVariable** Store Selected Products as Map<Id , Wrapper> with updated price and quantity-->
+    <aura:attribute name="selectedProductsMap" type="Map" />
+    
+    <!-- Catalog and Product Options and Option Components -->
+    <aura:attribute name="selectedCategoryId" type="String" default="All" />
+    <aura:attribute name="selectedCategoryname" type="String" default="All" />
+
+    <!-- Init() allCategoriesData load selected categories to selectedCategoryData -->
+    <aura:attribute name="allCategoriesData" type="List" />
+    <aura:attribute name="selectedCategoryData" type="List" />
+    <aura:attribute name="filtedoptions" type="List" />
+    <aura:attribute name="selectedproductoption" type="List" />
+    <aura:attribute name="Inactiveprodoptions" type="List" />
+    <!-- Register Products Selection Application Event -->
+    <aura:registerEvent name="appEvent" type="c:posCommunicationEvent"/>
+
+     <!-- Register for Communications Application Event -->
+   <aura:registerEvent name="contactsearchEvent" type="c:ContactcommunicationEvent"/>
+
+    <!-- Handler for Cart Product Deletion Application Event -->
+    <aura:handler event="c:cartCommunicationEvent" action="{!c.handleProductDeletionCartEvent}"/>
+    <aura:handler event="c:componentCommunicationEvent" action="{!c.handleCompoentCommunication}"/>
+    <aura:attribute name="showProductsComponent" type="Boolean" default="true" />
+    <aura:attribute name="Popup" type="Boolean" default="false" /> 
+    <aura:attribute name="counter" default="0" type="integer"/>
+    <aura:attribute name="productsfromcontactserch" type="boolean" default="false" />
+    <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.toasterLib + '/toastr.min.css')}"  
+    scripts="{!$Resource.toasterLib + '/toastr.min.js'}"/>
+    <div></div>
+    <aura:if isTrue="{!v.showProductsComponent}">  
+        <!--Start Bootstrap Products data markup-->
+        <div class=" slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_8-of-12 slds-large-size_8-of-12">
+            <div class="slds-card no-border">
+                <div class="sfappwrapper">
+                    <aura:if isTrue="{!v.isLoading}">
+                        <div class="slds-card my-2">
+                            <div class="spinnercontain" style="height:6rem;position:relative">
+                                <div class="slds-spinner_container">
+                                    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                        <span class="slds-assistive-text">Loading</span>
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <div class="slds-card">
+                        <aura:if isTrue="{!v.isLoggedIn}">
+                        <div class="ts-back-wrap" onclick="{!c.communicationforcontactsearch}">
+                            <div class="smoothscroll-back">                  
+                                <i class="fa fa-arrow-left"></i>
+                            </div>
+                        </div>
+                    </aura:if> 
+                        <!--Start Bootstrap Products data markup-->
+                        <div class="sfappwrapper py-1 h-100">
+                            <div class="slds-form-element search-center">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container">
+                                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
+                                                role="none">
+                                                <input type="text" aura:id="search-box"
+                                                    class="slds-input slds-combobox__input" onkeyup="{!c.onEnterProductSearchText}"
+                                                    value="{!v.searchText}" autoComplete="off"
+                                                    placeholder="Search Products" />
+                                                <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right pointer-none">
+                                                    <lightning:buttonIcon iconName="utility:search" variant="bare" alternativeText="Search" class="slds-input__icon" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          
+                            <!-- Add Breadcrumb and search results reset option -->
+                            <div class="search-reset ml-10" onclick="{! c.clearSelectedCategory }">
+                                <span class="custom-link">Clear Search Results</span>
+                                <span class="ml-10" onclick="{!c.refreshData}">
+                                    <lightning:icon iconName="utility:sync" alternativeText="Refresh" title="Refresh" size="x-small" />
+                                </span>
+                            </div>
+                            
+                            <div class="button-flex custom-scrollbar">
+                                <button type="button" class="{! (v.selectedCategoryId == 'All') ? 'button-outline active' : 'button-outline' }" data-categoryid="All" data-categoryname="All" onclick="{! c.showCatalogOptions }">All</button>
+                                <aura:iteration items="{!v.selectedCategoryData}" var="category" indexVar="key">
+                                    <aura:if isTrue="{! ( (!empty(category.Catalog__c)) &amp;&amp; (key == 0) ) }">
+                                        <button type="button" class="{! (v.selectedCategoryId  == category.Catalog__c ) ? 'button-outline active' : 'button-outline' }" data-categoryid="{! category.Catalog__c }" data-categoryname="{! category.Catalog__r.Name }"  onclick="{! c.showCatalogOptions }"><span>{! 'All ' + category.Catalog__r.Name }</span></button>
+                                    </aura:if>
+                                    <button type="button" class="{! (v.selectedCategoryId == category.Id) ? 'button-outline active' : 'button-outline' }" data-categoryid="{! category.Id }" data-categoryname="{! category.Name }" onclick="{! c.showCatalogOptions }"><span>{! category.Name }</span></button>
+                                </aura:iteration>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <aura:if isTrue="{! and(empty(v.selectedProductsData), (v.isLoading == false ) )}">
+                        <div class="slds-card my-2">
+                            <!--Start Bootstrap Products data markup-->
+                            <div class="sfappwrapper">
+                                <div class="slds-grid slds-wrap slds-var-p-around_xx-small my-2 sm-justify-content-center">
+                                    <div class="noproducts">No Products Added for {! v.userInfo.Name }. <div></div>
+                                        Contact Manager to Add Products
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <div class="scrollable-container custom-scrollbar">
+                        <div class="slds-grid slds-wrap slds-var-p-around_xx-small my-2 justify-content-center">
+                            <aura:iteration items="{!v.selectedProductsData}" var="prod" indexVar="key">
+                                <div class="{! ( (prod.isVisible == true) &amp;&amp; (prod.baseproduct.Is_Product_Available__c == true) ) ? 'slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center flex-productbasis mr-2rem my-2'  : 'slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center flex-productbasis mr-2rem my-2 inactiveProduct' }" data-id="{! prod.baseproduct.Id}" data-optionscount="{! prod.optionsCount }" data-isstockavailable="{! prod.baseproduct.Is_Product_Available__c }" onclick="{! ( (prod.isVisible == true) &amp;&amp; (prod.baseproduct.Is_Product_Available__c == true)) ? c.productOptionsfilter  : c.productNotEligible}">
+                                
+                                    <div class="product-wrapper">
+                                        <div class="overflow-hidden mx-auto image-wrapper max-height">
+                                            <!-- <c:imagePreview recordId="{! prod.baseproduct.Id }" FullName ="{! prod.baseproduct.Name }" shape = "square" imgWidth = "150" imgHeight = "150" /> -->
+
+                                            <aura:if isTrue="{! !(prod.hasPictureURL) }">
+                                                <span class="slds-avatar noimage">
+                                                    <abbr class="slds-avatar__initials slds-icon-standard-user noimagetext" title="{! prod.baseproduct.Name }">{! prod.shortNameCode }</abbr>
+                                                </span>
+                                            </aura:if>    
+                                            <aura:if isTrue="{! prod.hasPictureURL }">
+                                                <img src="{! prod.pictureURL }" alt="{! prod.baseproduct.Name }" class="prodctimage"/>
+                                            </aura:if>
+                                        </div>
+                                        <div>
+                                        <div class="product-title text-center title-flexwrapper" title='{!prod.baseproduct.Name}'><span class="w-100">{!prod.baseproduct.Name}</span></div>
+                                          <aura:if isTrue="{!and(prod.baseproduct.Is_options_Available__c > 1 , prod.baseproduct.Max_Price__c !=prod.baseproduct.Min_Price__c)}">  
+                                            <div style="display: flex;justify-content: center;">
+                                                <div class="product-title text-center slds-truncate" title='{!prod.productPrice}'> $ <lightning:formattedNumber value="{!prod.baseproduct.Min_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/></div>
+                                                <div class="product-title text-center slds-truncate" title='{!prod.productPrice}'>-$ <lightning:formattedNumber value="{!prod.baseproduct.Max_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/></div>
+                                          </div>
+                                         </aura:if>
+                                         <aura:if isTrue="{!and(prod.baseproduct.Is_options_Available__c > 1 , prod.baseproduct.Max_Price__c ==prod.baseproduct.Min_Price__c)}">  
+                                            <div class="product-title text-center slds-truncate" title='{!prod.productPrice}'>$ <lightning:formattedNumber value="{!prod.baseproduct.Max_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/></div>
+                                            
+                                             </aura:if>
+                                         <aura:if isTrue="{!prod.baseproduct.Is_options_Available__c == 0}">
+                                         <div class="product-title text-center slds-truncate" title='{!prod.productPrice}'>$ <lightning:formattedNumber value="{!prod.baseproduct.Default_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/></div>
+                                         </aura:if>
+                                         <aura:if isTrue="{!prod.baseproduct.Is_options_Available__c == 1}">
+                                            <div class="product-title text-center slds-truncate" title='{!prod.productPrice}'>$ <lightning:formattedNumber value="{!prod.baseproduct.Max_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/></div>
+                                            </aura:if>
+                                    </div>
+                                </div>
+                                </div>
+                            </aura:iteration>
+                        </div>
+                    </div>
+</div>
+            </div>
+        </div>
+        <!--End Bootstrap Products data markup-->
+    </aura:if>   
+    <aura:if isTrue="{!v.Popup}">    
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+       
+        <span class="slds-assistive-text">Cancel and close</span>
+        </button>
+        <div class="slds-modal__content slds-p-around_medium slds-modal__content_headless" id="modal-content-id-1">
+          <div >
+                <div class="scrollable-container custom-scrollbar">
+                    <div   class="slds-grid slds-wrap slds-var-p-around_xx-small my-2 justify-content-center">
+                        <aura:iteration items="{!v.filtedoptions}" var="prod" indexVar="key">
+                          <div name="{! prod.product.Id}" class="{! ( (prod.isVisible == true) &amp;&amp; (prod.product.Is_Option_Available__c == true) ) ? 'slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center flex-productbasis mr-2rem my-2'  : 'slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center flex-productbasis mr-2rem my-2 inactiveProduct' }" data-productid="{! prod.product.Product__c}" data-optionid="{! prod.product.Id}" data-isstockavailable="{! prod.product.Is_Option_Available__c }" onclick="{! ( (prod.isVisible == true) &amp;&amp; (prod.product.Is_Option_Available__c == true)) ? c.productClickHandler  : c.productNotEligible}">
+                  
+                                <div class="product-wrapper">
+                                    <div class="overflow-hidden mx-auto image-wrapper max-height">
+                                        <c:imagePreview recordId="{! prod.product.Id }" FullName ="{! prod.product.Name }" shape = "square" imgWidth = "150" imgHeight = "150" />
+
+                                        <!-- <aura:if isTrue="{! !(prod.hasPictureURL) }">
+                                            <span class="slds-avatar noimage">
+                                                <abbr class="slds-avatar__initials slds-icon-standard-user noimagetext" title="{! prod.product.Name }">{! prod.shortNameCode }</abbr>
+                                            </span>
+                                        </aura:if>    
+                                        <aura:if isTrue="{! prod.hasPictureURL }">
+                                            <img src="{! prod.pictureURL }" alt="{! prod.product.Name }" class="prodctimage"/>
+                                        </aura:if> -->
+                                    </div>
+                                    <div class="product-title text-center title-flexwrapper" title='{!prod.product.Name}'><span class="w-100 textcenter ">{!prod.product.Name}</span></div>
+                                    <div class="product-title text-center slds-truncate textcenter" title='{!prod.product.Option_Total_Price__c}'>$ <lightning:formattedNumber value="{!prod.product.Option_Total_Price__c}" minimumFractionDigits="2" maximumFractionDigits="2" currencyCode="USD"/></div>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </div>   
+     
+            </div>
+       </div>
+        <div class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{! c.handlecancle }">Cancel  </button>
+        <!-- <button class="slds-button slds-button_brand" onclick="{! c.handlecancle }">Added items({!v.counter})</button> -->
+        </div>
+        </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>  
+</aura:component>

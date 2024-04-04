@@ -1,0 +1,30 @@
+<template>
+    <div class="slds-card slds-p-around_small">
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Site Information Setup</span>
+            </h3>
+            <div class="slds-section__content">
+                <p class="slds-p-around_x-small">Select the experience site and the external page to be used in the router page dynamically.</p>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_2-of-4">
+                <div class="slds-p-around_x-small">
+                    <c-lookupmetadata s-object-api-name="Site" default-record-id={siteId} field-type="site" label="Site" onlookupupdate={handleSelect} ></c-lookupmetadata>
+                </div>
+            </div>
+            <div class="slds-col slds-size_2-of-4">
+                <div class="slds-p-around_x-small">
+                    <c-lookupmetadata s-object-api-name="ApexPage" default-record-id={vfpageId} field-type="vfpage" label="VisualForce Page" onlookupupdate={handleSelect}></c-lookupmetadata>
+                </div>
+            </div>
+        </div>
+        <div class="slds-align_absolute-center">
+            <lightning-button variant="brand" label="Save" title="Save" 
+            onclick={handleSaveClick} class=" slds-p-around_x-small"></lightning-button>
+            <lightning-button variant="brand-outline" label="Health Check" title="Health Check" 
+            onclick={handleHealthCheck} class=" slds-p-around_x-small"></lightning-button>
+        </div>
+    </div>
+</template>

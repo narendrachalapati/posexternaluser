@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subscription_Aggregate_Usage__c</fullName>
+    <description>Specifies a usage aggregation strategy for prices of usage_type=metered. Allowed values are sum for summing up all usage during a period, last_during_period for using the last usage record reported within a period, last_ever for using the last usage record ever (across period bounds) or max which uses the usage record with the maximum reported usage during a period. Defaults to sum.</description>
+    <externalId>false</externalId>
+    <label>Subscription Aggregate Usage</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>sum</fullName>
+                <default>false</default>
+                <label>sum</label>
+            </value>
+            <value>
+                <fullName>last_during_period</fullName>
+                <default>false</default>
+                <label>last_during_period</label>
+            </value>
+            <value>
+                <fullName>last_ever</fullName>
+                <default>false</default>
+                <label>last_ever</label>
+            </value>
+            <value>
+                <fullName>max</fullName>
+                <default>false</default>
+                <label>max</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

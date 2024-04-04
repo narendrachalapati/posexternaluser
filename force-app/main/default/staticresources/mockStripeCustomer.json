@@ -1,0 +1,46 @@
+{
+  "id": "cus_G5i0UDob8XanSl",
+  "object": "customer",
+  "address": null,
+  "balance": 0,
+  "created": 1572501183,
+  "currency": "usd",
+  "default_source": "card_1FZWVCDQBrpdxQCKwNKVLJq3",
+  "delinquent": false,
+  "description": null,
+  "discount": null,
+  "email": null,
+  "invoice_prefix": "FD1E865",
+  "invoice_settings": {
+    "custom_fields": null,
+    "default_payment_method": null,
+    "footer": null
+  },
+  "livemode": false,
+  "metadata": {},
+  "name": null,
+  "phone": null,
+  "preferred_locales": [],
+  "shipping": null,
+  "sources": {
+    "object": "list",
+    "data": [],
+    "has_more": false,
+    "url": "/v1/customers/cus_G5i0UDob8XanSl/sources"
+  },
+  "subscriptions": {
+    "object": "list",
+    "data": [],
+    "has_more": false,
+    "url": "/v1/customers/cus_G5i0UDob8XanSl/subscriptions"
+  },
+  "tax_exempt": "none",
+  "tax_ids": {
+    "object": "list",
+    "data": [],
+    "has_more": false,
+    "url": "/v1/customers/cus_G5i0UDob8XanSl/tax_ids"
+  },
+  "tax_info": null,
+  "tax_info_verification": null
+}

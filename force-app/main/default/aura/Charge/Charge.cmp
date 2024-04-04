@@ -1,0 +1,794 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global" controller="ChargeController">
+
+    <aura:attribute name="Loading" type="boolean" default="true" />
+    <aura:attribute name="ShowDefaultPage" type="boolean" default="true" />
+    <aura:attribute name="ShowPaymentOptions" type="Boolean" default="false" />
+    <aura:attribute name="ShowTransactionDetails" type="boolean" default="false" />
+    <aura:attribute name="EnableCheckoutButton" type="boolean" default="false" />
+    <aura:attribute name="PaymentMethodsLoading" type="boolean" default="true" />
+    <aura:attribute name="ShowPhone" type="boolean" default="false" />
+    <aura:attribute name="StripeCardUILoading" type="boolean" default="true" />
+
+    <aura:attribute name="ShowSavedCards" type="boolean" default="false" />
+    <!--Todo records change-->
+    <aura:attribute name="AccountId" type="string"  />
+     <!--Todo records change End-->
+    <!-- Load Labels and Gateway Properties -->
+    <aura:attribute name="Labels" type="Map" />
+    <aura:attribute name="Properties" type="Map" />
+    <aura:attribute name="StripePublishableKey" type="String" />
+
+    <!-- Contact Record Id -->
+    <aura:attribute name="recordId" type="String" default=""/>
+    <!-- Order Record Id -->
+    <aura:attribute name="OrderrecordId" type="String" default=""/>
+    <aura:attribute name="closeUrlPath" type="String" default=""/>
+    <!-- Payment Intent Record Id -->
+    <aura:attribute name="PaymentIntentrecordId" type="String" default=""/>
+
+    <!-- Status or context Message -->
+    <aura:attribute name="terminalTitle" type="String" default="Payment Terminal"/>
+    <aura:attribute name="initStatus" type="String" default=""/>
+    <aura:attribute name="chargeMessage" type="String" default=""/>
+    <aura:attribute name="isVirtualTerminal" type="boolean" default="true" />
+    <aura:attribute name="isFailedTransaction" type="boolean" default="false" />
+
+    <!-- Payment -->
+    <aura:attribute name="PaymentAmount" type="double" default="0.0" />
+    <!-- Communication Phone -->
+    <aura:attribute name="PhoneNumber" type="string" />
+
+    <!-- Load Card Iframe -->
+    <aura:attribute name="StripeCardUI" type="String" />
+    <!-- Payemnt Methods -->
+    <aura:attribute name="UserCards" type="List" />
+    <aura:attribute name="SelectedPaymentSource" type="String" />
+
+    <!-- Charge Card Response -->
+    <aura:attribute name="TxnDetailsColumns" type="List"/>
+    <aura:attribute name="TxnDetailsData" type="List"/>
+    <aura:attribute name="Txn" type="Object"/>
+
+    <!-- Get Record Details By RecordId-->
+    <aura:attribute name="obj" type="Object" />
+    <!-- Get Object Name by RecordId-->
+    <aura:attribute name="SelectedContact" type="Object" />
+    <aura:attribute name="ContactFilter" type="Map" default="{ 'Phone_Number__c!= ': null }" />
+
+    <aura:attribute name="FrequencyOptions" type="List" />
+    <aura:attribute name="SelectedFrequency" type="String" default="single" />
+    <aura:attribute name="FirstChargeDate" type="String" />
+    <aura:attribute name="DateToday" type="String" />
+
+    <aura:attribute name="CheckoutItems" type="List" />
+    <aura:attribute name="paymentResponse" type="List" />
+    <aura:attribute name="savedPaymentRequests" type="List" />
+
+    <!-- WIZARD CMP ATTRIBUTES -->
+    <aura:attribute name="wizardUuid" type="String" />
+    <aura:attribute name="todoRecordId" type="String" />
+
+    <!-- Register for ChargeResponseApply Application Event -->
+    <aura:registerEvent name="chargeResponse" type="c:ChargeResponseApply"/>
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />
+
+    <!--<aura:if isTrue="{! (v.recordId != null) }">
+         <force:recordData aura:id="recordLoader" recordId="{!v.recordId}" layoutType="FULL" targetFields="{!v.obj}"
+        targetError="{!v.recordError}" recordUpdated="{!c.recordLoaded}" />
+    </aura:if>-->
+<div class="mx-auto-mx-500px" style="margin: 0 auto!important;max-width: 500px;position: relative;">
+    <lightning:layoutItem>
+        <aura:if isTrue="{!v.Loading}">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+    </lightning:layoutItem>
+    <div class="c-container slds-is-relative slds-grow slds-theme_default oveflow-scroll1" style="margin: 0 auto;min-height:300px;background:#ffffff;max-width: 500px;">
+        <div class="slds-modal__header">
+            <h1 class="slds-modal__title">
+                <b>{!v.terminalTitle}</b>
+            </h1>
+        </div>
+        <aura:if isTrue="{! !empty(v.initStatus) }">
+            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                <b>{!v.initStatus}</b>
+            </div>
+        </aura:if>
+        <div class="slds-grid slds-grid_vertical-align-center">
+            <aura:if isTrue="{! and( (v.ShowPaymentOptions), (v.isFailedTransaction) ) }">
+                <div class="slds-m-around_small">
+                    <lightning:buttonIcon iconName="utility:back" onclick="{!c.goToDefaultPage}" />
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{! and(!empty(v.chargeMessage), v.ShowPaymentOptions ) }">
+                <div class="slds-text-align_center slds-m-around_small">
+                    <b>{!v.chargeMessage}</b>
+                </div>
+            </aura:if>
+        </div>
+        
+        <aura:if isTrue="{!and(v.ShowDefaultPage, v.Loading == false)}">
+            <!-- TO Do Change for Payment intnet or virtualpayment-->
+            
+            <lightning:layout multipleRows="true" class="charge-base-page">
+                <aura:if isTrue="{!or(v.recordId != 'null', v.SelectedContact != null)}">
+                
+                    <lightning:layoutItem flexibility="grow" class="input-layout">
+                        <c:SearchBox label="{!v.Labels.Contact.label}" sobject="Contact"
+                            filterParams="{!v.ContactFilter}"
+                            selectFields="['Id', 'Name' , 'AccountId', 'Phone_Number__c', 'Email', 'Default_Payment_Method__c']"
+                            searchOnField="Name" select="{!c.searchAndSelectContact}"
+                            placeholder="{!$Label.c.search_prefix + ' ' + v.Labels.Contact.pluralLabel}" numRecords="10"
+                            selected="{!(v.SelectedContact != null) ? true : false}"
+                            class="styled-input"
+                            required="false" />
+                    </lightning:layoutItem>
+                <aura:if isTrue="{!and(and(v.SelectedContact != null, v.ShowPhone != null), v.ShowPhone == false)}">
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:icon iconName="utility:log_a_call" size="xx-small" />
+                        <span style="padding-left: 0.5rem; font-size: 0.8rem;">{!v.PhoneNumber}</span>
+                        <span
+                            style="padding-left: 0.5rem; position:relative; top: -.1rem; cursor:pointer; color:lightblue;"
+                            onclick="{!c.editPhone}">
+                            <lightning:icon size="xx-small" iconName="utility:edit" /></span>
+                    </lightning:layoutItem>
+                </aura:if>
+                
+                <aura:if
+                    isTrue="{!or(v.ShowPhone, and(v.SelectedContact != null, v.SelectedContact.Phone_Number__c == null) )}">
+                    <lightning:layoutItem flexibility="grow" class="input-layout">
+                        <lightning:input value="{!v.PhoneNumber}" label="Phone Number" class="styled-input"
+                            placeholder="Contact Phone Number" />
+                    </lightning:layoutItem>
+                </aura:if>
+
+            </aura:if>
+
+                <lightning:layoutItem padding="around-small" flexibility="grow" class="amount-input">
+                    <div class="amount-label">
+                        <span>{!v.Labels.Amount}</span>
+                    </div>
+                    <lightning:input type="number" value="{!v.PaymentAmount}" formatter="currency" step="0.01"
+                        class="amount-input-field" />
+                </lightning:layoutItem>
+               
+            </lightning:layout>
+
+        </aura:if>
+        <aura:if isTrue="{!v.ShowPaymentOptions}">
+            <lightning:layoutItem flexibility="grow" class="payment-options-pane">
+                <lightning:tabset selectedTabId="two">
+                    <aura:if isTrue="{!v.ShowSavedCards}">
+                        <lightning:tab label="Saved Cards" id="one">
+                            <aura:if isTrue="{!v.PaymentMethodsLoading}">
+                                <lightning:spinner alternativeText="Loading" size="small" />
+                            </aura:if>
+                            <aura:if isTrue="{!empty(v.UserCards)}">
+                                <label style="margin-left: 20px">{!$Label.c.no_saved_cards_available}</label>
+                            </aura:if>
+                            <aura:if isTrue="{! !empty(v.UserCards)}">
+                                <div class="payment-group">
+                                    <aura:iteration items="{!v.UserCards}" var="card">
+                                        <!-- Cards -->
+                                        <div class="cardbox d-flex-align-center">
+                                            <div class="{! 'credit-card selectable ' + card.brandstylename}"
+                                                onclick="{!c.selectPaymentSource}" id="{!card.id}" data-id="{!card.id}"
+                                                title="{!card.name}">
+                                                <input type="radio" name="payment-source" value="{!card.id}"
+                                                    class="{! (card.id == v.SelectedPaymentSource)? 'checkbox default-source' : 'checkbox' }" checked="{! (card.id == v.SelectedPaymentSource)? 'checked' : '' }" />
+
+                                                <div class="option_inner">
+                                                    <div class="tickmark"></div>
+                                                </div>
+                                                <div class="credit-card-last4">
+                                                    {!card.last4}
+                                                </div>
+                                                <div class="credit-card-expiry">
+                                                    {!card.exp_month}/{!card.exp_year}
+                                                </div>
+                                            </div>
+                                            <div class="button-container">
+                                                <aura:if isTrue="{!card.id == v.SelectedPaymentSource}">
+                                                    <div style="text-align: center;">
+                                                        <lightning:button label="{!$Label.c.process_cart_items}"
+                                                            onclick="{!c.onCardCharge}" class="payment-card-button"
+                                                            variant="brand" />
+                                                    </div>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                        </lightning:tab>
+                    </aura:if>
+                    <lightning:tab label="{!'New ' + $Label.c.credit_or_debit_card}" id="two">
+                        <aura:if isTrue="{!v.StripeCardUILoading}">
+                            <lightning:spinner alternativeText="Loading" size="small" />
+                        </aura:if>
+                        <iframe id="stripeCardUI" src="{!v.StripeCardUI}" onload="{!c.stripeCardLoaded}" />
+                    </lightning:tab>
+                </lightning:tabset>
+            </lightning:layoutItem>
+        </aura:if>
+        
+
+        <aura:if isTrue="{!and(v.ShowTransactionDetails, v.Loading == false)}">
+            <lightning:layout multipleRows="true">
+                
+                <lightning:layoutItem padding="around-medium" class="mx-auto">
+                    <lightning:layoutItem class="charge-output">
+                        <aura:iteration items="{!v.paymentResponse}" var="payment">
+                            <aura:if isTrue="{!payment.type == 'TXN'}">
+<!-- Start Immediate Transaction Receipt Design Starts Here-->
+<div class="bg-lightgrey">
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="border-box">
+                                                    <div class="companyname-highlight">
+                                                        <div class="companyname-wrapper"><span class="text-white">{!payment.txn.Payment_Intent__r.Account__r.Name}</span></div>
+                                                        <div class="transaction-status-wrapper mt-16px pt-12px pb-12px bg-color-white text-align-center">
+                                                            <div class="transactionstatus-icon margin-left-right-auto">
+                                                            <img src="{! ( (payment.txn.Status__c != 'failed') ? $Resource.success_icon : $Resource.failure_icon )}" alt="{! ( (payment.txn.Status__c != 'failed') ? 'Success' : 'Failed'  )}" class="custom-image-default" ></img>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-dblue fw-900 pt-12px pb-12px bg-color-white text-align-center">
+                                                    <div class="margin-left-right-auto transaction-price">
+                                                        <span>
+                                                            <span class="fw-900 transactionprice-amount">
+                                                                <lightning:formattedNumber value="{!payment.txn.Amount__c}" style="currency" currencyCode="USD"/>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="margin-left-right-auto transaction-status-message text-lightgrey">
+                                                        {! ( (payment.txn.Status__c == 'succeeded') ? 'Paid Successfully' : 'Failed: ' + payment.txn.FailureMessage__c  )}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Transaction Reference</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!payment.txn.TransactionReference__c}</div>
+                                                    </div>
+                                                    <aura:if isTrue="{! (payment.txn.PaymentMethodType__c != null ? true : false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">Payment Type</div>
+                                                            <div class="transaction-itemvalue text-lightblue text-capitalize">{!payment.txn.PaymentMethodType__c}</div>
+                                                        </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.txn.PaymentCardLast4Digits__c != null ? true :false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">Card Last 4 Digits</div>
+                                                            <div class="transaction-itemvalue text-lightblue">xxxx xxxx xxxx {!payment.txn.PaymentCardLast4Digits__c}</div>
+                                                        </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.txn.PaymentBankLast4Digits__c != null ? true : false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">Bank Last 4 Digits</div>
+                                                            <div class="transaction-itemvalue text-lightblue">{!payment.txn.PaymentBankLast4Digits__c}</div>
+                                                        </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.txn.PaymentBankName__c != null ? true : false)}">
+                                                        <div class="transaction-infowrap">
+                                                            <div class="transaction-itemlabel text-lightgrey">Bank Name</div>
+                                                            <div class="transaction-itemvalue text-lightblue">{!payment.txn.PaymentBankName__c}</div>
+                                                        </div>
+                                                    </aura:if>
+
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Transaction Date</div>
+                                                        <div class="transaction-itemvalue text-lightblue" title="{!payment.txn.TransactionDate__c}">
+                                                            <lightning:formattedDateTime value="{!payment.txn.TransactionDate__c}" month="numeric" day="2-digit" year="numeric" hour="2-digit" minute="2-digit" />
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <aura:if isTrue="{! (payment.txn.Payment_Intent__r.Contact__r.Name != null ? true : false)}">    
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Contact</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            {!payment.txn.Payment_Intent__r.Contact__r.Name}
+                                                        </div>
+                                                    </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.txn.Payment_Intent__r.Contact__r.Email != null ? true : false)}">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Email</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                        <a href="{! 'mailto:' + payment.txn.Payment_Intent__r.Contact__r.Email}" target="_blank">{!payment.txn.Payment_Intent__r.Contact__r.Email}</a>
+                                                        </div>
+                                                    </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.txn.Payment_Intent__r.Contact__r.Phone_Number__c != null ? true : false)}">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Phone Number</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!payment.txn.Payment_Intent__r.Contact__r.Phone_Number__c}</div>
+                                                    </div> 
+                                                    </aura:if>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="fs-14px text-align-center lh-1-5 text-lightblue">For any order related queries please reach out to
+                                                        {!payment.txn.Payment_Intent__r.Account__r.Name}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-align-center p-td-10px-p-lr12px fs-12px text-lightgrey">
+                                                    <div class="mt-16px-mb-16px">
+                                                        <div>
+                                                            <div class="d-inlineblock v-align-middle">CopyRight @ {!payment.txn.Payment_Intent__r.Account__r.Name}</div>
+                                                            <div class="d-inlineblock v-align-middle ml-5px"></div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- End Immediate Transaction Receipt Design Starts Here--> 
+
+                            </aura:if>
+                            <aura:if isTrue="{!payment.type == 'OTHER'}">
+<!-- Start Payment Intent Immediate Payment Receipt Design Starts Here-->
+<div class="bg-lightgrey">
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="border-box">
+                                                    <div class="companyname-highlight">
+                                                        <div class="companyname-wrapper"><span class="text-white">{!payment.paymentRequest.Account__r.Name}</span></div>
+                                                        <div class="transaction-status-wrapper mt-16px pt-12px pb-12px bg-color-white text-align-center">
+                                                            <div class="transactionstatus-icon margin-left-right-auto">
+                                                            <img src="{! ( (payment.paymentRequest.Status__c != 'payment_failed') ? $Resource.success_icon : $Resource.failure_icon )}" alt="{! ( (payment.paymentRequest.Status__c != 'payment_failed') ? 'Success' : 'Failed'  )}" class="custom-image-default" ></img>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-dblue fw-900 pt-12px pb-12px bg-color-white text-align-center">
+                                                    <div class="margin-left-right-auto transaction-price">
+                                                        <span>
+                                                            <span class="fw-900 transactionprice-amount">
+                                                                <lightning:formattedNumber value="{!payment.paymentRequest.Amount__c}" style="currency" currencyCode="USD"/>
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                     <div class="margin-left-right-auto transaction-status-message text-lightgrey">
+                                                        {! ( (payment.paymentRequest.Status__c != 'payment_failed') ? 'Paid Successfully' : 'Failed: '  )}
+                                                    </div> 
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Payment Reference Id</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!payment.paymentRequest.Payment_Reference_Id__c}</div>
+                                                    </div>
+
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">First Charge Date</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            <lightning:formattedDateTime value="{!payment.paymentRequest.First_Charge_Date__c}" month="numeric" day="2-digit" year="numeric" hour="2-digit" minute="2-digit" />
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <aura:if isTrue="{! (payment.paymentRequest.Contact__r.Name != null ? true : false)}">    
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Contact</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                            {!payment.paymentRequest.Contact__r.Name}
+                                                        </div>
+                                                    </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.paymentRequest.Contact__r.Email != null ? true : false)}"> 
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Email</div>
+                                                        <div class="transaction-itemvalue text-lightblue">
+                                                        <a href="{! 'mailto:' + payment.paymentRequest.Contact__r.Email}" target="_blank">{!payment.paymentRequest.Contact__r.Email}</a>
+                                                        </div>
+                                                    </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! (payment.paymentRequest.Contact__r.Phone_Number__c != null ? true : false)}"> 
+                                                    <div class="transaction-infowrap">
+                                                        <div class="transaction-itemlabel text-lightgrey">Phone Number</div>
+                                                        <div class="transaction-itemvalue text-lightblue">{!payment.paymentRequest.Contact__r.Phone_Number__c}</div>
+                                                    </div> 
+                                                    </aura:if>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper bg-color-white border-box mt-8px p-td-16px-p-lr20px">
+                                                    <div class="fs-14px text-align-center lh-1-5 text-lightblue">For any order related queries please reach out to
+                                                        {!payment.paymentRequest.Account__r.Name}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="margin-auto-w-100">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" class="w-100">
+            <tbody>
+                <tr>
+                <td class="custom-td-format">
+                    <div class="customtablewrapper-inline-column">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                            <tbody>
+                            <tr>
+                                <td class="v-align-top;p-0">
+                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+                                        <tbody>
+                                        <tr>
+                                            <td align="left" class="customtable-tdreset-wbreak">
+                                                <div class="cell-alingleft-c-black-f-13 text-black">
+                                                    <div class="transaction-status-wrapper text-align-center p-td-10px-p-lr12px fs-12px text-lightgrey">
+                                                    <div class="mt-16px-mb-16px">
+                                                        <div>
+                                                            <div class="d-inlineblock v-align-middle">CopyRight @ {!payment.paymentRequest.Account__r.Name}</div>
+                                                            <div class="d-inlineblock v-align-middle ml-5px"></div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- End Payment Intent Immediate Payment Receipt Design Starts Here-->   
+
+
+                            </aura:if>
+                        </aura:iteration>
+                    </lightning:layoutItem>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+
+    </div>
+    <aura:if isTrue="{!(v.ShowDefaultPage) }">
+        <footer>
+            <div class="slds-col modal-footer slds-modal__footer">
+                <lightning:layoutItem flexibility="grow" padding="around-small">
+                    <lightning:button class="long-button" label="Checkout" variant="brand" iconName="utility:send"
+                        onclick="{!c.handleCheckout}" disabled="{!v.EnableCheckoutButton}" />
+                </lightning:layoutItem>
+            </div>
+        </footer>
+    </aura:if>
+</div>
+</aura:component>

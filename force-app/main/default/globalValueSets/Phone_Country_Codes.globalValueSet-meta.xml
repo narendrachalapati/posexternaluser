@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1</fullName>
+        <default>true</default>
+        <label>1</label>
+    </customValue>
+    <description>Add SMS Integration Supported Country Codes</description>
+    <masterLabel>Phone Country Codes</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

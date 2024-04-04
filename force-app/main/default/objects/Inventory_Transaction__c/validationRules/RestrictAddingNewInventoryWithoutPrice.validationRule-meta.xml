@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RestrictAddingNewInventoryWithoutPrice</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( ISPICKVAL(Type__c, &apos;Add&apos;) ,   ISBLANK(Price__c) 
+)</errorConditionFormula>
+    <errorDisplayField>Price__c</errorDisplayField>
+    <errorMessage>For New Inventory Addition Price is Required</errorMessage>
+</ValidationRule>

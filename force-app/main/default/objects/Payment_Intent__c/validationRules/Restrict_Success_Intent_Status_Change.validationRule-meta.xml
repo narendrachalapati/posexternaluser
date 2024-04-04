@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Restrict_Success_Intent_Status_Change</fullName>
+    <active>true</active>
+    <description>Restrict Success Intent Status Change</description>
+    <errorConditionFormula>AND( ISCHANGED(  Status__c ) , ISPICKVAL( PRIORVALUE(Status__c) ,&apos;succeeded&apos;))</errorConditionFormula>
+    <errorMessage>For succeded Intent, we cannot change the status</errorMessage>
+</ValidationRule>

@@ -1,0 +1,481 @@
+<apex:page showHeader="false" controller="CalendarUtility" action="{!checkPageValidity}" >
+    <head>
+        <apex:includeScript value="{!$Site.BaseUrl}/lightning/lightning.out.js?v=2" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> Schedule Appointment </title>
+        <div id="lightning" />
+        <apex:slds />
+
+        <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/jquery.min.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/moment.min.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/moment-timezone-with-data.min.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.toasterLib , '/toastr.min.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/fullcalendar.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/customcalendar.js') }" />
+
+        <apex:stylesheet value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/css/jquery-ui.min.css') }" />
+        <apex:stylesheet value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/css/fullcalendar.css') }" />
+        <apex:stylesheet value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/css/customcalendar.css') }" />
+        <apex:stylesheet value="{! URLFOR( $Resource.toasterLib , '/toastr.min.css') }" />
+        <apex:stylesheet value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/css/calendar-ui.css') }" />
+        
+    </head>
+    
+    <div id="spinner" class="slds-spinner_container">
+        <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    <div id="spinner-schedule" class="slds-spinner_container hide-section spinner-schedule">
+        <div role="status" class="slds-spinner slds-spinner--small slds-spinner--brand">
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+
+    
+
+    <div class="body-wrap">
+        
+        <apex:form >
+            
+        <!-- Error Container-->
+        <apex:outputPanel rendered="{! not(isblank(calenderError)) }" >
+            <section class="section-container">
+                <div class="section-inner-container">
+                    <div class="booking-container">
+                        <div class="booking-container-wrap">
+                            <apex:pageMessage summary="{!calenderError}" severity="error"/>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </apex:outputPanel>
+
+        <apex:outputPanel id="initvariables">
+            <input type="hidden" name="memberuuid" value="{! memberuuid }" />
+            <input type="hidden" name="currentSessionId" value="{! currentSessionId }" />
+            <input type="hidden" name="selectedproductuuid" value="{! selectedproductuuid }" />
+            <input type="hidden" name="selectedappointmentUuid" value="{! selectedappointmentUuid }" />
+            <input type="hidden" name="startDateTime" value="{! startDateTime }" />
+            <input type="hidden" name="endDateTime" value="{! endDateTime }" />
+            <input type="hidden" name="selectedschedulingProduct" value="{! selectedschedulingProduct }" />
+            <input type="hidden" name="specificError" value="{! specificError }" />
+            <input type="hidden" name="freebusyResponseJson" value="{! freebusyResponseJson }" />
+            <input type="hidden" name="displayTimeZone" value="{! IF( isblank(displayTimeZone) , 'America/Los_Angeles' , displayTimeZone )  }" />
+            <input type="hidden" name="availableBookingSlotsUTC" value="{! availableBookingSlotsUTC }" />
+            <input type="hidden" name="availableBookingSlotsTimezone" value="{! availableBookingSlotsTimezone }" />
+            <input type="hidden" name="availableBookingSlotsUTCMap" value="{! availableBookingSlotsUTCMap }" />
+            <input type="hidden" name="selectedAppointmentStartDateTime" value="{! selectedAppointmentStartDateTime }" />
+            <input type="hidden" name="createAppointmentResponseStatusCode" value="{! createAppointmentResponseStatusCode }" />
+            <input type="hidden" name="createAppointmentResponse" value="{! createAppointmentResponse }" />
+            <input type="hidden" class="available-slot-value" name="slotMap" value="{! availableSlotMap }" />
+        </apex:outputPanel>
+
+        <apex:actionfunction action="{!fetchUpcomingAppointments}" name="fetchUpcomingAppointments"
+            rerender="initvariables, allAppointments, specificErrorSection, calendarpagetitle, showAvailableSlots, showbookingconfirmationcontainer, upcomingAppointmentsSelection, bookingcontainer " oncomplete="hideLoadingAndBindEventHandlers()">
+        </apex:actionfunction>
+
+        <apex:actionfunction action="{!createAppointment}" name="createAppointment"
+            rerender="initvariables, allAppointments, specificErrorSection, calendarpagetitle, showAvailableSlots, productSelection, showbookingconfirmationcontainer, upcomingAppointmentsSelection, bookingcontainer" oncomplete="showAppointmentDetails()">
+            <apex:param assignto="{!selectedAppointmentStartDateTime}" name="selectedAppointmentStartDateTime" value="" />
+        </apex:actionfunction>
+
+        <apex:actionfunction action="{!cancelAppointment}" name="cancelAppointment"
+            rerender="initvariables, allAppointments, specificErrorSection, calendarpagetitle, showAvailableSlots, productSelection, showbookingconfirmationcontainer, upcomingAppointmentsSelection, bookingcontainer" oncomplete="showUpcomingAppointments()">
+            <apex:param assignto="{!selectedappointmentUuid}" name="selectedappointmentUuid" value="" />
+        </apex:actionfunction>
+
+        <apex:actionfunction action="{!changeSelectedDisplayTimeZone}" name="changeSelectedDisplayTimeZone"
+            rerender="initvariables, specificErrorSection, calendarpagetitle, showAvailableSlots, showbookingconfirmationcontainer, bookingcontainer" oncomplete="postTimezoneChange()">
+            <apex:param assignto="{!selectedDisplayTimeZone}" name="selectedDisplayTimeZone" value="" />
+        </apex:actionfunction>
+
+        <apex:actionfunction action="{!changeSelectedProductUuid}" name="changeSelectedProductUuid"
+            rerender="initvariables, specificErrorSection, calendarpagetitle, showAvailableSlots, showbookingconfirmationcontainer, bookingcontainer">
+            <apex:param assignto="{!selectedproductuuid}" name="selectedproductuuid" value="" />
+        </apex:actionfunction>
+
+        <apex:actionFunction name="checkFreeBusy" action="{! checkFreeBusyonSelectedDate }"
+            rerender="initvariables, specificErrorSection, calendarpagetitle, showAvailableSlots, showbookingconfirmationcontainer" oncomplete="showAvailableSlots();">
+            <apex:param assignto="{!selectedproductuuid}" name="selectedproductuuid" value="" />
+            <apex:param assignto="{!startDatetime}" name="startDatetime" value="" />
+            <apex:param assignto="{!endDateTime}" name="endDateTime" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction name="fetchAvailableSlot" action="{! fetchAvailableSlot }"
+            rerender=" initvariables, specificErrorSection" oncomplete="afterSlotsFetched();">
+            <apex:param assignto="{!selectedproductuuid}" name="selectedproductuuid" value="" />
+            <apex:param assignto="{!startDatetime}" name="startDatetime" value="" />
+            <apex:param name="dayCount" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="sample" action="{! sample }"
+            rerender="initvariables" oncomplete="afterSlotsFetched();">
+        </apex:actionFunction>
+        <!-- Booking Container -->
+        
+        <apex:outputPanel id="upcomingEventContainer">
+            <div class="upcoming-event-tiles ">
+                <div class="calendar-event-box">
+                    <div class="upcoming-appointments-section">
+                        <div class="section-wrap section-heading upcoming-appointments-tab">
+                            <div class="title-text text-center">Upcoming Appointments</div>
+                        </div>
+                        <!-- <apex:outputPanel id="upcomingAppointmentsSelection"> -->
+                        <!-- <apex:outputPanel rendered="{!if( (selectedMemberScheduledAppointments.size > 0) , true ,false)}"> -->
+                            <apex:outputPanel >
+                        <div class="upcomingappointments-tiles-wrap">
+                            <div class="w-100 max-width100 timeslots-picker-wrap">
+                                <div class="px-15"> 
+                                    <apex:outputPanel id="showbookingconfirmationcontainer">
+                                        <!-- Start Show Error in Booked Appointments -->
+                                        <apex:outputPanel rendered="{!if( ( createAppointmentResponseStatusCode != null && createAppointmentResponseStatusCode != 201 && createAppointmentResponseStatusCode != 200) , true ,false)}">
+                                            <div class="bookingconfirmcontainer"> 
+                                                <div class="pt-15 action-title-sm text-center">
+                                                    Oops! Error Occured while Scheduling a Appointment for {!selectedschedulingProduct.Name}
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel>  
+                                        <!-- End Show Error in Booked Appointments -->
+
+                                        <!-- Start Show Booked Appointments -->
+                                        <apex:outputPanel rendered="{!if( ( (createAppointmentResponseStatusCode == 201 || createAppointmentResponseStatusCode == 200) && (showScheduledAppointmentDetails == true) ) , true ,false)}">
+                                            <div class="bookingconfirmcontainer">
+                                                <div class="pt-15 action-title-sm message-text text-center">
+                                                    Your Appointment is Scheduled for {!selectedschedulingProduct.Name}
+                                                </div>
+                                                <div class="booking-confirmation-page-header pt-15 d-flex-justify-center">
+                                                    <div class="slds-icon_container slds-icon-standard-shift" title="Appointment Time">
+                                                        <svg aria-hidden="true" class="slds-icon slds-page-header__icon">
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#shift')}"
+                                                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                            </use>
+                                                        </svg>
+                                                        <span class="slds-assistive-text message-text text-center">Appointment Time</span>
+                                                    </div>
+                                                    <div class="booking-confirmation-time message-text text-center">
+                                                        {! confirmedAppointmentStartTime + " - " + confirmedAppointmentEndTime + ", " + selectedDateWeekDay + ", "  + selectedDateFormatted }
+                                                    </div>
+                                                </div>
+                                                <!-- <div class="d-flex pt-15 d-flex-justify-center">
+                                                    <a class="slds-button slds-button_brand" href="javascript:void(0);" onclick="window.location.reload()">
+                                                        Book Another Appointment
+                                                    </a>
+                                                </div> -->
+                                            </div>
+                                        </apex:outputPanel>
+                                        <!-- End Show Booked Appointments --> 
+                                    </apex:outputPanel>
+                                    
+                                    <div class="pb-15 slds-text-align_center">
+                                        <apex:outputPanel rendered="{!if( ( selectedMemberScheduledAppointments.size > 0) , true ,false)}">
+                                            <div class="message-text-new">Here are your upcoming appointments. To remove one, simply click on the "Delete" icon.</div>
+                                        </apex:outputPanel>
+                                    <div role="list" class="timeslots-list-container">
+                                        <apex:outputPanel rendered="{!if( ( selectedMemberScheduledAppointments.size > 0) , true ,false)}" id="allAppointments">
+                                            
+                                            <apex:repeat value="{!selectedMemberScheduledAppointments}" var="selectedMemberScheduledAppointment">
+                                                <div role="listitem" class="mb-10 fs-16px d-flex d-flex-justify-space-between d-flex-align-items-center">
+                                                    <div tabindex="0" data-appointmentUuid="{! selectedMemberScheduledAppointment.UUID__c }" 
+                                                    class="timeslots-btn upcoming-timeslots-btn-border btn-tile-normalize upcoming-slot-item cancelbookingbtn">
+                                                    {! appointmentUuidTimeSlotMap[selectedMemberScheduledAppointment.UUID__c] }
+                                                    </div>
+                                                    <div tabindex="0" data-appointmentUuid="{! selectedMemberScheduledAppointment.UUID__c }" 
+                                                    class="timeslots-btn btn-tile-normalize show cancel-confirm upcoming-slot-item-delete">
+                                                    
+                                                    <apex:image styleClass="delete-image-css" url="{!URLFOR($Resource.Calendar, '/fullcalendar390/lib/images/delete_120.png')}" />
+                                                    <!-- <apex:image url="{!URLFOR($Resource.Calendar,
+                                                        '/images/delete_120.png')}" width="50" height="50"/> -->
+                                                    </div>
+                                                    
+                                                    <!-- <div tabindex="0" data-appointmentUuid="{! selectedMemberScheduledAppointment.UUID__c }" 
+                                                    class="timeslots-btn btn-tile-normalize cancel-confirm">
+                                                    Cancel Appointment
+                                                    </div> -->
+                                                </div>
+                                            </apex:repeat>
+                                        </apex:outputPanel>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </apex:outputPanel>
+                        <!-- End Upcoming Appointments Selection for Cancellation -->
+                        <!-- Start No Upcoming Appointments Selection for Cancellation -->
+                        <apex:outputPanel rendered="{!if( (selectedMemberScheduledAppointments.size == 0 && showScheduledAppointmentDetails != true) , true ,false)}">
+                        <div class="upcomingappointments-tiles-wrap">
+                            <div class="w-100 max-width100 timeslots-picker-wrap">
+                                <div class="px-15">
+                                    <div class="title-text text-center">No Upcoming Appointments Found</div>
+                                </div>
+                            </div>
+                        </div>
+                        </apex:outputPanel>
+                        <!-- End No Upcoming Appointments Selection for Cancellation -->
+                        
+                    </div>
+                    
+                    <!-- Start Upcoming Appointments Section -->
+                    <!-- Start Upcoming Appointments Selection for Cancellation -->
+                    
+                    <!-- Start Upcoming Appointments Section -->
+                    <div class="product-tiles-section">
+                        <apex:outputPanel id="productSelection">
+                            <apex:outputPanel rendered="{!if( (showScheduledAppointmentDetails == true || schedulingProductsList.size > 0)  , true ,false)}">
+                                <div class="button-flex product-tiles-wrap custom-scrollbar">
+                                    
+                                    <apex:repeat value="{! schedulingProductsList }" var="schedulingProduct">
+                                        <div class="card productbutton section-hide" data-productuuid="{! schedulingProduct.UUID__c }"
+                                         data-productname="{! schedulingProduct.Name }">
+                                            <!-- <img src="img_avatar.png" alt="Avatar" style="width:100%"></img> -->
+                                            <apex:image styleClass="image-css" url="{!URLFOR($Resource.Calendar, '/fullcalendar390/lib/images/default_prod.jpeg')}" />
+                                            <div class="container">
+                                                <div class="product-name-text">
+                                                    {! schedulingProduct.Name }
+                                                </div>
+                                                <!-- <p>Some description may be.</p> -->
+                                            </div>
+                                        </div>
+                                        <!-- <button type="button"
+                                            class="button-outline productbutton"
+                                            data-productuuid="{! schedulingProduct.UUID__c }" data-productname="{! schedulingProduct.Name }">
+                                            <span>{! schedulingProduct.Name }</span>
+                                        </button> -->
+                                    </apex:repeat>
+                                </div>
+                            </apex:outputPanel>
+                        </apex:outputPanel>  
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{! (isblank(calenderError)) }" id="bookingcontainer">
+            <section class="section-container  ">
+                <div class="section-inner-container section-container-calendar hide-section">
+                    <div class="booking-container">
+                        <div class="booking-container-wrap">
+
+                            <!-- FIRST BLOCK (UNCOMING EVENTS & WELCOME) -->
+                            <div class="first-container-wrap">
+                                <!-- Specific Container-->
+                                <apex:outputPanel id="specificErrorSection" rendered="{! not(isblank(specificError)) }" >
+                                    <apex:pageMessage summary="{!specificError}" severity="error"/>
+                                </apex:outputPanel>
+                                
+                                <!-- MOVE IT  -->
+                                
+                            </div>
+                            
+                            <div class="calendar-event-box">
+                                <!-- <div class="spinner"></div> -->
+                                
+                                <!-- MIDDLE BLOCK CALENDAR-->
+                                <div class="section-wrap calendar-section">
+
+                                    <!-- <div class="section-heading book-appointments-tab">
+                                        <div class="title-text">Book Appointment</div>
+                                    </div> -->
+                                    <!-- Start Book Appointments Section -->
+                                    <div class="back-button " title="Back">
+                                        <apex:image url="{!URLFOR($Resource.Calendar, '/fullcalendar390/lib/images/back_120.png')}" width="30px" height="30px"/>
+                                    </div>
+                                    
+                                    <div class="title-text text-center">
+                                        Appointment for {!selectedschedulingProduct.Name}
+                                    </div>
+                                    <div class="book-appointments-section">
+                                        <!-- MOVE IT  -->
+                                        <!-- <div class="text-center">
+                                            <apex:outputPanel id="calendarpagetitle">
+                                                <apex:outputPanel rendered="{!if( (isblank(selectedproductuuid)) , true ,false)}">
+                                                    Please Select <b>Product</b> for Booking a Appointment
+                                                </apex:outputPanel>
+            
+                                                <apex:outputPanel rendered="{!if( ( not(isblank(selectedproductuuid)) && (selectedDateFormatted == '') ) , true ,false)}">
+                                                    Please Select Date for Booking a Appointment for
+                                                    <b>{!selectedschedulingProduct.Name}</b>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </div> -->
+                                        <!-- selectedschedulingProduct -->
+                                        <!-- Start Tab-Wise Product Selection for Scheduling -->
+                                        
+                                        <!-- MOVE IT  -->
+                                        <!-- <apex:outputPanel id="productSelection">
+                                            
+                                            <apex:outputPanel rendered="{!if( (showScheduledAppointmentDetails == false)  , true ,false)}">
+                                                <div class="button-flex product-tiles-wrap custom-scrollbar">
+                                                    
+                                                    <apex:repeat value="{! schedulingProductsList }" var="schedulingProduct">
+                                                        <button type="button"
+                                                            class="button-outline productbutton"
+                                                            data-productuuid="{! schedulingProduct.UUID__c }" data-productname="{! schedulingProduct.Name }">
+                                                            <span>{! schedulingProduct.Name }</span>
+                                                        </button>
+                                                    </apex:repeat>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>   -->
+
+                                        
+                                        <div class="bg-white h-100vh calender-wrap" >
+                                            <div class="component-wrapper">
+                                                <div class="slds-grid slds-wrap slds-grid_align-center flex-column">
+                                                    <!-- <div id="calendar" class="calendarinitwrap slds-card"></div> -->
+                                                    <div class="calendar"></div>
+                                                </div>
+                                            </div>
+                                        </div>  
+
+                                    </div>
+                                    <!-- End Book Appointments Section -->
+                                </div>    
+
+                                <!-- THIRD BLOCK (SLOTS) -->
+                                <div class="slot-section-wrap available-slot-section">
+                                    <!-- Start Show Available Time Slots --> 
+                                    <div class="back-button-rev " title="Back">
+                                        <apex:image url="{!URLFOR($Resource.Calendar, '/fullcalendar390/lib/images/back_120.png')}" width="30px" height="30px"/>
+                                    </div>
+                                    <apex:outputPanel id="showAvailableSlots">
+                                        <div class="availableslots-wrap">
+                                            <!-- <apex:outputPanel rendered="{!if( ( not(isblank(selectedproductuuid)) && (selectedDateFormatted != '') && (availableBookingSlotsTimezone.size > 0) && (showScheduledAppointmentDetails == false) ) , true ,false)}"> -->
+                                            <apex:outputPanel >
+                                                <apex:variable var="availableBookingSlotsList" value="{!availableBookingSlotsTimezone}" />
+                                                <div class="timeslots-picker minheight-600 pt-15">
+                                                    <div class="px-15 bookingslots-title ">
+                                                        <h2 class="action-title-sm selecteddateweekday">
+                                                            {! selectedDateWeekDay }
+                                                        </h2>
+                                                        <div class="pb-15">
+                                                            <div class="action-caption margin-0 selecteddate">
+                                                                {! selectedDateFormatted }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="w-100 max-width100 timeslots-picker-wrap pt-15">
+                                                        <div class="px-15">
+                                                            <h2 class="action-title">Select a Time</h2>
+                                                            <div class="pb-15">
+                                                                <div class="action-caption"> 
+                                                                    Duration: {! selectedschedulingProduct.Meet_Duration__c }&nbsp;min
+                                                                </div>
+
+                                                                <div role="list" class="timeslots-list-container timeslots-list-available">
+                                                                    <!-- <apex:repeat value="{!availableBookingSlotsUTCMap}"
+                                                                        var="iterAvailableBookingSlot">
+                                                                        <div role="listitem" class="mb-10 fs-16px d-flex d-flex-justify-space-between">
+                                                                            <div tabindex="0"
+                                                                                data-starttime="{! iterAvailableBookingSlot }"
+                                                                                class="timeslots-btn timeslots-btn-border btn-tile-normalize timeslotbookingbtn"
+                                                                                onclick="storeSelectedTimeSlot(event)">
+                                                                                {! availableBookingSlotsUTCMap[iterAvailableBookingSlot] }
+                                                                            </div>
+                                                                            <div tabindex="0"
+                                                                                data-starttime="{! iterAvailableBookingSlot }"
+                                                                                class="timeslots-btn btn-tile-normalize booking-confirm"
+                                                                                onclick="confirmAppointment(event)">
+                                                                                Confirm
+                                                                            </div>
+                                                                        </div>
+                                                                    </apex:repeat> -->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </apex:outputPanel>
+
+                                            <apex:outputPanel rendered="{!if( ( not(isblank(selectedproductuuid)) && (selectedDateFormatted != '') && (availableBookingSlotsTimezone.size == 0) && (showScheduledAppointmentDetails == false) ) , true ,false)}">
+                                                <div class="pt-15 px-15 pb-15 bg-lightgrey">
+                                                    <h2 class="action-title-sm selecteddateweekday">
+                                                        No Scheduling Slots Available on {! selectedDateFormatted }
+                                                    </h2>
+                                                    <div class="">
+                                                        <div class="action-caption margin-0 selecteddate">
+                                                            Please select another date
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </apex:outputPanel>
+                                    <!-- End Show Available Time Slots -->
+
+                                    <!-- <apex:outputPanel id="showbookingconfirmationcontainer"> -->
+                                        <!-- Start Show Error in Booked Appointments -->
+                                        <!-- <apex:outputPanel rendered="{!if( ( createAppointmentResponseStatusCode != null && createAppointmentResponseStatusCode != 201 && createAppointmentResponseStatusCode != 200) , true ,false)}">
+                                            <div class="bookingconfirmcontainer"> 
+                                                <div class="pt-15 action-title-sm text-center">
+                                                    Oops! Error Occured while Scheduling a Appointment for {!selectedschedulingProduct.Name}
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel>   -->
+                                        <!-- End Show Error in Booked Appointments -->
+
+                                        <!-- Start Show Booked Appointments -->
+                                        <!-- <apex:outputPanel rendered="{!if( ( (createAppointmentResponseStatusCode == 201 || createAppointmentResponseStatusCode == 200) && (showScheduledAppointmentDetails == true) ) , true ,false)}">
+                                            <div class="bookingconfirmcontainer">
+                                                <div class="pt-15 action-title-sm text-center">
+                                                    Your Appointment is Scheduled for {!selectedschedulingProduct.Name}
+                                                </div>
+                                                <div class="booking-confirmation-page-header pt-15 d-flex-justify-center">
+                                                    <div class="slds-icon_container slds-icon-standard-shift" title="Appointment Time">
+                                                        <svg aria-hidden="true" class="slds-icon slds-page-header__icon">
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#shift')}"
+                                                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                            </use>
+                                                        </svg>
+                                                        <span class="slds-assistive-text">Appointment Time</span>
+                                                    </div>
+                                                    <div class="booking-confirmation-time">
+                                                        {! confirmedAppointmentStartTime + " - " + confirmedAppointmentEndTime + ", " + selectedDateWeekDay + ", "  + selectedDateFormatted }
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex pt-15 d-flex-justify-center">
+                                                    <a class="slds-button slds-button_brand" href="javascript:void(0);" onclick="window.location.reload()">
+                                                        Book Another Appointment
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel> -->
+                                        <!-- End Show Booked Appointments --> 
+                                    <!-- </apex:outputPanel> -->
+                                </div>
+                                
+                            </div>
+
+                            
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </apex:outputPanel>
+
+        <!-- Timezone Selection -->
+        <!-- 
+        <apex:outputPanel id="displayTimezoneSelection">
+            <div class="d-flex d-flex-justify-flex-end" >
+                <apex:selectList value="{!selectedDisplayTimeZone}" multiselect="false" size="1">
+                    <apex:selectOption itemValue="America/Los_Angeles" itemLabel="Los Angeles"/>
+                    <apex:selectOption itemValue="Asia/Calcutta" itemLabel="India"/>
+                    <apex:actionSupport event="onchange" action="{!changeSelectedDisplayTimeZone}" rerender="initvariables, displayTimezoneSelection, calendarpagetitle, showAvailableSlots" />
+                </apex:selectList>
+            </div>
+        </apex:outputPanel>
+        -->
+        <!-- MOVE IT TO CALENDAR SEC  -->
+        <!-- <div class="d-flex d-flex-justify-flex-end" >
+            <select id="timezone-select" name="inputDisplayTimeZone">
+                <option value="">Select a timezone</option>
+            </select>
+        </div> -->
+
+    </apex:form>   
+        
+    </div>
+
+</apex:page>

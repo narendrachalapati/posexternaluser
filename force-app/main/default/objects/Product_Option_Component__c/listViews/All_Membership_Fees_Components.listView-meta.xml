@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Membership_Fees_Components</fullName>
+    <booleanFilter>1 OR 2 OR 3</booleanFilter>
+    <columns>NAME</columns>
+    <columns>Product_Option__c</columns>
+    <columns>Product_Inventory__c</columns>
+    <columns>Unit_Price__c</columns>
+    <columns>Is_Option_Available__c</columns>
+    <columns>Required_Quantity__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>LAST_UPDATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Product_Code__c</field>
+        <operation>equals</operation>
+        <value>INITFEE</value>
+    </filters>
+    <filters>
+        <field>Product_Code__c</field>
+        <operation>equals</operation>
+        <value>FAMILYADDON</value>
+    </filters>
+    <filters>
+        <field>Product_Code__c</field>
+        <operation>equals</operation>
+        <value>MEMBERFEE</value>
+    </filters>
+    <label>All Membership Fees Components</label>
+</ListView>

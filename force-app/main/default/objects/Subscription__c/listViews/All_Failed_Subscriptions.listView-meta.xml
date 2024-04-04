@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Failed_Subscriptions</fullName>
+    <columns>NAME</columns>
+    <columns>Contact__c</columns>
+    <columns>Member_IsActive__c</columns>
+    <columns>Start_Date__c</columns>
+    <columns>Status__c</columns>
+    <columns>Subscription_End_Date__c</columns>
+    <columns>Cancelled_At__c</columns>
+    <columns>Latest_Invoice__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>LAST_UPDATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>incomplete,incomplete_expired</value>
+    </filters>
+    <label>All Failed Subscriptions</label>
+</ListView>

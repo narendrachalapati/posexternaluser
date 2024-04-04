@@ -1,0 +1,124 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global" controller="PMA_SearchController">
+   
+    <aura:attribute name = "showChild" type = "Boolean" default = "false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+    <ltng:require styles="{!join(',', 
+    $Resource.Bootstrap, 
+    $Resource.FontAwesome + '/css/all.css')}" afterScriptsLoaded="{!c.setup}" />
+     <lightning:navigation aura:id="navigate" />
+   <!-- Todo Refactor Attributes -->
+   <aura:attribute name="todorecord" type="ToDo__c"/>
+   <aura:attribute name="uuidstring" type="String"/>
+   <aura:attribute name="memberId" type="String"/>
+   <aura:attribute name="AccountId" type="string" />
+   <aura:attribute name="isLoggedIn" type="Boolean"/>
+   <!-- Todo Refactor Attributes -->
+    <aura:attribute name="orderUUID" type="String" default=""/>
+    <aura:attribute name="orderRelatedActivities" type="Sobject"/>
+    <aura:attribute name="openRelatedActivities" type="Boolean" default="false"/>
+    <aura:attribute name="activityRecordid" type="String" default=""/>
+
+    <aura:attribute name="currentMember" type="String" default=""/>
+    <aura:attribute name="memberName" type="String" default=""/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    
+    <!-- Init() Loggend in User Record Details -->
+    <aura:attribute name="userInfo" type="User"/> 
+    <aura:attribute name="userContactWrap" type="PMA_SearchController.CurrentUserWrap"/> 
+    
+    <aura:attribute name="message" type="String" default=""/>
+    <aura:attribute name="eventMessage" type="String" default=""/>
+   
+    <!-- PRODUCT DATA FROM CONTACT SEARCH COMPONENT -->
+    <aura:attribute name="allProductsMap" type="Map" />
+    <aura:attribute name="productData" type="List" /> 
+    <aura:attribute name="productsfromcontactserch" type="boolean" default="false" />
+
+    <aura:handler event="c:componentCommunicationEvent" action="{!c.handleComponentCommunicationEvent}"/>
+
+     <!-- Register for Communications Application Event -->
+   <aura:registerEvent name="communicateEvent" type="c:componentCommunicationEvent"/>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div class="slds-is-relative">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        {!v.message}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <div class="slds-is-relative" style="height:100%">
+        <lightning:layout multipleRows="true" class="mtop1rem">
+            <!-- <aura:if isTrue="{! empty(v.activityRecordid) }">
+                <div class="ts-back-wrap" onclick="{!c.returnBacktoSearch}">
+                    <div class="smoothscroll-back">                  
+                        <i class="fa fa-arrow-left"></i>
+                    </div>
+                </div>
+            </aura:if> -->
+            <aura:if isTrue = "{!v.showChild}">
+                <c:PmaProducts orderUUID="{!v.orderUUID}" memberId="{!v.currentMember}" AccountId="{!v.AccountId}" memberName="{!v.memberName}" userContactWrap="{!v.userContactWrap}"
+                 productData="{!v.productData}" productsfromcontactserch="{!v.productsfromcontactserch}" allProductsMap="{!v.allProductsMap}" isLoggedIn="{!v.isLoggedIn}"/>
+            </aura:if>
+            <aura:if isTrue = "{!v.showChild}">
+                <c:pmaCart orderUUID="{!v.orderUUID}" memberId="{!v.currentMember}" AccountId="{!v.AccountId}" memberName="{!v.memberName}" activityRecordid="{!v.activityRecordid}" userContactWrap="{!v.userContactWrap}" todorecord="{!v.todorecord}" uuidstring="{!v.uuidstring}"/>
+            </aura:if>
+            <!--
+            <lightning:layoutItem size="12" largeDeviceSize="8" mediumDeviceSize="8" smallDeviceSize="12">
+                
+            </lightning:layoutItem>
+
+            <lightning:layoutItem size="12" largeDeviceSize="4" mediumDeviceSize="4" smallDeviceSize="12">
+                
+            </lightning:layoutItem>
+            -->
+            <!-- Start Load All OrderRelated Activity Messages -->
+            <aura:if isTrue="{!not(empty(v.orderRelatedActivities))}">
+                <aura:if isTrue="{! (v.openRelatedActivities) }">
+                    <div class="popup-chat-container">
+                        <div class="header">
+                            <div class="grp-info">
+                                <h3 class="grp-name">
+                                    Related Activities
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="chatbox">
+                            <!-- Start Iterate OrderRelated Activity Messages -->
+                            <aura:iteration items="{!v.orderRelatedActivities}" var="item">
+                                <aura:if isTrue="{! !empty(item.Message__c) }">
+                                    <div
+                                        class="{! (item.Direction__c == 'INBOUND') ? 'chat' : 'chat outboundmessage' }">
+                                        <p class="msg">
+                                            {!item.Message__c }
+                                        </p>
+                                    </div>
+                                </aura:if>
+                            </aura:iteration>
+                            <!-- End Iterate OrderRelated Activity Messages -->
+                        </div>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{! (v.openRelatedActivities) }">
+                    <div class="close" onclick="{! c.toggleopenRelatedActivities}">
+                        <i class="fa fa-times fa-2x fa-spin-hover"></i>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{! !(v.openRelatedActivities) }">
+                    <div class="openmessagesbox" onclick="{! c.toggleopenRelatedActivities}">
+                        <i class="fa fa-comments chat-icon-align-middle"></i>
+                    </div>
+                </aura:if>
+            </aura:if>
+            <!-- End Load All OrderRelated Activity Messages -->
+        </lightning:layout>
+    </div>
+</aura:component>

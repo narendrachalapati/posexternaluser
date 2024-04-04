@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+
+    <types>
+            <members>PMA_ProductsController</members>
+		    <members>PMA_SearchController</members>
+			<members>PosUtility</members>
+			<members>StripeService</members>
+		<name>ApexClass</name>
+
+	</types>
+	<types>
+           <members>pmaContactsSearch</members>
+		   <members>PmaProducts</members>
+		   <members>pmaContactsSearch</members>
+		    <members>POSscreenapp</members>
+		<name>AuraDefinitionBundle</name>
+
+	</types>
+	 <types>
+       
+        <members>POSscreencmp</members>
+        <name>ApexComponent</name>
+    </types>
+
+  <types>
+	    <members>POSscreen</members>
+		<name>ApexPage</name>
+	</types>
+	<version>56.0</version>
+</Package>

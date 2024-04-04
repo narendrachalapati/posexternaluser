@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Apply search result">
+	 <aura:attribute name="search-result" type="SObject" description="Apply search result"/>
+	 <aura:attribute name="event" type="String" description="Event type"/>
+</aura:event>

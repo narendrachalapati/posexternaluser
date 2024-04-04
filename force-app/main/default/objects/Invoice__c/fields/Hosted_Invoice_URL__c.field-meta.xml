@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hosted_Invoice_URL__c</fullName>
+    <description>Hosted Invoice URL</description>
+    <externalId>false</externalId>
+    <inlineHelpText>customers can view and pay an invoice. If the invoice has not been finalized yet</inlineHelpText>
+    <label>Hosted Invoice URL</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Url</type>
+</CustomField>

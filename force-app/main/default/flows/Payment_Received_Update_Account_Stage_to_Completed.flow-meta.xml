@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <description>On Payment Received Update Account stage to Appointment Completed</description>
+    <environments>Default</environments>
+    <interviewLabel>Payment Received Update Account Stage to Completed {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Payment Received Update Account Stage to Completed</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Account_Stage_to_Appointment_Completed</name>
+        <label>Update Account Stage to Appointment Completed</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Athrz_Account__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Stage__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Active Customer</stringValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Stage__c</field>
+            <value>
+                <stringValue>Appointment Completed</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Account_Stage_to_Appointment_Completed</targetReference>
+        </connector>
+        <filterFormula>AND(
+ISCHANGED({!$Record.Status__c}),
+OR(ISPICKVAL( {!$Record.Status__c}, &apos;payment_done&apos;), ISPICKVAL( {!$Record.Status__c}, &apos;payment_done_ext&apos;)),
+NOT(ISPICKVAL( {!$Record.Athrz_Account__r.Stage__c}, &apos;Active Customer&apos;))
+)</filterFormula>
+        <object>Payment_Intent__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

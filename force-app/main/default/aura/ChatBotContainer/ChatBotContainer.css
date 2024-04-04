@@ -1,0 +1,76 @@
+.THIS.c-container.h-100, .THIS .h-100{
+    height: 100%;
+}
+
+/*Utility CSS Hardcoded*/
+.THIS .chatbotutilitybar .main-screen {
+    height: 430px!important;
+}
+.THIS .chatbotutilitybar .main-screen .home-screen-messages{
+    height: 330px!important;
+}
+.THIS .chatbotutilitybar .chat-screen-body.chat-scroll-body{
+    height: 180px!important;
+}
+
+/* Responsive Css */
+.THIS .chatbotutilitybar .welcomescreen{
+    display: none!important;
+}
+.THIS .chatbotutilitybar-inactive .welcomescreen{
+    display: flex!important;
+}
+.THIS .chatbotutilitybar .memberslisttab {
+    display: none!important;
+}
+.THIS .chatbotutilitybar .messagesdetailtab {
+    display: none!important;
+}
+.THIS .chatbotutilitybar .messagesdetailtab.activetab {
+    display: block!important;
+}
+.THIS .chatbotutilitybar .memberslisttab.activetab {
+    display: block!important;
+}
+
+.THIS .chatbotutilitybar .chatbotmemberwrap {
+    width: 100%!important;
+}
+.THIS .chatbotutilitybar .chatbotconversationwrap {
+    width: 100%!important;
+}
+/* Media Query for Mobile Devices */
+@media (max-width: 480px) {
+    .THIS .chatbotutilitybar-inactive .welcomescreen{
+        display: none!important;
+    }
+}
+  
+/* Media Query for low resolution  Tablets, Ipads */
+@media (min-width: 481px) and (max-width: 767px) {
+    .THIS .chatbotutilitybar-inactive .welcomescreen{
+        display: none!important;
+    }
+}
+
+/* Media Query for Tablets Ipads portrait mode */
+@media (min-width: 768px) and (max-width: 1024px){
+    .THIS .chatbotutilitybar-inactive .welcomescreen{
+        display: flex!important;
+    }
+}
+  
+/* Media Query for Laptops and Desktops */
+@media (min-width: 1025px) and (max-width: 1280px){
+    .THIS .chatbotutilitybar-inactive .welcomescreen{
+        display: flex!important;
+    }
+}
+  
+/* Media Query for Large screens */
+@media (min-width: 1281px) {
+    .THIS .chatbotutilitybar-inactive .welcomescreen{
+        display: flex!important;
+    }
+}
+/* End Utility CSS Hardcoded*/

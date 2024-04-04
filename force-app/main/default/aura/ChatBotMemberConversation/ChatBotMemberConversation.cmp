@@ -1,0 +1,886 @@
+<aura:component  controller="ChatBotController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+access="global">
+
+    <!-- Start Static Resource -->
+    <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.jquerylib + '/css/jquery.fancybox.min.css')}" afterScriptsLoaded="{!c.setup}" />
+    <ltng:require scripts="{!join(',', $Resource.jquerylib+'/js/jquery.min.js', $Resource.jquerylib + '/js/jquery.fancybox.min.js', $Resource.jquerylib + '/js/jquery.fancybox.min.js')}" afterScriptsLoaded="{!c.fancyboxsetup}" />
+    <!-- End Static Resource -->
+
+    <!--Attribute section start-->
+    <!-- Boolean Attribute for Isolated Component -->
+    <aura:attribute name="isIsolatedComponent" type="Boolean" default="false" />
+    <!-- Boolean Attribute for Utility Bar Component -->
+    <aura:attribute name="onUtilityBar" type="Boolean" default="false"/>
+    <!-- Boolean Attribute for Loading -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <!-- Storing Current User Details -->
+    <!-- Init() Loggend in User Record Details -->
+   <aura:attribute name="userContactWrap" type="ChatBotController.CurrentUserWrap"/>
+   <aura:attribute name="AccountId" type="String" default="{!v.userContactWrap.contactRecord.AccountId}"/>
+   
+   <aura:attribute name="Opt_Out_Warning_Message" type="String" default=""/>
+
+    <!-- Start Set These Attributes to Load Messages -->
+    <!-- RecordId of Selected Contact -->
+    <aura:attribute name="recordId" type="String" />
+    <!-- Member Phone Number to Identify Unknown Activity  -->
+    <aura:attribute name="contactPhoneNumber" type="String" />
+    <aura:attribute name="memberObjectapiname" type="String" default="" />
+    <!-- End Set These Attributes to Load Messages -->
+
+    <aura:attribute name="contactName" type="String" />
+    <aura:attribute name="hasPictureURL" type="Boolean" default="false" />
+    <aura:attribute name="pictureURL" type="String" />
+    <aura:attribute name="shortNameCode" type="String" />
+    <aura:attribute name="scrollToBottom" type="Boolean" default="true" />
+
+    <!-- FROM ADDRESS -->
+    <aura:attribute name="fromPhoneNumbers" type="List" />
+    <aura:attribute name="selectedPhoneNumber" type="String" />
+    <aura:attribute name="defaultPhoneNumber" type="String" />
+    <aura:handler name="fromNumberEvent" event="c:InboxComponentEvent"
+    action="{!c.handleFromNumberComponentEvent}"/>
+    <!-- TEMPLATES -->
+    <aura:attribute name="smsTemplates" type="List" />
+    <aura:attribute name="selectedTemplate" type="String" />
+    <aura:handler name="selectTemplateEvent" event="c:InboxComponentEvent"
+    action="{!c.handleTemplateComponentEvent}"/>
+
+    <!-- Is Member has opted out for selected virtual Phone -->
+    <aura:attribute name="isMemberOptedOut" type="Boolean" default="false" />
+    <aura:attribute name="memberConsentStatus" type="String" default="" />
+    <!-- Application Event Specific Flters -->
+    <aura:attribute name='componentUniqueName' type='String' default="" />
+
+    <!-- Storing Message text for Outbound SMS -->
+    <aura:attribute name='currentMessage' type='String' default="" />
+    <!-- Storing Message text for Character Count and Limits -->
+    <aura:attribute name="messageFieldMaxLength" type="Integer" default="160" />
+    <aura:attribute name="messageCharacterCount" type="Integer" default="0" />
+    <aura:attribute name="smsCount" type="Integer" default="0" />
+
+    <!-- Handle Attachments For MMS for Outbound MMS -->
+    <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file -->
+    <aura:attribute name="parentId" type="Id" default="{! v.recordId }" />
+    <aura:attribute name="currentAttachId" type="String" default="" />
+    <!-- 'showLoadingSpinner' attribute for show/hide the uploading image and msg in aura:if-->
+    <aura:attribute name="showLoadingSpinner" type="Boolean" default="false" />
+    <!-- 'fileName' attribute for display the selected file name -->
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    <aura:attribute name="fileType" type="String" default="" />
+
+    <!-- Load Previous Messages Limit Per Page and Store offset Attributes-->
+    <aura:attribute name="messagesLimitPerPage" type="Integer" default="10" />
+    <aura:attribute name="currentMessagesListPage" type="Integer" default="1" />
+    <aura:attribute name="totalPages" type="Integer" default="0"/>
+    <aura:attribute name="totalActivityRecords" type="Integer" default="0"/>
+
+    <!-- Pooling Attributes -->
+    <!-- Custom pooling for platform Event Alternative -->
+    <aura:attribute name="objectapiname" type="String" default="" />
+    <aura:attribute name="latestActivityNum" type="Double" default="0" />
+    <aura:attribute name="timeoutInMiliseconds" type="Integer" default="10000" />
+    <aura:attribute name="setIntervalId" type="Integer" />
+    <aura:attribute name="userInteraction" type="Boolean" default="false" />
+
+    <!-- Platform Event Attributes -->
+    <aura:attribute name="InboxLatestMessageEventSubscription" type="Object" />
+
+    <!-- Onload or On Member Change Fetch Selected Member Activities -->
+    <aura:attribute name="memberInitRelatedActivities" type="ChatBotController.InboxMember"  default=""/>
+    <!-- Store Older Messages -->
+    <aura:attribute name="memberPreviousRelatedActivities" type="ChatBotController.InboxMember" default="" />
+    <!-- Store Latest Messages -->
+    <aura:attribute name="memberLatestActivities" type="ChatBotController.InboxMember" default="" />
+    <aura:attribute name="latestActivitiesList" type="List" />
+    <aura:attribute name="latestActivitiesMap" type="Map" default="{}" />
+
+    <!-- Show Hide POS Quick Actions -->
+    <aura:attribute name="ShowPosQuickActions" type="Boolean" default="false" />
+    <!-- Show Hide POS Order Screen -->
+    <aura:attribute name="showPosContainer" type="Boolean" default="false" />
+    <aura:attribute name="orderUUID" type="String" default="" />
+    <!-- Show Hide  Scheduling Screen -->
+    <aura:attribute name="ShowScheduling" type="Boolean" default="false" />
+    <aura:attribute name="selectedContactRecord" type="Contact"/>
+    <aura:attribute name="activityid" type="String" default="" />
+
+    <!-- Register Inbox Pooling Application Event -->
+    <aura:registerEvent name="InboxPoolingEvent" type="c:InboxApplicationEvent" />
+    <!-- Register for Communications Application Event -->
+    <aura:registerEvent name="communicateEvent" type="c:componentCommunicationEvent"/>
+
+    <!-- Handlers section -->
+    <aura:handler name="init" value="{!this}" action="{!c.doint}" />
+    <!-- Handler for Page Location Change -->
+    <aura:handler event="aura:locationChange" action="{!c.handleDestroy}" />
+    <!-- Handler for File Upload Change -->
+    <aura:handler name="change" value="{!v.currentAttachId}" action="{!c.handleAttachmentLoad}" />
+    <!-- Handler for Contact Point Number Change -->
+    <aura:handler name="change" value="{!v.selectedPhoneNumber}" action="{!c.updateContactPointConsentStatus}"/>
+    <aura:handler name="change" value="{!v.latestActivitiesList}" action="{!c.updateContactPointConsentStatus}"/>
+
+    <!-- Handler for Inbox Pooling Application Event -->
+    <aura:handler event="c:InboxApplicationEvent" action="{!c.handleInboxPoolingEvent}" />
+    <!-- Handler for Components Communication Application Event -->
+    <aura:handler event="c:componentCommunicationEvent" action="{!c.handleComponentCommunicationEvent}" />
+
+    <lightning:empApi aura:id="empApi" />
+    <lightning:navigation aura:id="navigate" />
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div class="spinnercontain">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">{!$Label.c.Loading_Message}</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <!-- Show Chatbot Conversation  -->
+        <div class="sf-wrapper-main">
+            <div class="sf-wrapper-main">
+                <div class="{! (v.isIsolatedComponent) ? (v.componentUniqueName + ' messagesdetailtab main-screen inbox-wrapper-height d-flex slds-grid_align-center') : ('messagesdetailtab main-screen inbox-wrapper-height d-flex slds-grid_align-center') }">
+                    <div class="d-flex d-flex-column chat-screen chatScreen mobile-messagedetails">
+                        <!-- Show Send Message and Message Conversation Screen  -->
+                        <aura:if isTrue="{! (!empty(v.contactPhoneNumber)) }">
+                            <div class="chat-screen-header">
+                                <div class="d-flex d-flex-align-items-center flex-gap-p-5rem">
+                                    <aura:if isTrue="{! !(v.isIsolatedComponent) }">
+                                        <span class="back-button action-color chatBackbutton" onclick="{!c.BacktoInbox}">
+                                            <i class="fas fa-2x fa-long-arrow-alt-left"></i>
+                                        </span>
+                                    </aura:if>
+                                    <aura:if isTrue="{! !(v.hasPictureURL) }">
+                                        <span class="slds-avatar noimage">
+                                            <abbr class="slds-avatar__initials actionbg-color slds-icon-standard-user noimagetext br-circle"
+                                            title="{! v.contactName }">{! v.shortNameCode }</abbr>
+                                        </span>
+                                    </aura:if>
+                                    <aura:if isTrue="{! v.hasPictureURL }">
+                                        <img src="{! v.pictureURL }" alt="{! v.contactName }" class="userimage" />
+                                    </aura:if>
+                                    <div class="chat-screen-header-left-membername">
+                                        <h4><a class="slds-text-link" target="_blank" href="{! $Label.c.MydomainURL+''+ v.recordId}"><b>{! v.contactName }</b></a></h4>
+                                        <span class="text-grey">{! v.contactPhoneNumber }</span>
+                                    </div>
+                                </div>
+
+                                <span class="call-button actionbg-color" onclick="{!c.phoneCall}">
+                                    <i class="text-white action-color fa fa-phone" aria-hidden="true"></i>
+                                </span>
+
+                            </div>
+                        </aura:if>
+
+                        <!-- Start No Phone number Filler Empty Header and If Message History was empty -->
+                        <aura:if isTrue="{! ( (v.memberInitRelatedActivities.totalActivityRecords == 0) &amp;&amp; empty(v.latestActivitiesList) &amp;&amp; empty(v.contactPhoneNumber) ) }">
+                            <div class="chat-screen-header-blank"></div>
+                        </aura:if>
+                        <!-- End  No Phone number Filler Empty Header and If Message History was empty -->
+
+                        <!-- Start Welcome Message If not Contacts Selected -->
+                        <aura:if isTrue="{! ( ( empty(v.recordId) &amp;&amp; empty(v.contactPhoneNumber)  ) ) }">
+                            <div class="d-flex d-flex-justify-content-center d-flex-align-items-center d-flex-w-100 welcomescreen">
+                                <strong class="fs-2rem">
+                                    {!$Label.c.Welcome_to_Inbox}
+                                </strong>
+                            </div>
+                        </aura:if>
+                        <!-- End Welcome Message If not Contacts Selected -->
+
+                        <!-- Start Conversation Messages -->
+                        <div class="chat-screen-body flex-1 chat-scroll-body custom-scrollbar">
+                            <!--  Start Button to Fetch Previous Messages -->
+                            <aura:if isTrue="{! ( not(v.currentMessagesListPage == v.memberInitRelatedActivities.totalPages) &amp;&amp; (v.memberInitRelatedActivities.totalPages > 1 ) ) }">
+                                <lightning:icon class="actionbg-color btn hover-white iconpostion" iconName='action:refresh'
+                                alternativeText='refresh' size='xx-small' title='refresh'
+                                onclick="{!c.fetchPreviousMessages}">
+                                </lightning:icon>
+                            </aura:if>
+                            <!-- End Button to Fetch Previous Messages -->
+
+                            <!-- Start Load Previous Messages-->
+                            <aura:if isTrue="{! not(empty(v.memberPreviousRelatedActivities)) }">
+                                <!-- Start Iterate Previous Messages-->
+                                <aura:iteration items="{!v.memberPreviousRelatedActivities.paginatedActivitiesList}" var="item">
+
+                                    <!-- OUTBOUND SMS -->
+                                    <aura:if isTrue="{! and( (item.Direction__c == 'OUTBOUND'), or( (item.Type__c == 'sms'), (item.Type__c == 'mms'))  )  }">
+                                    <div class="message-outbound memberPreviousRelatedActivities">
+                                        <div class="message-outbound-content">
+                                            <aura:if isTrue="{! (item.Type__c == 'mms') }">
+                                                <aura:iteration items="{! (item.Media_Urls__r)}" var="imagesingle">
+                                                <a href="{! imagesingle.Media_Url__c }" data-fancybox="{! v.contactName }" data-fancybox-group="{! v.contactName }" data-caption="{! imagesingle.Name }" class="fancybox">
+                                                    <img src="{! imagesingle.Media_Url__c }" alt="{! imagesingle.Name }" class="mmsImage" />
+                                                </a>
+                                                </aura:iteration>
+                                                <aura:if isTrue="{! empty(item.Media_Urls__r)}">
+                                                    <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                                </aura:if>
+                                            </aura:if>
+                                            <aura:if isTrue="{! !empty(item.Message__c) }">
+                                                <span class="message-content-message message-outbound-content-message"> {!item.Message__c }</span>
+                                            </aura:if>
+
+                                            <div class="d-flex flex-direction_row slds-text-align_right d-flex-justify-content-end">
+                                                <span class="message-content-time text-grey">{!item.Status__c } -
+                                                <lightning:formattedDateTime class="text-grey" value="{!item.When__c }"
+                                                    day="2-digit" month="2-digit" hour="2-digit" minute="2-digit"
+                                                    second="2-digit" />
+                                                </span>
+                                                <aura:if isTrue="{! (v.ShowPosQuickActions) }">
+                                                    <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                        data-selectedactivityrecordid="{!item.Id }"
+                                                        onclick="{!c.schedulingscreenhandler}">
+                                                        <lightning:icon iconName='standard:event'
+                                                            class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                            alternativeText='Appointment Scheduling' size='x-small'
+                                                            title='Appointment Scheduling'>
+                                                        </lightning:icon>
+                                                    </div>
+                                                    <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                        data-selectedactivityrecordid="{!item.Id }"
+                                                        data-memberid="{!v.recordId }"
+                                                        onclick="{!c.createandOpenPOSOrder}">
+                                                        <lightning:icon
+                                                            class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                            iconName="standard:webcart" alternativeText='POS Order'
+                                                            size='x-small' title='POS Order'></lightning:icon>
+                                                    </div>
+                                                </aura:if>
+                                                <aura:if isTrue="{! !empty(item.Error_Message__c)}">
+                                                    <lightning:helptext content="{!item.Error_Message__c}" iconName="utility:warning" iconVariant="error" />
+                                                </aura:if>
+                                            </div>
+
+                                        </div>
+                                        
+                                    </div>
+                                    </aura:if>
+
+                                    <!-- INBOUND SMS -->
+                                    <aura:if isTrue="{! and( (item.Direction__c == 'INBOUND'), or( (item.Type__c == 'sms'), (item.Type__c == 'mms')) )  }">
+                                    <div class="message-inbound memberPreviousRelatedActivities">
+                                        <div class="message-inbound-content">
+                                            <aura:if isTrue="{! (item.Type__c == 'mms') }">
+                                                <aura:iteration items="{! (item.Media_Urls__r)}" var="imagesingle">
+                                                <a href="{! imagesingle.Media_Url__c }" data-fancybox="{! v.contactName }" data-fancybox-group="{! v.contactName }" data-caption="{! imagesingle.Name }" class="fancybox">
+                                                    <img src="{! imagesingle.Media_Url__c }" alt="{! imagesingle.Name }" class="mmsImage" />
+                                                </a>
+                                                </aura:iteration>
+                                                <aura:if isTrue="{! empty(item.Media_Urls__r)}">
+                                                    <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                                </aura:if>
+                                            </aura:if>
+                                            <aura:if isTrue="{! !empty(item.Message__c) }">
+                                                <span class="message-content-message message-inbound-content-message"> {!item.Message__c }</span>
+                                            </aura:if>
+
+                                            <div class="d-flex flex-direction_row">
+                                                <aura:if isTrue="{! (v.ShowPosQuickActions) }">
+                                                    <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                        data-selectedactivityrecordid="{!item.Id }"
+                                                        onclick="{!c.schedulingscreenhandler}">
+                                                        <lightning:icon iconName='standard:event'
+                                                            class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                            alternativeText='Appointment Scheduling' size='x-small'
+                                                            title='Appointment Scheduling'>
+                                                        </lightning:icon>
+                                                    </div>
+                                                    <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                        data-selectedactivityrecordid="{!item.Id }"
+                                                        data-memberid="{!v.recordId }"
+                                                        onclick="{!c.createandOpenPOSOrder}">
+                                                        <lightning:icon
+                                                            class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                            iconName="standard:webcart" alternativeText='POS Order'
+                                                            size='x-small' title='POS Order'></lightning:icon>
+                                                    </div>
+                                                </aura:if>
+                                                <span class="message-content-time text-grey">{!item.Status__c} -
+                                                    <lightning:formattedDateTime class="text-grey"
+                                                        value="{!item.When__c }" day="2-digit" month="2-digit"
+                                                        hour="2-digit" minute="2-digit" second="2-digit" />
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    </aura:if>
+
+                                    <!-- Start OUTBOUND Call -->
+                                    <aura:if isTrue="{! and( (item.Direction__c == 'OUTBOUND'), (item.Type__c == 'Call') ) }">
+                                    <div class="message-outbound memberPreviousRelatedActivities">
+                                        <div class="message-outbound-content">
+                                            <span class="message-content-message message-outbound-content-message slds-grid slds-grid_vertical ml-auto">
+                                                <div>
+                                                <lightning:icon class="slds-var-p-right_x-small icon-white" iconName='utility:outbound_call' alternativeText='outbound_call' size='xx-small' title='outbound_call' ></lightning:icon>
+                                                    {! item.Phone__c }
+                                                </div>
+                                            </span>
+                                            <div class="d-flex d-flex-column d-flex-align-items-self-end">
+                                                <aura:if isTrue="{! ( !empty(item.Recording_URL__c) &amp;&amp; (item.Recording_Duration__c > 0) ) }">
+                                                    <audio controls="controls" class="slds-var-p-top_x-small mb-1p5rem">
+                                                    <source src="{!item.Recording_URL__c}" type="audio/mp3"/>
+                                                    </audio>
+                                                </aura:if>
+                                                <span class="message-content-time text-grey">{! (item.Status__c=='completed')?'Hangup':item.Status__c } {! (item.Recording_Start_Time__c != null) ? ' - ' : '' }
+                                                    <lightning:formattedDateTime class="text-grey" value="{!item.Recording_Start_Time__c }"
+                                                    hour="2-digit" minute="2-digit" second="2-digit" /> {! (item.Recording_End_Time__c != null) ? ' - ' : '' }
+                                                    <lightning:formattedDateTime class="text-grey" value="{!item.Recording_End_Time__c }"
+                                                    day="2-digit" month="2-digit" hour="2-digit" minute="2-digit" second="2-digit" />
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </aura:if>
+                                    <!-- End OUTBOUND Call -->
+
+                                    <!-- Start INBOUND Call -->
+                                    <aura:if isTrue="{! and( (item.Direction__c == 'INBOUND'), (item.Type__c == 'Call') ) }">
+                                    <div class="message-inbound memberPreviousRelatedActivities">
+                                        <div class="message-inbound-content">
+                                            <span class="message-content-message message-inbound-content-message slds-grid slds-grid_vertical">
+                                                <div>
+                                                <lightning:icon class="slds-var-p-right_x-small" iconName='utility:incoming_call' alternativeText='incoming_call' size='xx-small' title='incoming_call' ></lightning:icon>
+                                                    {! item.Phone__c }
+                                                </div>
+                                            </span>
+                                            <div class="d-flex d-flex-column">
+                                                <aura:if isTrue="{! ( !empty(item.Recording_URL__c) &amp;&amp; (item.Recording_Duration__c > 0) ) }">
+                                                    <audio controls="controls" class="slds-var-p-top_x-small mb-1p5rem">
+                                                    <source src="{!item.Recording_URL__c}" type="audio/mp3"/>
+                                                    </audio>
+                                                </aura:if>
+                                                <span class="message-content-time text-grey">{! (item.Status__c=='completed')?'Hangup':item.Status__c }{! (item.Recording_Start_Time__c != null) ? ' - ' : '' }
+                                                    <lightning:formattedDateTime class="text-grey" value="{!item.Recording_Start_Time__c }"
+                                                    hour="2-digit" minute="2-digit" second="2-digit" />{! (item.Recording_End_Time__c != null) ? ' - ' : '' }
+                                                    <lightning:formattedDateTime class="text-grey" value="{!item.Recording_End_Time__c }"
+                                                    hour="2-digit" minute="2-digit" second="2-digit" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </aura:if>
+                                    <!-- End INBOUND Call -->
+
+                                </aura:iteration>
+                                <!-- End Iterate Previous Messages-->
+                            </aura:if>
+                            <!-- End Load Previous Messages-->
+
+                            <!-- Start Load Current All OnEvent Cached Messages-->
+                            <aura:if isTrue="{! not(empty(v.memberInitRelatedActivities))}">
+                                <aura:if isTrue="{!not(empty(v.memberInitRelatedActivities))}">
+                                    <!-- Start Iterate Current All OnEvent Cached Messages-->
+                                    <aura:iteration items="{!v.memberInitRelatedActivities.paginatedActivitiesList}" var="item">
+
+                                        <!-- OUTBOUND SMS -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'OUTBOUND'),  or( (item.Type__c == 'sms'), (item.Type__c == 'mms')) ) }">
+                                        <div class="message-outbound memberInitRelatedActivities">
+                                            <div class="message-outbound-content">
+                                                <aura:if isTrue="{! (item.Type__c == 'mms') }">
+                                                    <aura:iteration items="{! (item.Media_Urls__r)}" var="imagesingle">
+                                                    <a href="{! imagesingle.Media_Url__c }" data-fancybox="{! v.contactName }" data-fancybox-group="{! v.contactName }" data-caption="{! imagesingle.Name }" class="fancybox">
+                                                        <img src="{! imagesingle.Media_Url__c }" alt="{! imagesingle.Name }" class="mmsImage" />
+                                                    </a>
+                                                    </aura:iteration>
+                                                    <aura:if isTrue="{! empty(item.Media_Urls__r)}">
+                                                        <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                                    </aura:if>
+                                                </aura:if>
+                                                <aura:if isTrue="{! !empty(item.Message__c) }">
+                                                    <span class="message-content-message message-outbound-content-message"> {!item.Message__c } </span>
+                                                </aura:if>
+
+                                                <div class="d-flex flex-direction_row slds-text-align_right d-flex-justify-content-end">
+                                                    <span class="message-content-time text-grey">{!item.Status__c } -
+                                                        <lightning:formattedDateTime class="text-grey"
+                                                            value="{!item.When__c }" day="2-digit" month="2-digit"
+                                                            hour="2-digit" minute="2-digit" second="2-digit" />
+                                                    </span>
+                                                    <aura:if isTrue="{! (v.ShowPosQuickActions) }">
+                                                        <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                            data-selectedactivityrecordid="{!item.Id }"
+                                                            onclick="{!c.schedulingscreenhandler}">
+                                                            <lightning:icon iconName='standard:event'
+                                                                class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                alternativeText='Appointment Scheduling' size='x-small'
+                                                                title='Appointment Scheduling'>
+                                                            </lightning:icon>
+                                                        </div>
+                                                        <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                            data-selectedactivityrecordid="{!item.Id }"
+                                                            data-memberid="{!v.recordId }"
+                                                            onclick="{!c.createandOpenPOSOrder}">
+                                                            <lightning:icon
+                                                                class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                iconName="standard:webcart" alternativeText='POS Order'
+                                                                size='x-small' title='POS Order'></lightning:icon>
+                                                        </div>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! !empty(item.Error_Message__c)}">
+                                                        <lightning:helptext content="{!item.Error_Message__c}" iconName="utility:warning" iconVariant="error" />
+                                                    </aura:if>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        </aura:if>
+
+                                        <!-- INBOUND SMS -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'INBOUND'), or( (item.Type__c == 'sms'), (item.Type__c == 'mms')) ) }">
+                                        <div class="message-inbound memberInitRelatedActivities">
+                                            <div class="message-inbound-content">
+                                                <aura:if isTrue="{! (item.Type__c == 'mms') }">
+                                                    <aura:iteration items="{! (item.Media_Urls__r)}" var="imagesingle">
+                                                    <a href="{! imagesingle.Media_Url__c }" data-fancybox="{!  v.contactName }" data-fancybox-group="{!  v.contactName }" data-caption="{! imagesingle.Name }" class="fancybox">
+                                                        <img src="{! imagesingle.Media_Url__c }" alt="{! imagesingle.Name }" class="mmsImage" />
+                                                    </a>
+                                                    </aura:iteration>
+                                                    <aura:if isTrue="{! empty(item.Media_Urls__r)}">
+                                                        <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                                    </aura:if>
+                                                </aura:if>
+                                                <aura:if isTrue="{! !empty(item.Message__c) }">
+                                                    <span class="message-content-message message-inbound-content-message"> {!item.Message__c }</span>
+                                                </aura:if>
+
+                                                <div class="d-flex flex-direction_row">
+                                                    <aura:if isTrue="{! (v.ShowPosQuickActions) }">
+                                                        <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                            data-selectedactivityrecordid="{!item.Id }"
+                                                            onclick="{!c.schedulingscreenhandler}">
+                                                            <lightning:icon iconName='standard:event'
+                                                                class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                alternativeText='Appointment Scheduling' size='x-small'
+                                                                title='Appointment Scheduling'>
+                                                            </lightning:icon>
+                                                        </div>
+                                                        <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                            data-selectedactivityrecordid="{!item.Id }"
+                                                            data-memberid="{!v.recordId }"
+                                                            onclick="{!c.createandOpenPOSOrder}">
+                                                            <lightning:icon
+                                                                class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                iconName="standard:webcart" alternativeText='POS Order'
+                                                                size='x-small' title='POS Order'></lightning:icon>
+                                                        </div>
+                                                    </aura:if>
+                                                    <span class="message-content-time text-grey">{!item.Status__c} -
+                                                        <lightning:formattedDateTime class="text-grey" value="{! item.When__c }" day="2-digit" month="2-digit" hour="2-digit" minute="2-digit" second="2-digit" />
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        </aura:if>
+
+                                        <!-- Start OUTBOUND Call -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'OUTBOUND'), (item.Type__c == 'Call') ) }">
+                                        <div class="message-outbound memberInitRelatedActivities">
+                                            <div class="message-outbound-content">
+                                                <span class="message-content-message message-outbound-content-message slds-grid slds-grid_vertical ml-auto">
+                                                    <div>
+                                                    <lightning:icon class="slds-var-p-right_x-small icon-white" iconName='utility:outbound_call' alternativeText='outbound_call' size='xx-small' title='outbound_call' ></lightning:icon>
+                                                        {! item.Phone__c }
+                                                    </div>
+                                                </span>
+                                                <div class="d-flex d-flex-column d-flex-align-items-self-end">
+                                                    <aura:if isTrue="{! ( !empty(item.Recording_URL__c) &amp;&amp; (item.Recording_Duration__c > 0) ) }">
+                                                        <audio controls="controls" class="slds-var-p-top_x-small mb-1p5rem">
+                                                        <source src="{!item.Recording_URL__c}" type="audio/mp3"/>
+                                                        </audio>
+                                                    </aura:if>
+                                                    <span class="message-content-time text-grey">{! (item.Status__c=='completed')?'Hangup':item.Status__c } {! (item.Recording_Start_Time__c != null) ? ' - ' : '' }
+                                                        <lightning:formattedDateTime class="text-grey" value="{!item.Recording_Start_Time__c }"
+                                                        hour="2-digit" minute="2-digit" second="2-digit" /> {! (item.Recording_End_Time__c != null) ? ' - ' : '' }
+                                                        <lightning:formattedDateTime class="text-grey" value="{!item.Recording_End_Time__c }"
+                                                        day="2-digit" month="2-digit" hour="2-digit" minute="2-digit" second="2-digit" />
+    
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </aura:if>
+                                        <!-- End OUTBOUND Call -->
+
+                                        <!-- Start INBOUND Call -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'INBOUND'), (item.Type__c == 'Call') ) }">
+                                        <div class="message-inbound memberInitRelatedActivities">
+                                            <div class="message-inbound-content">
+                                                <span class="message-content-message message-inbound-content-message slds-grid slds-grid_vertical">
+                                                    <div>
+                                                    <lightning:icon class="slds-var-p-right_x-small" iconName='utility:incoming_call' alternativeText='incoming_call' size='xx-small' title='incoming_call' ></lightning:icon>
+                                                        {! item.Phone__c }
+                                                    </div>
+                                                </span>
+                                                <div class="d-flex d-flex-column">
+                                                    <aura:if isTrue="{! ( !empty(item.Recording_URL__c) &amp;&amp; (item.Recording_Duration__c > 0) ) }">
+                                                        <audio controls="controls" class="slds-var-p-top_x-small mb-1p5rem">
+                                                        <source src="{!item.Recording_URL__c}" type="audio/mp3"/>
+                                                        </audio>
+                                                    </aura:if>
+                                                    <span class="message-content-time text-grey">{! (item.Status__c=='completed')?'Hangup':item.Status__c }{! (item.Recording_Start_Time__c != null) ? ' - ' : '' }
+                                                        <lightning:formattedDateTime class="text-grey" value="{!item.Recording_Start_Time__c }"
+                                                        hour="2-digit" minute="2-digit" second="2-digit" />{! (item.Recording_End_Time__c != null) ? ' - ' : '' }
+                                                        <lightning:formattedDateTime class="text-grey" value="{!item.Recording_End_Time__c }"
+                                                        hour="2-digit" minute="2-digit" second="2-digit" />
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </aura:if>
+                                        <!-- End INBOUND Call -->
+                                    </aura:iteration>
+                                    <!-- End Iterate Current All OnEvent Cached Messages-->
+                                </aura:if>
+                            </aura:if>
+                            <!-- End Load Current All OnEvent Cached Messages-->
+
+                            <!-- Start Load New Messages From Polling-->
+                            <aura:if isTrue="{! not(empty(v.latestActivitiesList))}">
+                                <aura:if isTrue="{!not(empty(v.latestActivitiesList))}">
+                                    <!-- Start Iterate Current All OnEvent Cached Messages-->
+                                    <aura:iteration items="{!v.latestActivitiesList}" var="item">
+
+                                        <!-- OUTBOUND SMS -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'OUTBOUND'),  or( (item.Type__c == 'sms'), (item.Type__c == 'mms')) ) }">
+                                            <div class="message-outbound latestActivitiesList">
+                                                <div class="message-outbound-content">
+                                                    <aura:if isTrue="{! (item.Type__c == 'mms') }">
+                                                        <aura:iteration items="{! (item.Media_Urls__r)}" var="imagesingle">
+                                                        <a href="{! imagesingle.Media_Url__c }" data-fancybox="{! v.contactName }" data-fancybox-group="{! v.contactName }" data-caption="{! imagesingle.Name }" class="fancybox">
+                                                            <img src="{! imagesingle.Media_Url__c }" alt="{! imagesingle.Name }" class="mmsImage" />
+                                                        </a>
+                                                        </aura:iteration>
+                                                        <aura:if isTrue="{! empty(item.Media_Urls__r)}">
+                                                            <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! !empty(item.Message__c) }">
+                                                        <span class="message-content-message message-outbound-content-message"> {!item.Message__c } </span>
+                                                    </aura:if>
+
+                                                    <div class="d-flex flex-direction_row slds-text-align_right d-flex-justify-content-end">
+                                                        <aura:if isTrue="{! (v.ShowPosQuickActions) }">
+                                                            <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                                data-selectedactivityrecordid="{!item.Id }"
+                                                                onclick="{!c.schedulingscreenhandler}">
+                                                                <lightning:icon iconName='standard:event'
+                                                                    class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                    alternativeText='Appointment Scheduling'
+                                                                    size='x-small' title='Appointment Scheduling'>
+                                                                </lightning:icon>
+                                                            </div>
+                                                            <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                                data-selectedactivityrecordid="{!item.Id }"
+                                                                data-memberid="{!v.recordId }"
+                                                                onclick="{!c.createandOpenPOSOrder}">
+                                                                <lightning:icon
+                                                                    class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                    iconName="standard:webcart"
+                                                                    alternativeText='POS Order' size='x-small'
+                                                                    title='POS Order'></lightning:icon>
+                                                            </div>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{! !empty(item.Error_Message__c)}">
+                                                            <lightning:helptext content="{!item.Error_Message__c}" iconName="utility:warning" iconVariant="error" />
+                                                        </aura:if>
+                                                        <span class="message-content-time text-grey">{!item.Status__c } -
+                                                        <lightning:formattedDateTime class="text-grey" value="{!item.When__c }"
+                                                            day="2-digit" month="2-digit" hour="2-digit" minute="2-digit"
+                                                            second="2-digit" />
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </aura:if>
+
+                                        <!-- INBOUND SMS -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'INBOUND'), or( (item.Type__c == 'sms'), (item.Type__c == 'mms')) ) }">
+                                            <div class="message-inbound latestActivitiesList">
+                                                <div class="message-inbound-content">
+                                                    <aura:if isTrue="{! (item.Type__c == 'mms') }">
+                                                        <aura:iteration items="{! (item.Media_Urls__r)}" var="imagesingle">
+                                                        <a href="{! imagesingle.Media_Url__c }" data-fancybox="{!  v.contactName }" data-fancybox-group="{! v.contactName }" data-caption="{! imagesingle.Name }" class="fancybox">
+                                                            <img src="{! imagesingle.Media_Url__c }" alt="{! imagesingle.Name }" class="mmsImage" />
+                                                        </a>
+                                                        </aura:iteration>
+                                                        <aura:if isTrue="{! empty(item.Media_Urls__r)}">
+                                                            <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{! !empty(item.Message__c) }">
+                                                        <span class="message-content-message message-inbound-content-message"> {!item.Message__c }</span>
+                                                    </aura:if>
+
+                                                    <div class="d-flex flex-direction_row">
+                                                        <span class="message-content-time text-grey">{!item.Status__c} -
+                                                            <lightning:formattedDateTime class="text-grey" value="{! item.When__c }" day="2-digit" month="2-digit" hour="2-digit" minute="2-digit" second="2-digit" />
+                                                        </span>
+                                                        <aura:if isTrue="{! (v.ShowPosQuickActions) }">
+                                                            <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                                data-selectedactivityrecordid="{!item.Id }"
+                                                                onclick="{!c.schedulingscreenhandler}">
+                                                                <lightning:icon iconName='standard:event'
+                                                                    class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                    alternativeText='Appointment Scheduling'
+                                                                    size='x-small' title='Appointment Scheduling'>
+                                                                </lightning:icon>
+                                                            </div>
+                                                            <div class="slds-text-align_center slds-var-m-top_xx-small"
+                                                                data-selectedactivityrecordid="{!item.Id }"
+                                                                data-memberid="{!v.recordId }"
+                                                                onclick="{!c.createandOpenPOSOrder}">
+                                                                <lightning:icon
+                                                                    class="slds-icon_container_circle actionbg-color search-button btn slds-var-m-right_xx-small"
+                                                                    iconName="standard:webcart"
+                                                                    alternativeText='POS Order' size='x-small'
+                                                                    title='POS Order'></lightning:icon>
+                                                            </div>
+                                                        </aura:if>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </aura:if>
+
+                                        <!-- Start OUTBOUND Call -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'OUTBOUND'), (item.Type__c == 'Call') ) }">
+                                            <div class="message-outbound latestActivitiesList">
+                                                <div class="message-outbound-content">
+                                                    <span class="message-content-message message-outbound-content-message slds-grid slds-grid_vertical ml-auto">
+                                                        <div>
+                                                        <lightning:icon class="slds-var-p-right_x-small icon-white" iconName='utility:outbound_call' alternativeText='outbound_call' size='xx-small' title='outbound_call' ></lightning:icon>
+                                                            {! item.Phone__c }
+                                                        </div>
+                                                    </span>
+                                                    <div class="d-flex d-flex-column d-flex-align-items-self-end">
+                                                        <aura:if isTrue="{! ( !empty(item.Recording_URL__c) &amp;&amp; (item.Recording_Duration__c > 0) ) }">
+                                                            <audio controls="controls" class="slds-var-p-top_x-small mb-1p5rem">
+                                                            <source src="{!item.Recording_URL__c}" type="audio/mp3"/>
+                                                            </audio>
+                                                        </aura:if>
+                                                        <span class="message-content-time text-grey">{! (item.Status__c=='completed')?'Hangup':item.Status__c } {! (item.Recording_Start_Time__c != null) ? ' - ' : '' }
+                                                            <lightning:formattedDateTime class="text-grey" value="{!item.Recording_Start_Time__c }"
+                                                            hour="2-digit" minute="2-digit" second="2-digit" /> {! (item.Recording_End_Time__c != null) ? ' - ' : '' }
+                                                            <lightning:formattedDateTime class="text-grey" value="{!item.Recording_End_Time__c }"
+                                                            day="2-digit" month="2-digit" hour="2-digit" minute="2-digit" second="2-digit" />
+        
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:if>
+                                        <!-- End OUTBOUND Call -->
+
+                                        <!-- Start INBOUND Call -->
+                                        <aura:if isTrue="{! and( (item.Direction__c == 'INBOUND'), (item.Type__c == 'Call') ) }">
+                                            <div class="message-inbound latestActivitiesList">
+                                                <div class="message-inbound-content">
+                                                    <span class="message-content-message message-inbound-content-message slds-grid slds-grid_vertical">
+                                                        <div>
+                                                        <lightning:icon class="slds-var-p-right_x-small" iconName='utility:incoming_call' alternativeText='incoming_call' size='xx-small' title='incoming_call' ></lightning:icon>
+                                                            {! item.Phone__c }
+                                                        </div>
+                                                    </span>
+                                                    <div class="d-flex d-flex-column">
+                                                        <aura:if isTrue="{! ( !empty(item.Recording_URL__c) &amp;&amp; (item.Recording_Duration__c > 0) ) }">
+                                                            <audio controls="controls" class="slds-var-p-top_x-small mb-1p5rem">
+                                                            <source src="{!item.Recording_URL__c}" type="audio/mp3"/>
+                                                            </audio>
+                                                        </aura:if>
+                                                        <span class="message-content-time text-grey">{! (item.Status__c=='completed')?'Hangup':item.Status__c }{! (item.Recording_Start_Time__c != null) ? ' - ' : '' }
+                                                            <lightning:formattedDateTime class="text-grey" value="{!item.Recording_Start_Time__c }"
+                                                            hour="2-digit" minute="2-digit" second="2-digit" />{! (item.Recording_End_Time__c != null) ? ' - ' : '' }
+                                                            <lightning:formattedDateTime class="text-grey" value="{!item.Recording_End_Time__c }"
+                                                            hour="2-digit" minute="2-digit" second="2-digit" />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:if>
+                                        <!-- End INBOUND Call -->
+
+                                    </aura:iteration>
+                                    <!-- End Iterate Current All OnEvent Cached Messages-->
+                                </aura:if>
+                            </aura:if>
+                            <!-- End Load New Messages From Polling -->
+
+                            <!-- Start If Message History was empty -->
+                            <aura:if isTrue="{! ( (v.memberInitRelatedActivities.totalActivityRecords == 0) &amp;&amp; empty(v.latestActivitiesList) &amp;&amp; !empty(v.contactPhoneNumber) ) }">
+                                <div class="chat-screen-body fs-2rem posabs-center defaultnomessagesdiv">
+                                    <strong class="text-black">
+                                        {!$Label.c.Say_Hello}
+                                    </strong>
+                                </div>
+                            </aura:if>
+                            <!-- End If Message History was empty -->
+
+                            <!-- Start No Phone number Filler and If Message History was empty -->
+                            <aura:if isTrue="{! ( (v.memberInitRelatedActivities.totalActivityRecords == 0) &amp;&amp; empty(v.latestActivitiesList) &amp;&amp; empty(v.contactPhoneNumber) ) }">
+                                <div class="chat-screen-body fs-2rem posabs-center w-100-absolute-center defaultnomessagesdiv">
+                                    <strong class="fs-18px text-black">
+                                        {!$Label.c.Fill_the_Phone_Number}
+                                    </strong>
+                                </div>
+                            </aura:if>
+                            <!-- End  No Phone number Filler and If Message History was empty -->
+
+                            <!-- Start show spinner for Outbound SMS and MMS -->
+                            <aura:if isTrue="{!v.showLoadingSpinner}">
+                                <div class="message-outbound typing processingoutbound" tabindex="-1">
+                                    <div class="message-outbound-content flex-direction_row">
+                                        <span class="message-content-message message-outbound-content-message processingtext">
+                                            <div class="slds-text-body_small slds-text-color_error">
+                                                <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>
+                                            </div>
+                                            <span class="pl-p5rem">{!$Label.c.Sending_Event}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <!-- End show spinner for Outbound SMS and MMS -->
+                            <!-- Empty Conversation Box for Scroll -->
+                            <span class="emptyconversation"></span>
+
+                        </div>
+                        <!-- End Conversation Body-->
+
+                        <!-- Start No Phone number Filler Empty Footer and If Message History was empty -->
+                        <aura:if isTrue="{! ( (v.memberInitRelatedActivities.totalActivityRecords == 0) &amp;&amp; empty(v.latestActivitiesList) &amp;&amp; empty(v.contactPhoneNumber) ) }">
+                            <div class="chat-screen-footer-blank"></div>
+                        </aura:if>
+                        <!-- End  No Phone number Filler Empty Footer and If Message History was empty -->
+
+                        <aura:if isTrue="{! ( !empty(v.contactPhoneNumber) ) }">
+                            <div class="chat-screen-footer uploadtextcolor">
+                                <div class="slds-grid slds-grid_align-spread slds-wrap">
+                                    <div class="slds-var-p-around_xx-small container lgc-bg">
+                                        <!-- <lightning:select aura:id="select-template" name="sms-template" value="{!v.selectedTemplate}" label="Select Template" onchange="{! c.handleTemplateChange }">
+                                            <option value="">choose one...</option>
+                                            <aura:iteration items="{!v.smsTemplates}" var="option">
+                                                <option text="{!option.label}" value="{!option.body}" />
+                                            </aura:iteration>
+                                        </lightning:select> -->
+                                        <c:TemplateCmp recordId="{!v.recordId}"></c:TemplateCmp>
+                                    </div>
+                                    <div class="slds-var-p-around_xx-small container lgc-bg">
+                                        <!-- <lightning:buttonMenu label="From" alternativeText="Show menu">
+                                            <aura:iteration items="{!v.fromPhoneNumbers}" var="item">
+                                                <lightning:menuItem value="{!item.label}" label="{!item.label}" />
+                                            </aura:iteration>
+
+                                        </lightning:buttonMenu> -->
+                                        <!-- <lightning:select aura:id="select-from-number" name="from-number" value="{!v.selectedPhoneNumber}" label="From Number" onchange="{! c.handlePhoneNumber }">
+                                            <aura:iteration items="{!v.fromPhoneNumbers}" var="option">
+                                                <option text="{!option.label}" value="{!option.phoneNumber}" selected="{!option.selected}"/>
+                                            </aura:iteration>
+                                        </lightning:select> -->
+                                        <c:FromCmp selectedNumber="{!v.selectedPhoneNumber}"></c:FromCmp>
+                                        <!-- <div class="slds-p-top_medium" role="group">
+                                            <button type="button" class="slds-button slds-button_neutral" data-container="body" data-toggle="popover" data-placement="top" title="Popover title" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">Tooltip on top</button>
+                                        </div> -->
+                                    </div>
+                                </div>
+                                
+                            <div class="slds-is-relative">
+                                <div class="{! (v.isMemberOptedOut) ? 'input d-blur' : 'input'  }">
+                                    <!--file uploader-->
+                                    <lightning:input class="fileuploadinput" aura:id="fileId"
+                                        onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload Attachment"
+                                        accept="image/png,image/jpg,image/jpeg" multiple="false" />
+
+                                    <textarea class="message-input" placeholder="Type new message" type="text" onfocus="{!c.onFocusSendMessageHandler}" onfocusout="{!c.onFocusOutSendMessageHandler}" onkeyup="{!c.updateActivityMesssage}" onkeypress="{! (v.isMemberOptedOut) ? '' : c.inputkeyCheck }" autoComplete="off">{!v.currentMessage}</textarea>
+
+                                    <button class="btn hover-white" onclick="{! (v.isMemberOptedOut) ? '' : c.sendMessage }">
+                                        <i class="fa fa-paper-plane back-button chat-back-button"></i>
+                                    </button>
+                                </div>
+                            
+                                <div class="{! (v.isMemberOptedOut) ? 'sms-counter-wrap d-blur' : 'sms-counter-wrap'  }">
+                                    <span class="message-counter">{!v.messageCharacterCount}</span>/<span class="message-max-size">{!v.messageFieldMaxLength}</span>
+                                    | &nbsp; <span class="sms-count">{!v.smsCount}</span> SMS
+                                </div>   
+                                <aura:if isTrue="{! ( v.isMemberOptedOut ) }">
+                                    <div class="warningMessageWrap">
+                                        <div class="alert fade alert-simple alert-warning alert-dismissible text-left font__family-montserrat font__size-16 font__weight-light brk-library-rendered rendered show" role="alert">
+                                            <i class="start-icon fa fa-exclamation-triangle faa-flash animated"></i>
+                                            {! v.Opt_Out_Warning_Message }
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </div>
+                            
+                            </div>
+                        </aura:if>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!--Use aura:if tag to display/hide POS popup based on showPosContainer value-->
+   <aura:if isTrue="{!v.showPosContainer}">
+        <div class="slds-var-m-around_xx-large">
+            <!-- pmaContainer/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="POS-Modal-Popup" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <!-- pmaContainer/Popup Box Header Starts here-->
+                    <header class="slds-modal__header slds-p-around_none">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.navigateBackToInboxFromPOS }"
+                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                    </header>
+                    <!--pmaContainer/Popup Box Body Starts here-->
+                    <div class="slds-modal__content slds-var-p-around_medium">
+                    <c:pmaContainer orderUUID="{!v.orderUUID}" activityRecordid = "{!v.activityid}" />
+                    </div>
+                    <!--pmaContainer/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="destructive" label="Cancel" title="Cancel"
+                            onclick="{! c.navigateBackToInboxFromPOS }" />
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+    <!--Use aura:if tag to display/hide Scheduling popup based on ShowScheduling value-->
+    <aura:if isTrue="{!v.ShowScheduling}">
+        <div class="slds-var-m-around_xx-large">
+        <!-- AppointmentScheduling/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="AppointmentScheduling-Modal-Popup" aria-modal="true"
+            aria-describedby="AppointmentScheduling-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <!-- AppointmentScheduling/Popup Box Header Starts here-->
+                <header class="slds-modal__header slds-p-around_none">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.navigateBackToInboxFromScheduler }"
+                        alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                </header>
+                <!--AppointmentScheduling/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <c:SchedulingCalendar memberuuid="{!v.selectedContactRecord.UUID__c}" activityRecordid="{!v.activityid}"/>
+                </div>
+                <!--AppointmentScheduling/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="destructive" label="Cancel" title="Cancel"
+                        onclick="{! c.navigateBackToInboxFromScheduler }" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    </aura:if>
+
+</aura:component>

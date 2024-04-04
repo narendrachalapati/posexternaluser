@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+	<types>
+		<members>ChatBotController</members>
+		<members>PlivoMediaUploadWrapper</members>
+		<members>ActivityTriggerHandler</members>
+		<members>CustomActivityService</members>
+		<members>MergeFields</members>
+
+		<members>MassMessageController</members>
+		<members>MassMessageService</members>
+		<members>MassSMSBatch</members>
+		
+		<!-- Start Municorn Override Classes -->
+		<members>Plivo_IB_SYS_ApplicationService</members>
+		<members>Plivo_OB_SYS_ApplicationService</members>
+		<!-- End Municorn Override Classes -->
+		<!-- Start Test Classes -->
+		<members>Communication_TestDataFactory</members>
+		<members>Communication_MockHttpResponseGenerator</members>
+		<members>ChatBotControllerTest</members>
+		<members>LeadConversion_UnitTest</members>
+		<members>Plivo_Inbound_Test</members>
+		<!-- End Test Classes -->
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>ActivityTrigger</members>
+		<name>ApexTrigger</name>
+	</types>
+	<types>
+		<!-- Start Plivo Components -->
+		<members>ChatBotContainer</members>
+		<members>ChatBotMembers</members>
+		<members>ChatBotMemberConversation</members>
+		<members>FromCmp</members>
+        <members>TemplateCmp</members>
+		<members>MassMesssageCmp</members>
+		<!-- End Plivo Components -->
+		<!-- Start Events -->
+		<members>InboxApplicationEvent</members>
+		<members>componentCommunicationEvent</members>
+		<members>InboxComponentEvent</members>
+		<!-- End Events -->
+		<name>AuraDefinitionBundle</name>
+	</types>
+	<types>
+		<members>Municorn_Inbox</members>
+		<name>CustomApplication</name>
+	</types>
+	<!--
+	<types>
+		<members>Salesforce_Connected_App</members>
+		<name>ConnectedApp</name>
+	</types>
+	-->
+	<types>
+		<members>Plivo_Media</members>
+		<members>Plivo_Media_Resolvedurl</members>
+		<members>Plivo_Media_Resolvedurl1</members>
+		<name>CspTrustedSite</name>
+	</types>
+	<types>
+		<members>PlivoSmsMms</members>
+		<members>PlivoMedia</members>
+		<members>PlivoPHLO</members>
+		<name>RemoteSiteSetting</name>
+	</types>
+	<types>
+		<members>Activity__c</members>
+		<members>Media_URL__c</members>
+		<members>Inbox__c</members>
+		<members>InboxLatestMessage__e</members>
+		<members>Contact_Point__c</members>
+		<members>Converse_Template__c</members>
+		<members>User_Contact_Point__c</members>
+		<members>Contact_Point_Consent__c</members>
+		<name>CustomObject</name>
+	</types>
+	<types>
+		<members>Activity__c</members>
+		<members>Inbox__c</members>
+		<members>Municorn_Inbox</members>
+		<members>Contact_Point__c</members>
+		<members>Converse_Template__c</members>
+		<members>User_Contact_Point__c</members>
+		<members>Contact_Point_Consent__c</members>
+		<name>CustomTab</name>
+	</types>
+	<types>
+		<members>Activity_Record_Page</members>
+		<members>Inbox</members>
+		<members>SMS_Inbox_UtilityBar</members>
+		<name>FlexiPage</name>
+	</types>
+	<types>
+		<members>Activity__c-Activity Layout</members>
+		<members>Media_URL__c-Media Url Layout</members>
+		<members>Inbox__c-Inbox Layout</members>
+		<members>Contact_Point__c-Contact Point Layout</members>
+		<members>Converse_Template__c-Converse Template Layout</members>
+		<members>User_Contact_Point__c-User Contact Point Layout</members>
+		<members>Contact_Point_Consent__c-Contact Point Consent Layout</members>
+		<name>Layout</name>
+	</types>
+	<types>
+		<members>Activity__c.All</members>
+		<members>Activity__c.All_Call_Activities</members>
+		<members>Activity__c.All_MMS_Activities</members>
+		<members>Activity__c.All_SMS_Activities</members>
+		<members>Media_URL__c.All</members>
+		<members>Inbox__c.All</members>
+		<members>Contact_Point__c.All</members>
+		<members>Converse_Template__c.All</members>
+		<members>User_Contact_Point__c.All</members>
+		<members>FieldSetting__mdt.PlivoInboundSMSorMMS</members>
+		<members>FieldSetting__mdt.PlivoSMSorMMS</members>
+		<!--
+		<members>FieldSetting__mdt.Plivo_Call</members>
+        -->
+		<members>FieldSetting__mdt.Plivo_Webhook_Call_Recording</members>
+		<members>FieldSetting__mdt.Plivo_Webhook_Incoming_Call</members>
+		<members>FieldSetting__mdt.Plivo_Webhook_Outgoing_Call</members>
+		
+		<name>ListView</name>
+	</types>
+    <types>
+		<members>ADS_SMS_Activity</members>
+		<members>ADS_MMS_Activity</members>
+		<members>ADS_Create_Media_Url_Record_for_MMS_Inbound_Activity</members>
+		<members>ADS_Update_Contact_Point_Lookup_on_Activity</members>
+		<members>ADS_Update_Inbox_with_Converted_Lookups_and_WhatId_and_Object_API_name</members>
+
+		<members>ADS_SMS_and_MMS_OptIn_Consent_Registration</members>
+		<members>ADS_SMS_and_MMS_Optout_Consent_Registration</members>
+		<members>PMA_GET_Call_Recording</members>
+	    <members>ADS_Publish_InboxLatestMessage_Platform_Event</members>
+        <members>HC_Update_Formatted_Phone_Number_Field_on_Account</members>
+        <members>HC_Update_Formatted_Phone_Number_Field_on_Lead</members>
+        <members>HC_Update_Formatted_Phone_Number_Field_on_Contact</members>
+        <members>HC_Update_Formatted_Phone_Number_Field_on_Contact_Point</members>
+        <name>Flow</name>
+    </types>
+  
+    <types>
+        <members>Account.Formatted_Phone_Number__c</members>
+		<members>Account.Country_Code__c</members>
+		<members>Account.Last_Processed_SYSLog__c</members>
+		<members>Contact.Formatted_Phone_Number__c</members>
+		<members>Contact.Country_Code__c</members>
+		<members>Contact.Last_Processed_SYSLog__c</members>
+		<members>Lead.Formatted_Phone_Number__c</members>	
+		<members>Lead.Country_Code__c</members>
+		<members>Lead.Last_Processed_SYSLog__c</members>
+		<members>Contact_Point__c.Account__c</members>
+		<members>Contact_Point__c.Country_Code__c</members>
+		<members>Contact_Point__c.Default__c</members>
+		<members>Contact_Point__c.Formatted_Phone_Number__c</members>
+		<members>Contact_Point__c.From_Email__c</members>
+		<members>Contact_Point__c.From_Phone__c</members>
+		<members>Contact_Point__c.Integration_Setting__c</members>
+		<members>Contact_Point__c.Label__c</members>
+		<members>Activity__c.Last_Processed_SYSLog__c</members>
+		<members>Activity__c.Error_Code__c</members>
+		<members>Activity__c.Message_Intent__c</members>
+		<members>Contact_Point_Consent__c.Account__c</members>
+		<members>Contact_Point_Consent__c.Activity__c</members>
+		<members>Contact_Point_Consent__c.Capture_Contact_Point_Type__c</members>
+		<members>Contact_Point_Consent__c.Capture_Date__c</members>
+		<members>Contact_Point_Consent__c.Capture_Source__c</members>
+		<members>Contact_Point_Consent__c.Consent_Status__c</members>
+		<members>Contact_Point_Consent__c.Contact_Point__c</members>
+		<members>Contact_Point_Consent__c.Data_Use_Purpose__c</members>
+		<members>Contact_Point_Consent__c.Double_Consent_Capture_Date__c</members>
+		<members>Contact_Point_Consent__c.Inbox__c</members>
+		<members>Contact_Point_Consent__c.Member_Phone__c</members>
+
+		<members>IntegrationSetting__mdt.Integration_Type__c</members>
+        <name>CustomField</name>
+    </types>
+
+	<types>
+		<members>FieldSetting.MMS_Inbound_Direction</members>
+		<members>FieldSetting.MMS_Inbound_Message_UUID</members>
+		<members>FieldSetting.MMS_Inbound_Activity_Id</members>
+		<members>FieldSetting.MMS_Inbound_Status</members>
+		<members>FieldSetting.MMS_media_url</members>
+		<members>FieldSetting.MMS_WH_Inbound_Message</members>
+		<members>FieldSetting.MMS_WH_Contact_Number</members>
+		<members>FieldSetting.MMS_WH_Inbound_Message_Type</members>
+		<members>FieldSetting.MMS_WH_Inbound_Direction</members>
+		<members>FieldSetting.MMS_WH_Inbound_Status</members>
+		<members>FieldSetting.MMS_WH_Message_External_Phone</members>
+		<members>FieldSetting.MMS_WH_Message_UUID</members>
+		<members>FieldSetting.MMS_WH_Inbound_Activity_Id</members>
+		<members>FieldSetting.MMS_WH_Inbound_AccountId</members>
+		<members>FieldSetting.MMS_WH_Inbound_ContactId</members>
+		<members>FieldSetting.MMS_WH_Inbound_Lead_Id</members>
+		<members>FieldSetting.MMS_WH_Inbound_WhatId</members>
+		<members>FieldSetting.MMS_WH_Inbound_MessagereceivedAt</members>
+		<members>FieldSetting.MMS_WH_Inbound_MessageIntent</members>
+
+		<members>FieldSetting.SMS_Direction</members>
+		<members>FieldSetting.SMS_From_Phone</members>
+		<members>FieldSetting.SMS_Inbound_Direction</members>
+		<members>FieldSetting.SMSInboundMessage</members>
+		<members>FieldSetting.SMSInbound_Message_External_Phone</members>
+		<members>FieldSetting.SMS_Inbound_Contact_Number</members>
+		<members>FieldSetting.SMS_Inbound_Message_UUID</members>
+		<members>FieldSetting.SMSIndound_Message_Type</members>
+		<members>FieldSetting.SMSInboundMessage_Activity_Id</members>
+		<members>FieldSetting.SMSINBoundMessageAccountId</members>
+		<members>FieldSetting.SMSINBoundMessageContactId</members>
+		<members>FieldSetting.SMSInboundMessage_Lead_Id</members>
+		<members>FieldSetting.SMSInboundMessage_WhatId</members>
+		<members>FieldSetting.SMSINBoundMessagereceivedAt</members>
+		<members>FieldSetting.SMSInboundMessageIntent</members>
+		<members>FieldSetting.SMS_media_url</members>
+		<members>FieldSetting.SMS_Message</members>
+		<members>FieldSetting.SMS_Message_Callback_Method</members>
+		<members>FieldSetting.SMS_Message_Callback_URL</members>
+		<members>FieldSetting.SMS_Message_Delivery_Status</members>
+		<members>FieldSetting.SMS_Message_Error_Message</members>
+		<members>FieldSetting.SMS_Message_Log</members>
+		<members>FieldSetting.SMS_Message_Trackable_2FA</members>
+		<members>FieldSetting.SMS_Message_Type</members>
+		<members>FieldSetting.SMS_Message_UUID</members>
+		<members>FieldSetting.SMS_Message_Activity_Id</members>
+		<members>FieldSetting.SMS_To_Phone</members>
+		<members>FieldSetting.SMS_Message_Error_Code</members>
+		<members>FieldSetting.SMS_WH_Message_Delivery_Status</members>
+		
+		<members>IntegrationSetting.Plivo</members>
+		<members>IntegrationSetting.PlivoInbound</members>
+		<members>IntegrationEnablement.Plivo</members>
+		<members>IntegrationEnablement.PlivoInbound</members>		
+		<members>ObjectSetting.PlivoSMS</members>
+		<members>ObjectSetting.PlivoInboundSMS</members>
+		<members>HttpHeaders.Plivo_Header</members>
+		<members>HttpHeaders.PlivoInbound_Header</members>
+
+		<members>Integration_Metadata.defaultPhone</members>
+		<members>Integration_Metadata.Contact_ApexHandler</members>
+
+		<!-- PHLO OUTBOUND	-->	
+		<members>ObjectSetting.Plivo_PHLO_Call</members>
+		<members>IntegrationSetting.Plivo_PHLO</members>
+		<members>IntegrationEnablement.Plivo_PHLO</members>
+		<members>HttpHeaders.Plivo_PHLO_Header</members>
+
+		<members>FieldSetting.Plivo_API_Id</members>
+		<members>FieldSetting.Plivo_Calling_From</members>
+		<members>FieldSetting.Plivo_Calling_To</members>
+		<members>FieldSetting.Plivo_PHLO_Id</members>
+		<members>FieldSetting.Plivo_Calling_Customer_Phone</members>
+		<members>FieldSetting.Plivo_Caller_Id</members>
+		<!--PHLO OUTBOUND -->
+
+		<!-- Plivo Call Start -->
+		<members>ObjectSetting.PlivoCall</members>
+		<members>ObjectSetting.PlivoCallRecording</members>
+		
+		<members>FieldSetting.Call_Recording_Id_WH</members>
+		<members>FieldSetting.Call_Recording_Call_UUID_WH</members>
+		<members>FieldSetting.Call_Recording_Duration_MS_WH</members>
+		<members>FieldSetting.Call_Recording_Duration_WH</members>
+		<members>FieldSetting.Call_Recording_URL_WH</members>
+		<members>FieldSetting.Call_Recording_Start_Time_WH</members>
+		<members>FieldSetting.Call_Recording_End_Time_WH</members>
+		<members>FieldSetting.Incoming_Call_ActivityType_WH</members>
+		<members>FieldSetting.Incoming_Call_Caller_Id_WH</members>
+		<members>FieldSetting.Incoming_Call_Direction_WH</members>
+		<members>FieldSetting.Incoming_Call_Event_Time_WH</members>
+		<members>FieldSetting.Incoming_Call_From_Phone_WH</members>
+		<members>FieldSetting.Incoming_Call_Hide_Record_WH</members>
+		<members>FieldSetting.Incoming_Call_Status_WH</members>
+		<members>FieldSetting.Incoming_Call_To_Phone_WH</members>
+		<members>FieldSetting.Incoming_Call_UUID_WH</members>
+		<members>FieldSetting.Incoming_Call_Recording_URL_WH</members>
+		<members>FieldSetting.Incoming_Call_Recording_Id_WH</members>
+		<members>FieldSetting.Incoming_Call_Recording_Duration_MS_WH</members>
+		<members>FieldSetting.Incoming_Call_Recording_Duration_WH</members>
+		<members>FieldSetting.Incoming_Call_Recording_Start_Time_WH</members>
+		<members>FieldSetting.Incoming_Call_Recording_End_Time_WH</members>
+		<members>FieldSetting.Incoming_Call_Account_WH</members>
+		<members>FieldSetting.Incoming_Call_Contact_WH</members>
+		<!-- <members>FieldSetting.Incoming_Call_Lead_WH</members> -->
+		<!-- <members>FieldSetting.Incoming_Call_WhatId_WH</members> -->
+		<members>FieldSetting.Outbound_Call_ActivityType_WH</members>
+		<members>FieldSetting.Outbound_Call_Caller_Id_WH</members>
+		<members>FieldSetting.Outbound_Call_Direction_WH</members>
+		<members>FieldSetting.Outbound_Call_Event_Time_WH</members>
+		<members>FieldSetting.Outbound_Call_From_Phone_WH </members>
+		<members>FieldSetting.Outbound_Call_Hide_Record_WH</members>
+		<members>FieldSetting.Outbound_Call_Status_WH</members>
+		<members>FieldSetting.Outbound_Call_To_Phone_WH</members>
+		<members>FieldSetting.Outbound_Call_UUID_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_Id_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_URL_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_UUID_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_Duration_MS_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_Duration_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_Start_Time_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_End_Time_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_Id_Record_WH</members>
+		<members>FieldSetting.Outbound_Call_Recording_URL_Record_WH</members>
+		<members>FieldSetting.Outbound_Call_Account_WH</members>
+		<members>FieldSetting.Outbound_Call_Contact_WH</members>
+		<!-- <members>FieldSetting.Outbound_Call_WhatId_WH</members> -->
+		<!-- <members>FieldSetting.Outbound_Call_Lead_WH</members> -->
+		<!-- Plivo Call End -->
+
+		<name>CustomMetadata</name>
+	</types>
+
+	<types>
+		<members>PlivoContryCode</members>
+		<members>MydomainURL</members>
+		<members>GuestSiteLink</members>
+		<members>No_Contacts_Found</members>
+		<members>Send_New_Message_To</members>
+		<members>Welcome_to_Inbox</members>
+		<members>Say_Hello</members>
+		<members>Fill_the_Phone_Number</members>
+		<members>Sending_Event</members>
+		<members>Loading_Message</members>
+		<members>Opt_Out_Warning_Message</members>
+		<name>CustomLabel</name>
+	</types>
+	<types>
+		<members>SF_Credentials</members>
+		<name>NamedCredential</name>
+	</types>
+    <types>
+		<members>SalesforceAuth</members>
+		<name>AuthProvider</name>
+	</types>
+	<types>
+        <members>Phone_Country_Codes</members>
+        <name>GlobalValueSet</name>
+    </types>
+    <types>
+        <members>ADS_Communications_Permission_Set</members>
+        <members>ADS_Communications_Guest_User_Permission_Set</members>
+        <name>PermissionSet</name>
+    </types>
+	<types>
+		<members>FontAwesome</members>
+		<members>jquerylib</members>
+		<members>alert</members>
+		<members>Outboundimmediateresonce</members>
+		<members>PlivoMediasucessresponce</members>
+		<members>PlivoWebookResponce</members>
+		<members>Plivosmsfailresonce</members>
+		<members>PlivoMediaFail</members>
+		<name>StaticResource</name>
+	</types>
+    <!--SMS-template package start -->
+    <types>
+		<members>SMSTemplateController</members>
+		<members>SMSTemplateControllerTest</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>CreateSMSTemplate</members>
+		<members>RecordLookUp</members>
+		<members>RecordLookUpComponentEvent</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
+	<types>
+		<members>Converse_Template__c</members>
+		<members>Create_SMS_Template</members>
+		<name>CustomTab</name>
+	</types>
+	<types>
+		<members>Converse_Template_Record_Page</members>
+		<name>FlexiPage</name>
+	</types>
+	<types>
+		<members>ADS_Communications_Permission_Set</members>
+		<name>PermissionSet</name>
+	</types>
+    <types>
+		<members>Converse_Template__c</members>
+		<name>CustomObject</name>
+	</types>
+    <types>
+		<members>MassMessageService</members>
+		<members>SYS_metadataService</members>
+        <members>SYS_customMetadataDeploy</members>
+        <members>SYS_FieldMapperController</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>lookup</members>
+		<name>LightningComponentBundle</name>
+	</types>
+    <types>
+		<members>preview_ill</members>
+		<name>StaticResource</name>
+	</types>
+    <types>
+		<members>MassMesssageCmp</members>
+		<members>PreviewSMS</members>
+		<name>AuraDefinitionBundle</name>
+	</types>
+<!--SMS Template package end -->
+	<version>56.0</version>
+</Package>

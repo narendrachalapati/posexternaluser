@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+	<types>
+		<members>CalendarService</members>
+		<name>ApexClass</name>
+	</types>
+    <types>
+		<members>Product__c.Google_Place_Holder_Calendar_Id__c</members>
+		<members>Product__c.Google_Waitlist_Calendar_Id__c</members>
+        <members>Google_Calendar__c.Calendar_Type__c</members>
+        <members>Google_Calendar__c.TimeZone__c</members>
+		<name>CustomField</name>
+	</types>
+	<types>
+		<members>Product__c-PMA Product Layout</members>
+		<name>Layout</name>
+	</types>
+	<version>58.0</version>
+</Package>

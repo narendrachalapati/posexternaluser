@@ -1,0 +1,44 @@
+<aura:component controller="ChatBotController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+description="Chatbot Container">
+    <!-- Show child components after init of parent actions -->
+    <aura:attribute name="showChild" type="Boolean" default="false"/>
+    <!-- EMPAPI -->
+    <lightning:empApi aura:id="empApi" />
+    <!-- utility bar api -->
+   <lightning:utilityBarAPI aura:id="utilitybar"/>
+   <aura:attribute name="onUtilityBar" type="Boolean" default="false"/>
+   <aura:attribute name="myUtilityLabel" type="String" default="Inbox"/>
+   <aura:attribute name="utilityWidth" type="Integer" />
+   <aura:attribute name="utilityHeight" type="Integer" />
+   <aura:attribute name="browserNotification" type="List" default="[]"/>
+   <aura:attribute name="notifiedActivity" type="Map" default="{}"/>
+   <aura:attribute name="alert" type="string" default="{!$Resource.alert}" />
+
+   <!-- Init() Loggend in User Record Details -->
+   <aura:attribute name="userContactWrap" type="ChatBotController.CurrentUserWrap"/> 
+   <aura:attribute name="AccountId" type="String" default="{!v.userContactWrap.contactRecord.AccountId}"/> 
+
+   <!-- Selected Member Fields -->
+   <aura:attribute name="selectedRecordId" type="String" />
+   <aura:attribute name="selectedContactPhone" type="String" />
+   <aura:attribute name="componentUniqueName" type="String" default=""/>
+
+   <aura:registerEvent name="communicateEvent" type="c:componentCommunicationEvent"/>
+
+    <!-- Handlers section -->
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    
+    <!-- layout info goes here  --> 
+    <div class="c-container h-100">
+        <div class="{! v.onUtilityBar ? 'slds-grid slds-wrap slds-grid slds-grid_vertical-align-center h-100 chatbotcontainerwrap chatbotutilitybar ' + v.componentUniqueName : 'slds-grid slds-wrap slds-grid slds-grid_vertical-align-center h-100 chatbotcontainerwrap chatbotutilitybar-inactive ' + v.componentUniqueName }">
+            <aura:if isTrue ="{!v.showChild}">
+                <div class="chatbotmemberwrap slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_4-of-12 slds-large-size_3-of-12">
+                    <c:ChatBotMembers componentUniqueName="{!v.componentUniqueName}" SelectedRecordId="{!v.selectedRecordId}" SelectedContactPhone="{! v.selectedContactPhone}" />
+                </div>
+                <div class="chatbotconversationwrap slds-grow slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_8-of-12 slds-large-size_9-of-12">
+                    <c:ChatBotMemberConversation onUtilityBar="{!v.onUtilityBar}" componentUniqueName="{!v.componentUniqueName}" recordId="{!v.selectedRecordId}" contactPhoneNumber="{!v.selectedContactPhone}" />
+                </div> 
+            </aura:if>           
+        </div>
+    </div>
+</aura:component>

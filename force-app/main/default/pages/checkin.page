@@ -1,0 +1,90 @@
+<apex:page showHeader="false" controller="CheckinController" action="{!init}">
+    <head>
+        <apex:includeScript value="{!$Site.BaseUrl}/lightning/lightning.out.js?v=2" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title> Checkin Appointment </title>
+        <div id="lightning" />
+        <apex:slds />
+
+        <apex:includeScript value="{! URLFOR( $Resource.Checkin , '/Checkin/js/jquery.min.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Checkin , '/Checkin/js/html5-qrcode.min.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Checkin , '/Checkin/js/controller.js') }" />
+        <apex:includeScript value="{! URLFOR( $Resource.Checkin , '/Checkin/js/qr-scanner.min.js') }" />
+        
+        <apex:stylesheet value="{! URLFOR( $Resource.Checkin , '/Checkin/css/style.css') }" />
+
+    </head>
+    <apex:form >
+        <apex:actionfunction action="{!checkinAppointment}" name="checkinAppointment"
+            rerender="initvariables, container, success-checkin" oncomplete="onCompleteCheckin()">
+            <apex:param assignto="{!locationTagUUID}" name="locationTagUUID" value="" />
+        </apex:actionfunction>
+        
+        <div id="spinner" class="slds-spinner_container hide">
+            <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+
+        <apex:outputPanel id="initvariables">
+                <input type="hidden" name="uuid" value="{! uuid }" />
+                <input type="hidden" name="locationTagUUID" value="{! locationTagUUID }" />
+                <input type="hidden" name="checkinMessage" value="{! checkinMessage }" />
+                <input type="hidden" name="appointmentStartTime" value="{! appointmentStartTime }" />
+        </apex:outputPanel>
+        <apex:outputPanel id="container-invalidurl" rendered="{! not(isblank(invalidUrlMessage))}" >
+            <div style="width: 100%" class="message-success" id="message">
+                <apex:image styleClass="image-css-check" url="{!URLFOR($Resource.Checkin , '/Checkin/img/invalid-icon.png')}" />
+                {!invalidUrlMessage} 
+            </div>
+        </apex:outputPanel>
+        <apex:outputPanel id="container" rendered="{! (isblank(invalidUrlMessage))}" >
+            <div class="container">
+                <!-- <div class="slds-section slds-is-open">
+                    <h3 class="slds-section__title">
+                    <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
+                        
+                        <span class="slds-truncate" title="Section Title">Check-in</span>
+                    </button>
+                    </h3>
+                    <div class="slds-section__content" id="expando-unique-id">
+                    <p>Effortlessly check in by scanning the QR code or opt for a hassle-free 
+                        experience by clicking 'Check-in without QR code' directly.</p>
+                    </div>
+                    <div>Appointment Time : </div>
+
+                </div>
+                <div id="check-in" class="slds-button slds-button_brand">Check-in</div>
+                <div id="check-in-woqrcode" class="slds-button slds-button_outline-brand">Check-in without QR-code</div> -->
+                
+                <apex:outputPanel rendered="{! (isblank(checkinMessage))}" id="qrreader-tag">
+                    <div style="width: 100%; height" class="border-empty" id="reader-tag"></div>
+                </apex:outputPanel>
+                
+                <div id="video-element"></div>
+
+                <div style="width: 100%; padding:1.2rem;" class="appointment-time" id="message">
+                    <span>
+                        <apex:image styleClass="image-css" url="{!URLFOR($Resource.Checkin , '/Checkin/img/check-in.png')}" />
+                    </span>
+                    Appointment Time : <span class="date-time-local"></span>
+                </div>
+
+                <apex:outputPanel rendered="{! not(isblank(checkinMessage))}" id="success-checkin">
+                    <div style="width: 100%" class="message-success" id="message">
+                        <apex:image styleClass="image-css-check" url="{!URLFOR($Resource.Checkin , '/Checkin/img/check.png')}" />
+                        {!checkinMessage} 
+                    </div>
+    
+                </apex:outputPanel>
+                
+                <div id="check-in-woqrcode" class="mobile-bottom-navbar">
+                    Check-in without QR-code
+                </div>
+                
+            </div>
+        </apex:outputPanel>
+    </apex:form>
+    
+</apex:page>

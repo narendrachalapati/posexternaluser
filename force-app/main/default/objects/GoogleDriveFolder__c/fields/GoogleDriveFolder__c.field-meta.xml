@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GoogleDriveFolder__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>GoogleDriveParentFolder</label>
+    <referenceTo>GoogleDriveFolder__c</referenceTo>
+    <relationshipLabel>GoogleDriveFolders</relationshipLabel>
+    <relationshipName>GoogleDriveFolders</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

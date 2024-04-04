@@ -1,0 +1,2 @@
+<apex:page showHeader="false" controller="RouterController" action="{!routerInit}" >
+</apex:page>

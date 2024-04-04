@@ -1,0 +1,225 @@
+.THIS .product-wrapper {
+    padding: 0;
+    border-radius: 5px 5px 0 0;
+	/* max-height: 165px;*/
+   /* max-width: 150px;*/
+   /* height: max-content; */
+    box-shadow: 0 0 5px rgb(0 0 0 / 30%);
+    transition: all 200ms ease-in-out;
+}
+.THIS .product-wrapper:hover{
+    box-shadow:0 2px 5px rgba(0,0,0,0.5);
+}
+.THIS .image-wrapper.max-height{
+    min-width: 100%;
+    height: 100%;
+}
+.THIS .inactiveProduct{
+    filter: grayscale(60%);
+    background: #7e7575;
+    color: #fff;
+    opacity: 0.8;
+}
+.THIS .flex-productbasis{
+    flex-basis: 150px;
+}
+.THIS .noimage {
+    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+}
+.THIS .noimage:hover{
+    transform: scale(0.9);
+}
+.THIS .noimagetext{
+    font-size: 2rem;
+    font-weight: 600;
+}
+.THIS .prodctimage {
+    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+}
+.THIS .prodctimage:hover{
+    transform: scale(1.2);
+}
+.THIS .product-title{
+    font-weight: 700;
+    padding: 0.2em 0.2rem 10px;
+}
+.THIS .w-100{
+    width: 100%;
+}
+.THIS .title-flexwrapper{
+    /* min-height: 60px; */
+    min-width: 100%;
+    max-height: 65px;
+    display: flex;
+    align-items: center;
+}
+.THIS .mr-2rem{
+    margin-right: 0.2rem;
+}
+.THIS .noproducts{
+    width: 100%;
+    min-height: 300px;
+    text-align: center;
+    position: relative;
+    top: 0;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, 50%);
+    font-size: 1.25rem;
+}
+.THIS .scrollable-container{
+    /* max-height: 450px; */
+    /* min-height: var(--scroll-height, 350px); */
+    height: calc( var(--scroll-height, 350px) - 300px );
+    max-height: var(--scroll-height-gridsize, 350px);
+    overflow: hidden auto;
+}
+
+.THIS .slds-card.no-border, .THIS .slds-card {
+    border: none!important;
+}
+
+/* Category Flex */
+.THIS .button-flex {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 12px;
+    max-width: 90%;
+    margin: 20px auto;
+    margin-left: 10px;
+    height: 50px;
+    overflow: auto hidden;
+    white-space: pre;
+}
+
+.THIS .button-flex span {
+    overflow:visible;
+}
+
+.THIS .button-outline {
+    position: relative;
+    z-index: 3;
+    background: transparent;
+    color: #1172c4;
+    font-size: 14px;
+    font-weight: 500;
+    border-color: #1172c4;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+    padding: 5px 5px;
+    max-height: 35px;
+    text-transform: uppercase;
+    transition: all 0.2s linear;
+}
+
+.THIS .button-outline.active {
+    color: white;
+    background: #1172c4;
+    border-color: white;
+    transition: all 0.2s linear;
+}
+
+.THIS .button-outline:hover {
+    color: white;
+    background: #1172c4;
+    border-color: white;
+    transition: all 0.2s linear;
+}
+
+.THIS .search-center{
+    width: 70%;
+    margin: 0 auto;
+}
+
+.THIS abbr {
+    text-decoration: none!important;
+    cursor: pointer!important;
+}
+
+.THIS .custom-link {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 1rem;
+    text-align: center;
+	color: grey;
+}
+
+.THIS .search-reset{
+    width: max-content;
+}
+
+.THIS .ml-10{
+    margin-left: 10px;
+    padding-top: 7px;
+}
+
+ /* Custom Scrollbar */ 
+ .THIS .custom-scrollbar::-webkit-scrollbar{
+    width: 5px;
+    height: 5px;
+}
+
+.THIS .custom-scrollbar::-webkit-scrollbar-track{
+    background: #BBB;    
+}
+
+.THIS .custom-scrollbar::-webkit-scrollbar-thumb{
+    background: #888;
+    border-radius: 5px;
+}
+
+.THIS body::webkit-scrollbar-thumb:hover  , .THIS .custom-scrollbar::webkit-scrollbar-thumb:hover{
+    background: #888;    
+}
+
+@media only screen and (max-width: 768px){
+    .THIS .product-wrapper {
+        max-width: 150px;
+        height: max-content;
+        text-align: center;
+    }
+    .THIS .flex-productbasis {
+        flex-basis: 100px;
+    }
+    .THIS .image-wrapper, .THIS .image-wrapper img{
+        width: 150px;
+        height: 100px!important;
+    }
+}
+@media only screen and (max-width: 480px){
+    .THIS .product-wrapper {
+        max-width: 100%;
+        height: max-content;
+        text-align: center;
+    }
+    .THIS .flex-productbasis {
+        flex-basis: 100px;
+    }
+    .THIS .noimage {
+        width: 100%;
+        height: 80px!important;
+    }
+    .THIS .image-wrapper, .THIS .image-wrapper img{
+        width: 100%;
+        height: 75px!important;
+    }
+    .THIS .sm-justify-content-center{
+        justify-content: center!important;
+    }
+    .THIS .prodoptionpop{
+        cursor: pointer;
+    }
+
+}
+
+.THIS .textcenter{
+    text-align: center;
+}

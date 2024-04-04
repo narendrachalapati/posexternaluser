@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Form_JSON__c</fullName>
+    <description>survey json expects the questions in an order, so this field is used to save the whole json (temporarily).</description>
+    <externalId>false</externalId>
+    <label>Form JSON</label>
+    <length>131072</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

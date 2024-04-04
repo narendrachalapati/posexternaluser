@@ -1,0 +1,212 @@
+.bodybgstyle{
+        overflow:hidden scroll;
+        background:#b4b4b4;
+    }        
+.customcc , .card-font{
+    font-family: 'cc font', monospace!important;
+}        
+.fs-22px{
+ font-size: 22px;
+}
+.my-10px{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.p-relative{
+    position: relative;
+}
+.transaction-itemlabel {
+	width: 50%!important;
+}
+.selected {
+    position: absolute;
+    border-top: 35px solid green;
+    border-right: 35px solid transparent;
+    border-radius: 15px 0px 50px 0px;
+    z-index: 9999;
+}
+.replacecard-button {
+    -webkit-border-radius: 0.2rem !important;
+    -moz-border-radius: 0.2rem !important;
+    border-radius: 0.2rem !important;
+    color: #FFFFFF !important;
+    font-family: "Helvetica Neue", Helvetica !important;
+    font-size: .9rem !important;
+    font-variant: normal!important;
+    padding: 0.6rem 2.5rem !important;
+    background: #004487 !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    border: none !important;
+}
+.card {
+  width: 400px;
+  height: 250px;
+  margin: 10px auto;
+}
+@media only screen and (max-width: 768px){
+    .card {
+        width: 98%!important;
+    }
+}
+.flip {
+  width: inherit;
+  height: inherit;
+}
+.front,
+.back {
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  border-radius: 15px;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 10px 1px rgba(0,0,0,0.3);
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  background-image: linear-gradient(to right, #111, #555);
+  overflow: hidden;
+}
+.front {
+  transform: translateZ(0);
+}
+.strip-bottom,
+.strip-top {
+  position: absolute;
+  right: 0;
+  height: inherit;
+  background-image: linear-gradient(to bottom, #ff6767, #ff4545);
+  box-shadow: 0 0 10px 0px rgba(0,0,0,0.5);
+  z-index: -1;
+}
+.strip-bottom {
+  width: 200px;
+  transform: skewX(-15deg) translateX(50px);
+}
+.strip-top {
+  width: 180px;
+  transform: skewX(20deg) translateX(50px);
+}
+.logo {
+  position: absolute;
+  top: 30px;
+  right: 25px;
+}
+.investor {
+  position: relative;
+  top: 30px;
+  left: 25px;
+  text-transform: uppercase;
+}
+.chip {
+  position: relative;
+  top: 60px;
+  left: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 40px;
+  border-radius: 5px;
+  background-image: linear-gradient(to bottom left, #ffecc7, #d0b978);
+  overflow: hidden;
+}
+.chip .chip-line {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background-color: #333;
+}
+.chip .chip-line:nth-child(1) {
+  top: 13px;
+}
+.chip .chip-line:nth-child(2) {
+  top: 20px;
+}
+.chip .chip-line:nth-child(3) {
+  top: 28px;
+}
+.chip .chip-line:nth-child(4) {
+  left: 25px;
+  width: 1px;
+  height: 50px;
+}
+.chip .chip-main {
+  width: 20px;
+  height: 25px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background-image: linear-gradient(to bottom left, #efdbab, #e1cb94);
+  z-index: 1;
+}
+.wave {
+  position: relative;
+  top: 20px;
+  left: 100px;
+}
+.card-number {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px 25px 10px;
+  font-size: 23px;
+  font-family: 'cc font', monospace;
+}
+.end {
+  margin-left: 25px;
+  text-transform: uppercase;
+  font-family: 'cc font', monospace;
+}
+.end .end-text {
+  /* @sldsValidatorIgnore */
+  font-size: 9px;
+  color: rgba(255,255,255,0.8);
+}
+.card-holder {
+  margin: 10px 25px;
+  text-transform: uppercase;
+  font-family: 'cc font', monospace;
+}
+.master {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+}
+.master .circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+}
+.master .master-red {
+  background-color: #eb001b;
+}
+.master .master-yellow {
+  margin-left: -10px;
+  background-color: rgba(255,209,0,0.7);
+}
+.card {
+  perspective: 1000;
+}
+.back {
+  transform: rotateY(180deg) translateZ(0);
+  background: #9e9e9e;
+}
+
+@-webkit-keyframes flip {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+}
+@keyframes flip {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+}

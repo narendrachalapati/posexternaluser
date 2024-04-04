@@ -1,0 +1,3 @@
+<design:component >
+    <design:attribute name="onUtilityBar" label="isUtilityBar" description="For Utility Bar Set true - Default value: false" default="false" required="true" />
+</design:component>

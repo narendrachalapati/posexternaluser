@@ -1,0 +1,36 @@
+{
+    "kind": "calendar#event",
+    "etag": "\"3368310948150000\"",
+    "id": "mnb3bst40c1t9ujbggl4bq445c",
+    "status": "confirmed",
+    "htmlLink": "https://www.google.com/calendar/event?eid=bW5iM2JzdDQwYzF0OXVqYmdnbDRicTQ0NWMgY19wcTc5OXU0MGppY3Nxcjlpamh0ZzRlM3IzZ0Bn",
+    "created": "2023-05-15T12:57:54.000Z",
+    "updated": "2023-05-15T12:57:54.075Z",
+    "summary": "Appointment for Test0 Contact0 - Consultation",
+    "creator": {
+        "email": "webmaster@adisols.com"
+    },
+    "organizer": {
+        "email": "testbooking@group.calendar.google.com",
+        "displayName": "B-Consultation",
+        "self": true
+    },
+    "start": {
+        "dateTime": "2023-05-15T07:00:52-07:00",
+        "timeZone": "America/Los_Angeles"
+    },
+    "end": {
+        "dateTime": "2023-05-15T08:00:52-07:00",
+        "timeZone": "America/Los_Angeles"
+    },
+    "iCalUID": "mnb3bst40c1t9ujbggl4bq445c@google.com",
+    "sequence": 0,
+    "attendees": [{
+        "email": "malli@adisols.com",
+        "responseStatus": "needsAction"
+    }],
+    "reminders": {
+        "useDefault": true
+    },
+    "eventType": "default"
+}

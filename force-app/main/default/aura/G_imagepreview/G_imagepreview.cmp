@@ -1,0 +1,40 @@
+<aura:component description="ImageUploader" controller="CustomfileuploaderController"
+    implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+ <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+     <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="imageURL" type="String"  />
+    <aura:attribute name="shape" type="String" default="square" />
+    <aura:attribute name="Downloadlink" type="String" />
+    <aura:attribute name="previewlink" type="String" />
+    <aura:attribute name="Brand" type="String" />
+
+  <aura:attribute name="imgWidth" type="integer" default="200" />
+  <aura:attribute name="imgHeight" type="integer" default="200" />
+  <aura:if isTrue="{! !empty(v.imageURL)}">
+        <div class="slds-col slds-grid slds-var-p-around_xx-small slds-var-m-bottom_xx-small slds-grid_align-center">
+          <div class="product-wrapper" >
+              <div class="overflow-hidden mx-auto image-wrapper max-height slds-is-relative">
+                <div class="">
+
+                  <div class="product-wrapper"  style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+                    <div class="overflow-hidden mx-auto image-wrapper max-height slds-is-relative" style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+                      <span class="slds-avatar noimage" style="{!'width:'+v.imgWidth+'px; max-width:'+v.imgWidth+'px; height:'+v.imgHeight+'px; max-height:'+v.imgHeight+'px'}">
+                        <a href="{!v.imageURL}" target="_blank">
+                        <img src="{!v.imageURL}" alt="{!v.recordId}" class="{!'image-' + v.shape}" style="{!'Width:'+v.imgWidth+'px; height:'+v.imgHeight+'px'}" />
+                      </a>
+                      </span>
+                     
+                    </div>
+                 
+                 
+                   </div>
+                  </div>               
+                 </div>
+                 <aura:if isTrue="{! !empty(v.Brand)}">
+              <div class="product-title text-center slds-text-align_center slds-var-p-bottom_x-small">
+                  <p class="slds-truncate">{!v.Brand}</p></div>
+                </aura:if>
+          </div>
+      </div>
+</aura:if>
+</aura:component>

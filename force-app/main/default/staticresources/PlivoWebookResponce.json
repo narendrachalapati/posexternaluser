@@ -1,0 +1,22 @@
+{
+  "externalnumber": "18008803326",
+  "contactnumber": "15108672811",
+  "status": "Delivered",
+  "mnc": "",
+  "parentmessageuuid": "55ceb09e-0b16-41bd-85be-4fb7487fd17a",
+  "partinfo": "1 of 1",
+  "from": "18008803326",
+  "messagetime": "2023-04-05 13:04:54.877633",
+  "sequence": "1",
+  "totalamount": "0.00000",
+  "mcc": "",
+  "totalrate": "0.00000",
+  "units": "1",
+  "token": "TQo5GqOWQERRW",
+  "powerpackuuid": "",
+  "type": "sms",
+  "queuedtime": "2023-04-05 13:04:54.879803",
+  "to": "15108672811",
+  "messageuuid": "55ceb09e-0b16-41bd-85be-4fb7487fd17a",
+  "requesterip": "13.110.246.8"
+}

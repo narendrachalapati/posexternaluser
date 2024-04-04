@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0070D2</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Scheduling Appointments</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <label>Appointment Scheduling</label>
+    <navType>Standard</navType>
+    <tabs>standard-Account</tabs>
+    <tabs>standard-Contact</tabs>
+    <tabs>Product__c</tabs>
+    <tabs>Appointment_Scheduling__c</tabs>
+    <tabs>Google_Calendar__c</tabs>
+    <tabs>Appointment_Attendees__c</tabs>
+    <tabs>GoogleDriveFolder__c</tabs>
+    <tabs>GoogleDriveFile__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

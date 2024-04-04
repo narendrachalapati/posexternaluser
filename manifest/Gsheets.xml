@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+      <types>
+        <members>SpreadSheet__c</members>
+       <name>CustomObject</name>
+    </types>
+     <types>
+        <members>SpreadSheet__c</members>
+        <name>CustomTab</name>
+    </types>
+ 
+     <types>
+      <members>Contact.Gsheetsync__c</members>
+       <members>Contact.SpreadSheet__c</members>
+         <members>Contact.Range__c</members>
+    <members>Contact.SpreadSheet_Id__c</members>
+     <members>SpreadSheet__c.Account__c</members>
+    <members>SpreadSheet__c.Last_Processed_SYSLog__c</members>
+    <members>SpreadSheet__c.SpreadSheet_Id__c</members>
+    <members>SpreadSheet__c.spreadsheetUrl__c</members>
+     <name>CustomField</name>
+    </types>
+    <types>
+     <members>FieldSetting.SpreadSheet_Contact_Active</members>
+    <members>FieldSetting.SpreadSheet_Contact_majorDimension</members>
+    <members>FieldSetting.SpreadSheet_Contact_Metadataident</members>
+    <members>FieldSetting.SpreadSheet_Contact_Name</members>
+    <members>FieldSetting.SpreadSheet_Contact_range</members>
+    <members>FieldSetting.SpreadSheet_ContactUpdatemajorDimension</members>
+    <members>FieldSetting.SpreadSheet_Contactupdate_Metadataident</members>
+    <members>FieldSetting.SpreadSheet_ContactUpdate_Name</members>
+    <members>FieldSetting.SpreadSheet_Contactupdate_range</members>
+    <members>FieldSetting.SpreadSheet_Id</members>
+    <members>FieldSetting.SpreadSheet_Name</members>
+    <members>FieldSetting.SpreadSheet_Url</members>
+      <members>HttpHeaders.spreadsheetContent_Type</members>
+       <members>IntegrationEnablement.SpreadSheet</members>
+         <members>IntegrationSetting.SpreadSheet</members>
+          <members>ObjectSetting.SpreadSheet</members>
+    <members>ObjectSetting.SpreadSheetValues_Contact</members>
+    <members>ObjectSetting.SpreadSheetValues_Contact_Update</members>
+     <members>ObjectSetting.SpreadSheet</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>Integration_Type</members>
+         <name>GlobalValueSet</name>
+  </types>
+     <types>
+        <members>G_Spreadsheet_creation_flow</members>
+        <members>Spreadsheet_values_update</members>
+
+        <name>Flow</name>
+    </types>
+        <types>
+        <members>SpreadSheet__c-SpreadSheet Layout</members>
+        
+        <name>Layout</name>
+    </types>
+     <types>
+      <members>SpreadSheet__c.All</members>
+        
+        <name>ListView</name>
+    </types>
+    <types>
+    <members>Gspreadsheet_Datafactory</members>
+    <members>Gspreadsheet_sys_Applicationservice</members>
+    <members>Gspreadsheet_sys_ApplicationserviceTest</members>
+    <members>IB_Gspreadsheet_sys_Applicationservice</members>
+    <members>G_sheetsoldrecordprocesser</members>
+    <members>G_sheetsoldrecordprocesserhandler</members>
+        <name>ApexClass</name>
+    </types>
+   
+  
+    <version>56.0</version>
+</Package>

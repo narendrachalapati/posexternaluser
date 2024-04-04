@@ -1,0 +1,96 @@
+:root {
+    --checkin-button-color: #006496;
+    --checkin-button-color-green: rgb(0, 150, 110);
+    --calendar-today-color: linear-gradient(to bottom, #11b4ff, #1b98ff);
+    --calendar-today-color-light: linear-gradient(to bottom, #00a0ea6f, #007fe74d);
+}
+
+body{
+    position: relative;
+}
+
+.hide {
+    display: none;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: auto;
+    flex-direction: column;
+}
+
+.reader-tag {
+    width: 80%;
+    margin: auto;
+    padding: 0px;
+}
+
+.message-success {
+    width: 100%;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 4rem;
+}
+
+.button {
+    background-color:var(--checkin-bg-color-green);
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.border-empty {
+    border: unset !important;
+}
+
+.image-css {
+    height: 1.5rem !important;
+}
+
+.image-css-check {
+    height: 2rem !important;
+}
+
+.appointment-time {
+    font-size: 1.2rem !important;
+    text-align: center;
+}
+
+.mobile-bottom-navbar {
+    position: fixed;
+    bottom: 10px;
+    left: 7px;
+    width: calc(100% - 30px);
+    height: 50px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    background-color: #EEEEEE;
+    border: 1px solid #DBDBDB;
+    border-radius: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.mobile-bottom-navbar:hover {
+    background-color: #c6c6c6;
+  }
+
+
+@media(min-width: 600px) {
+    
+    
+}
+
+@media(max-width: 600px) {
+    
+}

@@ -1,0 +1,196 @@
+<apex:page showQuickActionVfHeader="false" showheader="false" standardController="Survey__c"
+extensions="FormBuilderController" action="{!init}" >
+    <head>
+        <title>Form Builder</title>
+        <meta charset="utf-8"/>
+
+        <apex:styleSheet value="{!URLFOR($Resource.surveyjs, 'surveyjs/css/defaultV2.min.css')}"/>
+        <apex:styleSheet value="{!URLFOR($Resource.surveyjs, 'surveyjs/css/survey-creator-core.min.css')}"/>
+        
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/knockout-latest.js')}"></apex:includeScript>
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/survey.core.min.js')}"></apex:includeScript>
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/survey-knockout-ui.min.js')}"></apex:includeScript>
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/survey-creator-core.min.js')}"></apex:includeScript>
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/survey-creator-knockout.min.js')}"></apex:includeScript>
+        <apex:includeScript value="{!$Resource.customwidget}"></apex:includeScript>
+
+        <!-- bootstrap-datepicker -->
+        <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></apex:includeScript>
+        <apex:styleSheet value="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+            />
+        <!-- bootstrap-datepicker -->
+        <!-- jquery-ui-datepicker -->
+        <apex:includeScript value="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></apex:includeScript>
+        <apex:styleSheet value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css"  />
+        <!-- jquery-ui-datepicker -->
+
+        <!-- <apex:stylesheet value="https://unpkg.com/survey-core/defaultV2.min.css" ></apex:stylesheet> -->
+        <!-- <apex:stylesheet value="https://unpkg.com/survey-creator-core/survey-creator-core.min.css"></apex:stylesheet> -->
+        
+        <!-- <apex:includeScript value="https://unpkg.com/knockout/build/output/knockout-latest.js"></apex:includeScript> -->
+        <!-- <apex:includeScript value="https://unpkg.com/survey-core/survey.core.min.js"></apex:includeScript> -->
+        <!-- <apex:includeScript value="https://unpkg.com/survey-knockout-ui/survey-knockout-ui.min.js"></apex:includeScript> -->
+        <!-- <apex:includeScript value="https://unpkg.com/survey-creator-core/survey-creator-core.min.js"></apex:includeScript> -->
+        <!-- <apex:includeScript value="https://unpkg.com/survey-creator-knockout/survey-creator-knockout.min.js"></apex:includeScript> -->
+            
+        <script>
+            
+
+
+            const creatorOptions = {
+                showLogicTab: true,
+                isAutoSave: false
+            };
+
+            console.log('JSON ',JSON.parse('{!initialjson}'));
+            const defaultJson = JSON.parse('{!initialjson}');
+            console.log('default json ',JSON.stringify(defaultJson, null, 2));
+            /* {
+                pages: [{
+                    name: "Name",
+                    elements: [{
+                        name: "FirstName",
+                        title: "Enter your first name:",
+                        type: "text"
+                    }, {
+                        name: "LastName",
+                        title: "Enter your last name:",
+                        type: "text"
+                    }]
+                }]
+            }; */
+
+            const creator = new SurveyCreator.SurveyCreator(creatorOptions);
+            creator.text = JSON.stringify(defaultJson) || window.localStorage.getItem("survey-json") ;
+            creator.saveSurveyFunc = (saveNo, callback) => { 
+                //window.localStorage.setItem("survey-json", creator.text);
+                callback(saveNo, true);
+                console.log('url ','{!domainUrl}','{!$Api.Session_ID}');
+                updateSurveyRecord(JSON.stringify(creator.JSON));
+                saveSurveyJson(
+                    "{!domainUrl}",
+                    creator.JSON,
+                    saveNo,
+                    callback
+                );
+            };
+
+            document.addEventListener("DOMContentLoaded", function() {
+                creator.render("surveyCreator");
+
+                let expandbtn = document.getElementById("expand-button");
+                console.log('expandbtn getElementById ', expandbtn);
+                expandbtn.addEventListener("click", ()=>{
+                    // expand();
+                    window.open('/apex/FormBuilderVf?survey={!recordId}', '_blank');
+                });
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const survey = urlParams.get('survey')
+
+                if(survey) {
+                    console.log('hide');
+                    expandbtn.classList.add("hide");
+                }
+            });
+
+            function saveSurveyJson(url, json, saveNo, callback) {
+                json.sfid = '{!recordId}';
+                console.log('json saved', json);
+                fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + '{!$Api.Session_ID}'
+                    },
+                    body: JSON.stringify(json)
+                })
+                .then(response => {
+                    response.json()
+                })
+                .then(response => {
+                    console.log(JSON.stringify(response))
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+                /* const request = new XMLHttpRequest();
+                request.open('POST', url);
+                request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                request.setRequestHeader('Authorization', 'Bearer ' + '{!$Api.Session_ID}');
+                request.addEventListener('load', () => {
+                    console.log('success');
+                    callback(saveNo, true);
+                });
+                request.addEventListener('error', () => {
+                    console.log('error occured');
+                    callback(saveNo, false);
+                });
+                request.send(JSON.stringify(json)); */
+            }
+    </script>
+    <style>
+        .nav {
+            display: flex; /* 1 */
+            /* justify-content: space-between;  */
+            padding: 1rem 2rem; /* 3 */
+            background: #cfd8dc; /* 4 */
+        }
+        button {
+            padding-left: 1rem; /* 7! */
+            justify-content: right;
+        }
+        .title {
+            justify-content: left;
+        }
+        .collapsible {
+            background-color: #19b394;
+            border-radius: 2px;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #02846a;
+        }
+
+        .hide {
+            display: none;
+        }
+
+    </style>
+
+    </head>
+    
+<body style="margin: 0;">
+    
+    <div class="builder-form">
+        <div type="button" id="expand-button"  class="collapsible expand-button">
+            Expand 
+            <span><img style="height:1rem; margin-left:1rem;" src = "{!URLFOR($Resource.surveyjs, 'surveyjs/asset/expand.svg')}" alt="expand"/></span>
+        </div>
+        <div id="surveyCreator" style="height: 100vh;"></div>
+    </div>
+
+    <apex:form >
+        <apex:actionFunction name="expand" action="{!expand}" reRender=""
+        oncomplete="">
+        </apex:actionFunction>
+        <apex:actionFunction name="updateSurveyRecord" action="{!updateSurveyRecord}" reRender=""
+        oncomplete="">
+            <apex:param name="formMetadata" value=""/>
+        </apex:actionFunction>
+
+    </apex:form>
+    
+</body>
+<!-- End Default Content REMOVE THIS -->
+
+</apex:page>

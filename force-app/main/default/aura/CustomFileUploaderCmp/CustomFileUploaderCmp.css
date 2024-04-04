@@ -1,0 +1,10 @@
+.THIS .imagesize{
+   width:250px;
+   height: 250px;
+ 
+  }
+  
+.THIS .dflex {
+    display: flex;
+    gap: 10px;
+}

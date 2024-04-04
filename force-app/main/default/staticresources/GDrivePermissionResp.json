@@ -1,0 +1,7 @@
+{
+    "kind": "drive#permission",
+    "id": "anyoneWithLink",
+    "type": "anyone",
+    "role": "commenter",
+    "allowFileDiscovery": false
+}

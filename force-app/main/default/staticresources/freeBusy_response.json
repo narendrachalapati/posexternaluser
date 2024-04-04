@@ -1,0 +1,25 @@
+{
+    "kind": "calendar#freeBusy",
+    "timeMin": "2070-05-16T01:00:00.000Z",
+    "timeMax": "2070-05-17T22:00:00.000Z",
+    "calendars": {
+        "testshift@group.calendar.google.com": {
+            "busy": [{
+                "start": "2070-05-16T01:00:00Z",
+                "end": "2070-05-16T22:00:00Z"
+            }]
+        },
+        "testbooking@group.calendar.google.com": {
+            "busy": [{
+                "start": "2070-05-16T07:00:00Z",
+                "end": "2070-05-16T08:00:00Z"
+            }, {
+                "start": "2070-05-16T08:00:00Z",
+                "end": "2070-05-16T09:00:00Z"
+            }, {
+                "start": "2070-05-16T09:00:00Z",
+                "end": "2070-05-16T10:00:00Z"
+            }]
+        }
+    }
+}

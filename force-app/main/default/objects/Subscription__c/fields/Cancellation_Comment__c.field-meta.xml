@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cancellation_Comment__c</fullName>
+    <description>Additional comments about why the user canceled the subscription, if the subscription was cancelled explicitly by the user.</description>
+    <externalId>false</externalId>
+    <label>Cancellation Comment</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

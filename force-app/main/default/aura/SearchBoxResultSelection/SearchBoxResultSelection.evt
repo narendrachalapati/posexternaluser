@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Click search result">
+	 <aura:attribute name="clicked-search-result" type="SObject" description="Selected search result"/>
+</aura:event>

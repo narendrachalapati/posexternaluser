@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+	<types>
+		<members>Modern_Health_Care</members>
+		<name>CustomApplication</name>
+	</types>
+
+    <types>
+		<members>DF_get_member</members>
+		<members>DF_get_product</members>
+		<members>DF_upsert_member</members>
+		<members>DF_get_availability</members>
+        <members>DF_fetchupcomingappointment</members>
+        <members>DF_cancelappointment</members>
+        <members>DF_send_verification_code</members>
+        <members>DF_send_appointment_scheduling_text</members>
+        <members>DF_update_profile</members>
+		<name>StaticResource</name>
+	</types>
+	<types>
+		<!-- Start Municorn Override Classes -->
+		<members>Member_ServicesAPI_ApplicationService</members>
+		<members>MemberUpsertAPI_ApplicationService</members>
+		<members>AuthorizeDOBAPI_SYS_ApplicationService</members>
+		<members>NotificationAPI_ApplicationService</members>
+		<members>SchedulingAPI_ApplicationService</members>
+		
+		<!-- End Municorn Override Classes -->
+		<members>DialogFlow_Helper</members>
+        <members>CustomActivityService</members>
+        <members>MemberService</members>
+        <members>DialogueFlow_InboundTest</members>
+        <members>DialogueFlow_MockServer</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+	
+		<members>FieldSetting.MemberAndServicesAPI_IB_Account_UUID</members>
+		<members>FieldSetting.MemberUpsertAPI_IB_Account_UUID</members>
+		<members>FieldSetting.NotificationAPI_IB_Account_UUID</members>
+
+		<members>FieldSetting.AuthorizeMember_IB_Login_Type</members>
+		<members>FieldSetting.AuthorizeMember_IB_Phone</members>
+		<members>FieldSetting.AuthorizeMember_IB_Status</members>
+
+		<members>FieldSetting.SchedulingLatestAvailabilit_IB_MemberId</members>
+		<members>FieldSetting.SchedulingCheckAndBookAPI_IB_MemberId</members>
+		<members>FieldSetting.SchedulingFetchUpcomingAPI_IB_MemberId</members>
+		<members>FieldSetting.SchedulingCancelAPI_IB_MemberId</members>
+
+
+		<members>ObjectSetting.MemberAndServicesAPI</members>
+		<members>ObjectSetting.MemberUpsertAPI</members>
+		<members>ObjectSetting.AuthorizeMember</members>
+		<members>ObjectSetting.NotificationAPI</members>
+		<members>ObjectSetting.SchedulingLatestAvailabilityAPI</members>
+		<members>ObjectSetting.SchedulingCheckAndBookAPI</members>
+		<members>ObjectSetting.SchedulingFetchUpcomingAPI</members>
+		<members>ObjectSetting.SchedulingCancelAPI</members>
+
+		<members>IntegrationEnablement.MemberAndServicesAPI</members>
+		<members>IntegrationEnablement.MemberUpsertAPI</members>
+		<members>IntegrationEnablement.AuthorizeDOBAPI</members>
+		<members>IntegrationEnablement.NotificationAPI</members>
+		<members>IntegrationEnablement.SchedulingAPI</members>
+		
+		<members>IntegrationSetting.MemberAndServicesAPI</members>
+		<members>IntegrationSetting.MemberUpsertAPI</members>
+		<members>IntegrationSetting.AuthorizeDOBAPI</members>
+		<members>IntegrationSetting.NotificationAPI</members>
+		<members>IntegrationSetting.SchedulingAPI</members>
+
+		<members>Integration_Metadata.Appointment_Choices_Count</members>
+		<name>CustomMetadata</name>
+	</types>
+	<types>
+		<members>FieldSetting__mdt.All_Lead_Capture_Settings</members>
+		<members>ObjectSetting__mdt.All_Lead_Capture_Settings</members>
+		<members>IntegrationEnablement__mdt.All_Lead_Capture_Settings</members>
+		<members>IntegrationSetting__mdt.All_Lead_Capture_Settings</members>
+		<members>Member_Login_History__c.All</members>
+		<!--
+		<members>Customer_Experience__c.All</members>
+		-->
+		<name>ListView</name>
+	</types>
+	<types>
+		<members>Account.Stage__c</members>
+		<members>Account.Phone_Verified__c</members>
+		<members>Account.Lead_Source__c</members>
+		<members>Account.First_Name__c</members>
+		<members>Account.Last_Name__c</members>
+		<members>Account.Formatted_Phone_Number__c</members>
+		<members>Account.Date_of_Birth__c</members>
+		<members>Account.Last_Created_Verification_Pin__c</members>
+		<members>Account.Last_Created_Verification_Pin_Time__c</members>
+        <members>Account.Balance__c</members>
+        <members>Account.Schedule_Appointment_Link__c</members>
+		<members>Member_Login_History__c.Account__c</members>
+		<members>Member_Login_History__c.Application__c</members>
+		<members>Member_Login_History__c.Phone_Number__c</members>
+		<members>Member_Login_History__c.Location__c</members>
+		<members>Member_Login_History__c.Login_Time__c</members>
+		<members>Member_Login_History__c.Login_Type__c</members>
+		<members>Member_Login_History__c.Login_URL__c</members>
+		<members>Member_Login_History__c.Source_IP__c</members>
+		<members>Member_Login_History__c.Status__c</members>
+		<members>Member_Login_History__c.Last_Processed_SYSLog__c</members>
+
+		<members>Availability_History__c.Available_Slot__c</members>
+		<members>Availability_History__c.Customer_DateTime_Input__c</members>
+		<members>Availability_History__c.Customer_UUID__c</members>
+		<members>Availability_History__c.End_DateTime__c</members>
+		<members>Availability_History__c.Hash__c</members>
+		<members>Availability_History__c.Product_UUID__c</members>
+		<members>Availability_History__c.Product__c</members>
+		<members>Availability_History__c.Start_DateTime__c</members>
+		
+		<members>IntegrationSetting__mdt.Integration_Type__c</members>
+
+        <members>Payment_Intent__c.Appointment__c</members>
+        <members>Lead.Date_of_Birth__c</members>
+		<name>CustomField</name>
+	</types>
+	<types>
+		<members>Member_Login_History__c</members>
+		<members>Availability_History__c</members>
+        <members>Account_Transaction__c</members>
+        <members>Patient_Report__c</members>
+		<name>CustomObject</name>
+	</types>
+	<types>
+		<members>Member_Login_History__c</members>
+		<members>Availability_History__c</members>
+		<members>Patient_Report__c</members>
+		<name>CustomTab</name>
+	</types>
+	<types>
+		<members>Account_Path</members>
+		<name>PathAssistant</name>
+	</types>
+	<types>
+        <members>Member_Stage</members>
+        <name>GlobalValueSet</name>
+    </types>
+	<types>
+		<members>HealthCare_Account_Record_Page</members>
+        <members>Account_Transaction_Record_Page</members>
+        <members>Patient_Report_Record_Page</members>
+		<name>FlexiPage</name>
+	</types>
+	<types>
+		<members>Customer_Stage_Automation</members>
+        <members>Payment_Received_Update_Account_Stage_to_Completed</members>
+        <members>Appointment_Cancel_Event_Flow</members>
+        <!--members>Create_Activity_After_Appointment</members-->
+        <members>Appointment_Checked_in_Activate_Member</members>
+        <members>Appointment_No_Show_Update_Account_Stage</members>
+        <members>Appointment_Checked_in_Send_Feedback_Form_Text_Message</members>
+        <name>Flow</name>
+    </types>
+	<types>
+        <members>ADS_HealthCare_Guest_User_Permission_Set</members>
+        <members>ADS_HealthCare_Permission_Set</members>
+        <name>PermissionSet</name>
+    </types>
+	<version>56.0</version>
+</Package>

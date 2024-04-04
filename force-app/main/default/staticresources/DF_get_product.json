@@ -1,0 +1,46 @@
+{
+  "detectIntentResponseId": "160064b3-67e8-4783-80e9-8eec770ba76f",
+  "pageInfo": {
+    "currentPage": "projects/smbenterprise/locations/global/agents/5987b046-dac9-4e91-9e6f-871d81770de0/flows/80474a11-a6f1-410a-947b-d520894cb364/pages/112a97fc-1e0e-4e38-b0fb-4c16e205d80d",
+    "displayName": "\u003eFetch Services API Invoke"
+  },
+  "sessionInfo": {
+    "session": "projects/smbenterprise/locations/global/agents/5987b046-dac9-4e91-9e6f-871d81770de0/sessions/dfMessenger-4af14843-e86f-4499-9581-01caab87c315",
+    "parameters": {
+      "additional_action": "fetchservices",
+      "announce_services": false,
+      "appointment_date": "2023-10-27 11:37:59-0700",
+      "authorize_attempt": 0.0,
+      "authorize_attempt_remaining": 3.0,
+      "confirm_input": false,
+      "current_flow": "services_lookup",
+      "ismemberfound": false,
+      "isnewpatient": false,
+      "leadsource": "Website Chat",
+      "number_of_days_forward_to_fetch": 90.0,
+      "phonenumber": null,
+      "resource_path": "memberandservice"
+    }
+  },
+  "fulfillmentInfo": {
+    "tag": "findmember"
+  },
+  "messages": [{
+    "text": {
+      "text": ["Hello Welcome to Municorn Care. I am the virtual assistant I can help you with any of our services."],
+      "allowPlaybackInterruption": true,
+      "redactedText": ["Hello Welcome to Municorn Care. I am the virtual assistant I can help you with any of our services."]
+    },
+    "responseType": "ENTRY_PROMPT",
+    "source": "VIRTUAL_AGENT"
+  }, {
+    "responseType": "ENTRY_PROMPT",
+    "outputAudioText": {
+      "ssml": "\u003cspeak\u003e\nHello Welcome to Municorn Care. I am the virtual assistant I can help you with any of our services.\n\u003c/speak\u003e",
+      "allowPlaybackInterruption": true
+    },
+    "source": "VIRTUAL_AGENT"
+  }],
+  "triggerEvent": "InitChat",
+  "languageCode": "en"
+}

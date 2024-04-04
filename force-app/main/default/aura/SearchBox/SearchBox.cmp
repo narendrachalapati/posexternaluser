@@ -1,0 +1,57 @@
+<aura:component implements="forceCommunity:searchInterface" controller="SearchController">
+    <aura:attribute name="sobject" type="String"/>
+    <aura:attribute name="filterParams" type="Map"/>
+	<aura:attribute name="searchText" type="String" default=""/>
+    <aura:attribute name="selectFields" type="String[]"/>
+    <aura:attribute name="searchOnField" type="String"/>
+    <aura:attribute name="searchResult" type="List"/>
+    <aura:attribute name="selected" type="boolean" default="false"/>
+    <aura:attribute name="label" type="String"/>
+    <aura:attribute name="placeholder" type="String" default="Search"/>
+    <aura:attribute name="defaultSelection" type="String" default="Search"/>
+    <aura:attribute name="required" type="boolean" default="false"/>
+    <aura:attribute name="numRecords" type="Integer" default="20"/>
+    <aura:attribute name="defaultValues" type="Object[]"/>
+    <aura:attribute name="defaultState" type="Map"/>
+    <aura:attribute name="class" type="String"/>
+    <aura:attribute name="disabled" type="boolean"/>
+           
+    <aura:registerEvent name="select" type="c:SearchBoxResultApply"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <div class="{!concat('slds-form-element slds-lookup ', v.class)}" data-select="single">
+        <div class="slds-form-element__control">
+            <div class="slds-input-has-icon slds-input-has-icon--right">
+                <aura:if isTrue="{!not(v.selected)}">
+                    <lightning:buttonIcon iconName="utility:search" variant="bare" alternativeText="Search" class="slds-input__icon"/>
+                </aura:if>
+                <aura:if isTrue="{!v.selected}">
+                    <lightning:buttonIcon iconName="utility:close" variant="bare" alternativeText="Clear" class="slds-input__icon"/>
+                </aura:if>
+                <ui:inputText aura:id="search-box" label="{!v.label}"
+                              value="{!v.searchText}" 
+                              class="{!concat('slds-lookup__search-input slds-input ', (v.selected ? ' selected' : ''))}"
+                              placeholder="{!and(v.selected, v.defaultSelection != null) ? v.defaultSelection : v.placeholder}" keyup="{!c.onEnterText}"
+                              click="{!c.cancelSelection}"
+                              updateOn="keyup"
+                              disabled="{!v.disabled}"
+                              required="{!v.required}"
+                              blur="{!c.lostFocus}"/>
+            	<aura:if isTrue="{!and(not(empty(v.searchResult)), not(v.selected))}">
+                    <div class="slds-dropdown slds-grow">
+                        <ul class="slds-dropdown__list slds-grow" role="menu">
+                            <aura:if isTrue="{!not(empty(v.defaultValues))}">
+                                <aura:iteration var="value" items="{!v.defaultValues}">
+                                    <c:SearchBoxResult object="{!value}" fieldName="{!v.searchOnField}" select="{!c.onSelect}"/>
+                                </aura:iteration>
+                            </aura:if>
+                            <aura:iteration var="result" items="{!v.searchResult}">
+                                <c:SearchBoxResult object="{!result}" fieldName="{!v.searchOnField}" select="{!c.onSelect}"/>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+    </div>
+</aura:component>

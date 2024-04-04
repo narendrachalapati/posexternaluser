@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global">
+    <!-- Contact UUID -->
+    <aura:attribute name="memberuuid" type="String" default=""/>
+    <aura:attribute name="appointmentRelatedActivities" type="Sobject"/>
+    <aura:attribute name="openRelatedActivities" type="Boolean" default="false"/>
+    <aura:attribute name="activityRecordid" type="String" default=""/>
+
+    <aura:attribute name="isLoading" type="boolean" default="true" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+    <iframe src="{! $Label.c.GuestForm_Site_Link + '/apex/Calendar?memberuuid=' + v.memberuuid }" width="100%" height="100vh;" frameBorder="0" class="calendarIframe" id="calendarIframe" onload="{!c.calendarLoaded}"/>
+</aura:component>

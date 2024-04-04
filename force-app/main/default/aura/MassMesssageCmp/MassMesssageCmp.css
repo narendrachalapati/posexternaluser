@@ -1,0 +1,240 @@
+/* Flex Helpers */
+.THIS .d-flex-justify-content-center{
+    justify-content: center;
+}
+.THIS .d-flex-justify-content-space-between{
+    justify-content: space-between;
+}
+.THIS .d-flex-align-items-end{
+    align-items: flex-end;
+}
+.THIS .d-flex-align-self-start{
+	align-self: flex-start;
+}
+.THIS .w-max-content{
+    width: max-content;
+}
+/* Chatbox Text Input */
+.THIS textarea {
+    width: 90%;
+    resize: none;
+    height: 45px;
+    outline: none;
+    padding: 5px 10px;
+    /* font-size: 16px; */
+    border-radius: 5px;
+    max-height: 330px;
+    caret-color: #4671ea;
+    border: 1px solid grey;
+  }
+  .THIS textarea::placeholder {
+    color: #b3b3b3;
+  }
+  .THIS textarea:is(:focus, :valid) {
+    border: 2px solid grey;
+  }
+  .THIS textarea::-webkit-scrollbar {
+    width: 0px;
+  }
+  /*Hide Native Salesforce Styles*/
+
+  /*list view buttons styling*/
+  .THIS .button-outline {
+  position: relative;
+  z-index: 3;
+  background: transparent;
+  color: #1172c4;
+  font-size: 14px;
+  font-weight: 700;
+  border-color: #1172c4;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 5px;
+  padding: 5px 5px;
+  max-height: 35px;
+  text-transform: uppercase;
+  transition: all 0.2s linear;
+}
+.THIS .button-flex {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 12px;
+  max-width: 90%;
+  margin: 5px auto;
+  margin-left: 10px;
+  height: 50px;
+  overflow: auto hidden;
+  white-space: pre;
+}
+/* Custom Scrollbar */
+.THIS .custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.THIS .custom-scrollbar::-webkit-scrollbar-track {
+  background: #BBB;
+}
+
+.THIS .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+.THIS body::webkit-scrollbar-thumb:hover,
+.THIS .custom-scrollbar::webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+
+.THIS .button-outline.active {
+  color: white;
+  background: #1172c4;
+  border-color: white;
+  transition: all 0.2s linear;
+}
+
+.THIS .button-outline:hover {
+  color: white;
+  background: #1172c4;
+  border-color: white;
+  transition: all 0.2s linear;
+}
+.THIS .posabs-center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: inherit;
+    font-size: 236%;
+    vertical-align: initial;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+.THIS .displayflex{
+  /* display:flex; */
+  padding-top: 2%;
+  padding-left: 2%;
+}
+
+/*spinner code*/
+.THIS .spinner {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  color: #474bff;
+  background: radial-gradient(farthest-side, currentColor calc(100% - 6.7px),#0000 calc(100% - 5.6px) 0);
+  -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 14.6px),#000 calc(100% - 13.4px));
+  border-radius: 50%;
+  animation: spinner-sm4bhi 2s infinite linear;
+}
+
+.THIS .spinner::before,
+.THIS .spinner::after {
+  content: "";
+  grid-area: 1/1;
+  background: linear-gradient(currentColor 0 0) center,
+         linear-gradient(currentColor 0 0) center;
+  background-size: 100% 11.2px,11.2px 100%;
+  background-repeat: no-repeat;
+}
+
+.THIS .spinner::after {
+  transform: rotate(45deg);
+}
+
+@keyframes spinner-sm4bhi {
+  100% {
+     transform: rotate(1turn);
+  }
+}
+
+.THIS .centered-axis-xy {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  
+}
+
+.THIS .file-preview-sf img {
+    max-width: 150px;
+    max-height: 150px;
+    height: 100px;
+}
+
+.THIS .file-preview-sf .change-image {
+    /*text-align: center;*/
+    cursor: pointer;
+    top:0;
+    right:0;
+  }
+
+  /*Hide Native Salesforce Styles*/
+  .THIS .slds-file-selector__dropzone{
+    border: 2px dashed grey;
+    border-radius: 5px;
+    display: block;
+    padding: 5px;
+    transition: border 300ms ease;
+    cursor: pointer;
+    text-align: center;
+    margin: 0 5px;
+  }
+  
+  .THIS .slds-file-selector__dropzone:hover {
+    border: 2px solid #1665c4;
+    color: #1665c4;
+  }
+  
+  /*set the size of the button and background image*/
+  .THIS .slds-file-selector__body{
+    display: block;
+    font-size: 30px;
+    padding-bottom: 5px;
+    color: #1665c4;
+    transition: 200ms color;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    cursor: pointer;
+    text-align: center;
+  }
+  .THIS .slds-file-selector__body:before {
+    content: "\f0c6";
+  }
+  
+  /*get rid of the right label*/
+  .THIS .slds-file-selector__dropzone .slds-file-selector__text{ 
+    display: none;
+  }
+  
+  /*To override the text, you'll need to set the size of the current text to 0*/
+  .THIS .slds-file-selector__dropzone .slds-file-selector__button {
+    display: none;
+  }
+  
+  /*get rid of the label*/
+  .THIS .slds-form-element__label{
+     display: none;
+  }
+/*SMS Counter*/
+.THIS .sms-counter-wrap {
+    text-align: right;
+    padding-right: 30px;
+}
+.THIS .messagebox .d-flex-100{
+        flex-basis:100%;
+    }
+
+/*spinner code end*/

@@ -1,0 +1,983 @@
+body {
+	padding: 0px 0px 30px 0px;
+    background: transparent;
+}
+
+.payment-form-body {
+    margin-top: 50px !important;
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+}
+
+.amount-description {
+    text-align: center;
+    font-size: 2rem;
+    padding: 1rem;
+    font-weight: bold;
+    color: #222222;
+}
+
+#card-element {
+	padding-top: 0.5rem;
+    padding-left: 0;
+}
+
+* {
+  font-family: "Helvetica Neue", Helvetica;
+  font-size: 0.95rem;
+  font-variant: normal;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+}
+
+form {
+  width: 100%;
+  /* margin: 0 0 20rem 0 */
+  margin: 0 0 0 0
+}
+
+.group {
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+label, #pouet {
+  position: relative;
+  /*color: #8898AA;*/
+  font-weight: normal;
+  line-height: 40px;
+  margin-left: 9px;
+  display: flex;
+  flex-direction: row;
+}
+
+label > span, #pouet > span {
+  text-align: right;
+  margin-right: 30px;
+}
+
+.field {
+  background: transparent;
+  font-weight: normal;
+  border: 0;
+  color: #31325F;
+  outline: none;
+  flex: 1;
+  padding-right: 10px;
+  padding-left: 10px;
+  cursor: text;
+}
+
+.field::-webkit-input-placeholder { color: #CFD7E0; }
+.field::-moz-placeholder { color: #CFD7E0; }
+
+.button-container {
+    text-align: center;
+    padding: .5rem 0 1.8rem 0;
+    display: none;
+}
+
+.payment-option {
+    width: 100%;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    border-bottom: 1px solid #f1f1f1;
+    margin-top: .4rem;
+}
+
+.payment-form-body .pbBody {
+    background: white !important;
+    margin: 0 0 0 0 !important;
+}
+
+#tabs { 
+    background: transparent; 
+    border: none;
+    outline: none;
+}
+
+#tabs .ui-widget-header { 
+    background: transparent; 
+    border: none; 
+    border-bottom: 1px solid #c0c0c0; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px; 
+} 
+#tabs .ui-tabs-nav .ui-state-default { 
+    background: transparent; 
+    border: none; 
+}
+#tabs .ui-tabs-nav .ui-state-default a { 
+    color: #c0c0c0; 
+}
+
+#tabs .ui-tabs-nav .ui-state-active a { 
+    color: #222222;
+    outline: 0;
+}
+
+.payment-option label {
+    cursor: pointer;
+}
+
+.payment-option.selected {
+    border-bottom: 1px solid #ECEBEA;
+    border-top: 1px solid #ECEBEA;
+}
+
+.payment-button, .register-ach-button, .verify-ach-button {
+    -webkit-border-radius: 0.2rem !important;
+    -moz-border-radius: 0.2rem !important;
+    border-radius: 0.2rem !important;
+    color: #FFFFFF !important;
+    font-family: "Helvetica Neue", Helvetica !important;
+  	font-size: .9rem !important;
+  	font-variant: normal !important;
+    padding: 0.6rem 2.5rem !important;
+    background: #004487 !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    cursor: pointer !important;
+    border: none !important;
+}
+
+.payment-retry-button{
+    -webkit-border-radius: 0.2rem !important;
+    -moz-border-radius: 0.2rem !important;
+    border-radius: 0.2rem !important;
+    color: #FFFFFF !important;
+    font-family: "Helvetica Neue", Helvetica !important;
+    font-size: .9rem !important;
+    padding: 0.6rem 0.9rem !important;
+    background: #004487 !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    cursor: pointer !important;
+    border: none !important;
+    font-weight: 600!important;
+}
+
+.verify-ach-button {
+    padding: .3rem 1rem !important;
+}
+
+.payment-button:hover, .register-ach-button:hover {
+    background: #1E62D0;
+    text-decoration: none;
+}
+
+.payment-button:active, .register-ach-button:active {
+    background: #1E62D0;
+    text-decoration: none;
+    box-shadow: none !important;
+}
+
+input[name=payment-source] {
+    cursor: pointer;
+}
+
+.outcome {
+  margin: 0.2rem 0;
+  text-align: center;
+}
+
+.save-card-cb-container {
+	font-size: 0.9rem;
+    font-family: "Helvetica Neue", Helvetica;
+    color: gray;
+}
+
+.error {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #E4584C;
+  border: none !important;
+}
+
+.success-new-card.visible, .error.visible {
+  display: inline;
+}
+
+.success-new-card {
+  color: #666EE8;
+}
+
+#save-card {
+    margin-right: 5px;
+}
+
+h3 {
+    color: rgb(8,7,7) !important;
+    font-family: "Helvetica Neue", Helvetica !important;
+  	font-size: 0.9rem !important;
+    padding: .7rem 1.3rem !important;
+  	font-variant: normal !important;
+    background: #ECEBEA !important;
+}
+
+.ui-accordion-content {
+    height: auto !important;
+    overflow: hidden !important;
+}
+
+.saved-payment-method {
+    cursor: pointer !important;
+    font-size: 13px;
+    width: 100%;
+}
+
+.saved-payment-method table {
+    margin-top: 0px !important;
+}
+
+.saved-payment-method table tr td {
+    padding: .5rem;
+    font-size: 13px;
+}
+
+.saved-payment-method.bank-accounts table:nth-child(1) tr td:nth-child(1) {
+    width: 5%;
+}
+
+.saved-payment-method.bank-accounts table:nth-child(1) tr td:nth-child(2) {
+    width: 15%;
+}
+
+.saved-payment-method.bank-accounts table:nth-child(1) tr td:nth-child(3) {
+    width: 25%;
+}
+
+.saved-payment-method.bank-accounts table:nth-child(1) tr td:nth-child(4) {
+    width: 30%;
+}
+
+.saved-payment-method.bank-accounts table:nth-child(1) tr td:nth-child(5) {
+    width: 15%;
+}
+
+.saved-payment-method.bank-accounts table:nth-child(1) tr td:nth-child(6) {
+    width: 10%;
+}
+
+.saved-payment-method.cards table:nth-child(1) tr td:nth-child(1) {
+    width: 5%;
+}
+
+.saved-payment-method.cards table:nth-child(1) tr td:nth-child(2) {
+    width: 100%;
+}
+
+.saved-payment-method.cards table:nth-child(1) tr td:nth-child(3) {
+    width: 10%;
+}
+
+.saved-payment-method.cards table:nth-child(1) tr td:nth-child(4) {
+    width: 45%;
+}
+
+table.transaction-details, table.payment-request-details {
+    margin-top: 1rem;
+    padding: 20px;
+}
+
+table.transaction-details {
+    border: 1px solid lightgray;
+}
+
+table.transaction-details td, table.transaction-details th {
+    padding: .3rem;
+    padding-left: 20px !important;
+    color: black;
+    font-family: "Helvetica Neue", Helvetica !important;
+  	font-size: 0.9rem !important;
+  	font-variant: normal !important;
+  	border: 1px solid lightgray;
+}
+
+.card-brand-logo {
+    position: relative;
+    margin-right: 1rem;
+    margin-left: -.8rem;
+    top: -.2rem;
+}
+
+p.law-disclaimer {
+    margin: 1.5rem 0rem !important;
+    font-size: .8rem;
+    font-style: italic;
+}
+
+.ach-bank-manual-details {
+    width: 90%;
+    margin-top: 5px;
+    height: 25px;
+}
+
+.ach-verification-container {
+    width: 30rem !important;
+    margin-left: auto;
+    margin-bottom: 1.5rem;
+    margin-right: 3.5rem;
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.verification-amounts-input {
+    width: 5rem;
+}
+
+.ach-verification-container tr td:nth-child(1) {
+    width: 6rem;
+    white-space: no-nowrap;
+}
+
+.ach-verification-container tr td:nth-child(2) {
+    width: 5rem;
+}
+
+.ach-verification-container tr td:nth-child(3) {
+    width: 6rem;
+    white-space: nowrap;
+}
+
+.ach-verification-container tr td:nth-child(4) {
+    width: 5rem;
+}
+
+.more-payment-methods {
+    display: block;
+    margin-top: 1.5rem;
+}
+
+.more-payment-methods-link {
+    display: inline-block;
+    padding: 1rem 3rem 1rem 0rem;
+}
+
+.more-payment-methods-link span{
+    cursor:pointer;
+    text-decoration: underline;
+    color: #049CD7;
+}
+
+.micro-deposits-message {
+    font-size: 0.8rem;
+    font-style: italic;
+    margin: 1rem 0rem !important;
+    color: #222222;
+}
+
+.bPageBlock .detailList tr td {
+    border-bottom: none !important;
+}
+
+input[type=text] {
+    padding: 1rem;
+    border-radius: 3px;
+    border: 1px solid #bfbdbd;
+}
+
+input[type=text]::placeholder {
+    font-size: 0.9rem;
+    color: #999999;
+}
+
+.payment-summary th {
+    text-align: center;
+    font-weight: normal !important;
+}
+
+.payment-summary td, .payment-summary td label {
+    text-align: center;
+    font-weight: bold;
+}
+
+.payment-summary td label {
+    display: inline-table;
+}
+
+.payment-summary {
+    margin-bottom: 1.5rem;
+}
+
+.payment-details-panel table:nth-child(1) tr td:nth-child(1) {
+    width: 50%;
+}
+
+.payment-details-panel table:nth-child(1) tr td:nth-child(2) {
+    width: 50%;
+    font-weight: bold;
+}
+
+.charge-output-panel {
+    display: block;
+    margin-top: 2rem;
+}
+
+.status-icon {
+    float: right;
+    margin: 0 0 .6rem 0;
+}
+
+.payment-label {
+    font-weight: bold;
+}
+/*custom Payment Receipt*/
+.custom-td-format {
+	direction: ltr;
+	font-size: 0px;
+	padding: 0;
+	text-align: center
+}
+
+.customtablewrapper-inline-column {
+	font-size: 0px;
+	text-align: left;
+	direction: ltr;
+	display: inline-block;
+	vertical-align: top;
+	width: 100%
+}
+
+.customtable-tdreset-wbreak {
+	font-size: 0px;
+	padding: 0;
+	word-break: break-word
+}
+
+.cell-alingleft-c-black-f-13 {
+	font-family: Trebuchet MS;
+	font-size: 13px;
+	line-height: 1;
+	text-align: left;
+}
+
+.companyname-highlight {
+	width: 100%;
+	padding-top: 16px;
+	background-color: #f28a3f
+}
+
+.companyname-wrapper {
+	font-size: 16px;
+	line-height: 1.5;
+	margin: 0 auto;
+	width: fit-content
+}
+
+.transaction-status-wrapper {
+	width: calc(46000% - 211600px);
+	max-width: 460px;
+	min-width: 308px;
+	margin: 0 auto;
+}
+
+.transactionstatus-icon {
+	height: 32px;
+	width: 32px;
+}
+
+.transaction-status-message {
+	font-weight: 200;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.transaction-price {
+	font-size: 24px;
+	line-height: 1.5;
+}
+.transactionprice-amount span{
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+.transaction-infowrap {
+	font-size: 14px;
+	line-height: 1.5;
+	width: 100%;
+	box-sizing: border-box;
+	padding-left: 5.3%;
+	margin-bottom: 20px;
+	clear: both
+}
+
+.transaction-itemlabel {
+	width: 50%;
+	width: calc(150701.569px - 38820.3%);
+	max-width: 100%;
+	min-width: 50%;
+	display: inline-block;
+	vertical-align: top;
+	font-weight: 700
+}
+
+.transaction-itemvalue {
+	display: inline-block;
+	float: right;
+}
+
+.custom-link {
+	text-decoration: none;
+	color: #528ff0
+}
+
+.text-capitalize{
+    text-transform: capitalize;
+}
+
+.d-inlineblock {
+	display: inline-block
+}
+
+.border-box {
+	box-sizing: border-box
+}
+
+.v-align-top {
+	vertical-align: top;
+}
+
+.v-align-middle {
+	vertical-align: middle;
+}
+
+.text-align-center {
+	text-align: center;
+}
+
+.custom-image-default {
+	height: 100%;
+	width: 100%
+}
+
+.fw-900 {
+	font-weight: 900
+}
+
+.fs-86percent {
+	font-size: 86%
+}
+
+.fs-12px {
+	font-size: 12px;
+}
+
+.fs-14px {
+	font-size: 14px;
+}
+
+.p-0 {
+	padding: 0
+}
+
+.pt-12px {
+	padding-top: 12px;
+}
+
+.pb-12px {
+	padding-bottom: 12px;
+}
+
+.p-td-16px-p-lr20px {
+	padding: 16px 20px;
+}
+
+.p-td-10px-p-lr12px {
+	padding: 10px 12px;
+}
+
+.margin-left-right-auto {
+	margin-left: auto;
+	margin-right: auto
+}
+
+.margin-auto-w-100 {
+	margin: 0px auto;
+	max-width: 100%
+}
+
+.mt-16px-mb-16px {
+	margin-top: 16px;
+	margin-bottom: 16px
+}
+
+.mt-8px {
+	margin-top: 8px
+}
+
+.mt-16px {
+	margin-top: 16px
+}
+
+.ml-5px {
+	margin-left: 5px;
+}
+
+.mr-8px {
+	margin-right: 8px
+}
+
+.text-white {
+	color: #ffffff
+}
+
+.text-black {
+	color: #000000
+}
+
+.text-lightgrey {
+	color: #7b8199
+}
+
+.text-lightblue {
+	color: #515978;
+}
+
+.text-dblue {
+	color: #0d2366;
+}
+
+.bg-lightgrey {
+	background-color: #f0f0f0;
+}
+
+.bg-color-white {
+	background-color: #fff;
+}
+
+.w-100 {
+	width: 100%
+}
+
+.w-14px-h-14px {
+	height: 14px;
+	width: 14px;
+}
+
+.lh-1-5 {
+	line-height: 1.5;
+}
+
+/*Responsive css*/
+@media only screen and (max-width: 768px){
+    .payment-form-body{
+        margin: 0 20px;
+    }
+}
+
+/* Stripe Custom Card UI Box Layout */
+.stripe-wrap-inputbox {
+    display: flex;
+    justify-content: center;
+}
+
+.stripe-wrap-inputbox .cardwrapper {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 20px 0;
+    background-color: transparent;
+    border-radius: 15px;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.stripe-wrap-inputbox .cardsecret-wrap {
+    display: inline-flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: 0 10px;
+}
+
+.stripe-wrap-inputbox .stripe-field.card-secrets-width {
+    flex-basis: calc(33% - (5px / 3));
+}
+
+@media only screen and (max-width: 400px) {
+    .stripe-wrap-inputbox .stripe-field.card-secrets-width {
+        flex-basis: 100%;
+    }
+}
+
+.stripe-wrap-inputbox .fieldset {
+    margin: 0 15px 30px;
+    padding: 0;
+    border-style: none;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.stripe-wrap-inputbox .stripe-field {
+    padding: 10px 20px 11px;
+    background-color: #30313d;
+    border-radius: 20px;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.stripe-wrap-inputbox .stripe-field.focus,
+.stripe-wrap-inputbox .stripe-field:focus {
+    color: #ffffff;
+    background-color: #30313d;
+    outline: v0;
+    border-color: #86da9766;
+    box-shadow: 0 0 0 3px #86da9740, 0 1px 1px 0 #ffffff1f;
+
+}
+
+.stripe-wrap-inputbox .stripe-field.focus::-webkit-input-placeholder,
+.stripe-wrap-inputbox .stripe-field:focus::-webkit-input-placeholder {
+    color: #9e9e9e;
+}
+
+.stripe-wrap-inputbox .stripe-field.focus::-moz-placeholder,
+.stripe-wrap-inputbox .stripe-field:focus::-moz-placeholder {
+    color: #9e9e9e;
+}
+
+.stripe-wrap-inputbox .stripe-field.focus:-ms-input-placeholder,
+.stripe-wrap-inputbox .stripe-field:focus:-ms-input-placeholder {
+    color: #9e9e9e;
+}
+
+.stripe-wrap-inputbox .stripe-field.invalid {
+    background-color: #fa755a;
+}
+
+.stripe-wrap-inputbox .stripe-field.invalid.focus {
+    background-color: #30313d;
+}
+/* Stripe Custom Card UI FlotingLables Layout */
+.stripe-wrap-float-labels {
+    background-color: #fff;
+    font-family: Source Code Pro, Consolas, Menlo, monospace;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.stripe-wrap-float-labels .stripe-label-row {
+    display: -ms-flexbox;
+    display: flex;
+    margin: 0 5px 10px;
+}
+
+.stripe-wrap-float-labels .stripelabel-field.half-width {
+    width: 50%;
+}
+
+@media only screen and (max-width: 400px) {
+    .stripe-wrap-float-labels .stripelabel-field.half-width {
+        width: 100%;
+    }
+    .stripe-wrap-float-labels .stripe-label-row{
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+.stripe-wrap-float-labels .stripe-label-baseline {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    bottom: 0;
+    background-color: #cfd7df;
+    transition: background-color 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.stripe-wrap-float-labels .stripelabel-field label {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 8px;
+    padding: 0 0 0 0.75rem;
+    color: #cfd7df;
+    line-height: unset;
+    margin: unset;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform-origin: 0 50%;
+    cursor: text;
+    pointer-events: none;
+    transition-property: color, transform;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.stripe-wrap-float-labels .stripelabel-field {
+    position: relative;
+    width: 100%;
+    height: 55px;
+    margin: 0 10px;
+    padding: 35px 0.75rem 12px;
+    background-color: #30313d;
+    border-radius: 5px;
+    transition: background 0.15s ease, border 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+    border: 1px solid #424353;
+    box-shadow: 0px 2px 4px rgb(0 0 0 / 50%), 0px 1px 6px rgb(0 0 0 / 25%);
+}
+
+.stripe-wrap-float-labels .stripe-label-input {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    color: #32325d;
+    padding: 0.5rem 0.75rem 12px;
+    background-color: #30313d;
+    border-radius: 5px;
+    transition: background 0.15s ease, border 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+    border: 1px solid #424353;
+    box-shadow: 1px 6px 4px rgb(0 0 0 / 50%), 1px 6px 6px rgb(0 0 0 / 25%);
+}
+
+.stripe-wrap-float-labels .stripe-label-input::-webkit-input-placeholder {
+    color: transparent;
+    transition: color 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.stripe-wrap-float-labels .stripe-label-input::-moz-placeholder {
+    color: transparent;
+    transition: color 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.stripe-wrap-float-labels .stripe-label-input:-ms-input-placeholder {
+    color: transparent;
+    transition: color 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.stripe-wrap-float-labels .stripe-label-input.StripeElement {
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    will-change: opacity;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused,
+.stripe-wrap-float-labels .stripe-label-input:not(.empty) {
+    opacity: 1;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused::-webkit-input-placeholder,
+.stripe-wrap-float-labels .stripe-label-input:not(.empty)::-webkit-input-placeholder {
+    color: #cfd7df;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused::-moz-placeholder,
+.stripe-wrap-float-labels .stripe-label-input:not(.empty)::-moz-placeholder {
+    color: #cfd7df;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused:-ms-input-placeholder,
+.stripe-wrap-float-labels .stripe-label-input:not(.empty):-ms-input-placeholder {
+    color: #cfd7df;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused+label,
+.stripe-wrap-float-labels .stripe-label-input:not(.empty)+label {
+    color: #aab7c4;
+    transform: scale(0.85) translateY(-25px);
+    cursor: default;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused+label {
+    color: #24b47e;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.invalid+label {
+    color: #E25950;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused+label+.stripe-label-baseline {
+    background-color: #24b47e;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused{
+    border-color: #24b47e;
+    box-shadow: 1px 6px 4px #24b47e80, 2px 5px 6px 0px #24b47e40;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused.invalid+label+.stripe-label-baseline {
+    background-color: #E25950;
+}
+
+.stripe-wrap-float-labels .stripe-label-input.focused.invalid{
+    border-color: #E25950;
+    box-shadow: 1px 6px 4px #e2595080, 1px 6px 6px #e2595040;
+}
+
+.stripe-wrap-float-labels .stripe-label-input{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border-style: none;
+}
+
+.stripe-wrap-float-labels .stripe-label-input:-webkit-autofill {
+    -webkit-text-fill-color: #e39f48;
+    transition: background-color 100000000s;
+    -webkit-animation: 1ms void-animation-out;
+}
+
+.stripe-wrap-float-labels .StripeElement--webkit-autofill {
+    background: transparent !important;
+}
+
+.stripe-wrap-float-labels .stripe-label-input{
+    -webkit-animation: 1ms void-animation-out;
+}
+
+.stripe-wrap-float-labels .error, .stripe-error {
+    display: flex!important;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Save Card Styles */
+.save-card-cb-container label {
+    justify-content: center;
+    align-items: center;
+}
+/* Payment Page Card Container */
+.payment-option .stripe-wrap-float-labels, .payment-group1 #pouet .stripe-wrap-float-labels {
+    flex-basis: 100%;
+}
+
+.payment-option .stripe-wrap-float-labels .stripelabel-field label,
+.payment-group1 #pouet .stripe-wrap-float-labels .stripelabel-field label{
+    height: 25px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+@media only screen and (max-width: 400px) {
+    .payment-option #pouet {
+        flex-direction: column;
+    }
+
+    .payment-option #pouet>span {
+        text-align: left;
+    }
+}

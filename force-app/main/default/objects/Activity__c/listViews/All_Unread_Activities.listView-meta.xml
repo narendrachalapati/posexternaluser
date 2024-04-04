@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Unread_Activities</fullName>
+    <columns>NAME</columns>
+    <columns>Type__c</columns>
+    <columns>Direction__c</columns>
+    <columns>Phone__c</columns>
+    <columns>External_Number__c</columns>
+    <columns>Status__c</columns>
+    <columns>Activity_No__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>UPDATEDBY_USER</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>IsUnread__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>All Unread Activities</label>
+</ListView>

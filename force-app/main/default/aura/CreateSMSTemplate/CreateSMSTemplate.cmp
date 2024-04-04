@@ -1,0 +1,76 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    controller="SMSTemplateController" access="global">
+
+    <!-- <aura:attribute name="description" type="String" default="Use merge fields to personalize your SMS content. 
+    You can add substitute text to any merge field. Substitute text displays 
+    only if the merge record does not contain data for that field. Enter substitute 
+    text after a comma in the merge field, for example, {!Contact.FirstName,Sir or Madam}"/> -->
+    <aura:attribute name="recordId" type="String" ></aura:attribute>
+
+    <aura:attribute name="isLoading" type="Boolean" default="false"></aura:attribute>
+    <aura:attribute name="templateName" type="String" default=""></aura:attribute>
+    <aura:attribute name="isAvailable" type="Boolean" default="false"></aura:attribute>
+    <aura:attribute name="templateBody" type="String" default=""></aura:attribute>
+    <aura:attribute name="mergeField" type="String" default=""></aura:attribute>
+    
+
+    <aura:handler name="init" value="{!this}" action="{!c.doint}" />
+
+    
+
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    <lightning:card>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="New SMS Template">New SMS Template</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content slds-p-around_x-small">
+                <lightning:formattedText value="Use merge fields to personalize your SMS content. 
+                You can add substitute text to any merge field. Substitute text displays 
+                only if the merge record does not contain data for that field. Enter substitute 
+                text after a comma in the merge field, for example, {Contact.FirstName,Sir or Madam}." />
+            </div>
+            <div class=" slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-1  slds-large-size_4-of-12">
+                    <lightning:input name="Object" disabled="true" value="Contact" label="Primary Object" class="slds-p-horizontal_small"/>
+                </div>
+                <div class="slds-col slds-size_1-of-1  slds-large-size_4-of-12 slds-p-horizontal_small">
+                    <c:lookup aura:id="lwclookup" onlookupupdate="{!c.handleLookupEvent}" ></c:lookup>
+                </div>
+                <div class="slds-col slds-size_1-of-1  slds-large-size_4-of-12 slds-p-horizontal_small">
+                    <!-- <span>
+                        Merge Field
+                        <lightning:helptext content="Copy the content in this field and paste it in the template to generate the fields dynamically."></lightning:helptext>
+                    </span> -->
+                    <lightning:input name="Merge Field" label="Merge Field" fieldLevelHelp="Copy the content in this field and paste it in the template to generate the fields dynamically." aura:id="merge-field" value="{!v.mergeField}">
+                    </lightning:input>
+                    <!-- <lightning:button label="Copy" title="Copy" class="slds-p-horizontal_small" onclick="{! c.handleCoptToClipboard }"/> -->
+                </div>
+            </div>
+        </div>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="New SMS Template">SMS Template Information</span>
+            </h3>
+        </div>
+        <div class="slds-p-horizontal_small">
+            <lightning:input type="text" name="Template Name" label="Template Name" 
+            placeholder="type here..." value="{!v.templateName}" onchange="{!c.handleTemplateNameChange}"/>
+            <lightning:input type="checkbox" name="Available For Use" 
+            label="Available For Use" checked="{!v.isAvailable}" onchange="{!c.handleIsAvailable}"/>
+            <lightning:textarea name="SMS Template" label="Template" aura:id="templatebody"
+            placeholder="type here..." value="{!v.templateBody}" onchange="{!c.handleTemplateBodyChange}"/>
+
+            <div class="slds-align_absolute-center">
+                <lightning:button label="Reset" title="Reset" class="slds-p-horizontal_small" onclick="{! c.handleReset }"/>
+
+                <lightning:button variant="brand" label="Save" title="Save" class="slds-p-horizontal_small" onclick="{! c.handleSave }" />
+            </div>
+        </div>
+        <c:PreviewSMS templateBody="{!v.templateBody}" expand="true"></c:PreviewSMS>
+        
+    </lightning:card>
+    
+</aura:component>

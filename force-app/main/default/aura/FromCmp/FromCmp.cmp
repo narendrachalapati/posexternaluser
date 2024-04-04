@@ -1,0 +1,32 @@
+<aura:component controller="ChatBotController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+access="global">
+    <aura:attribute name="defaultNumber" type="String" default="" />
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="selectedNumber" type="String" default="" /> 
+    <aura:attribute name="numberToBeUsed" type="String" default="" /> 
+    <aura:attribute name="availableFromNumber" type="List" default="" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:registerEvent name="fromNumberEvent" type="c:InboxComponentEvent" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:handler name="change" value="{!v.selectedNumber}" action="{!c.selectedNumberChange}"/>
+    
+    <aura:if isTrue="{!v.isLoading}"> 
+        <div class="spinnercontain">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div> 
+        </div> 
+    </aura:if>
+
+    <lightning:select aura:id="select-from-number" name="from-number" label="From Number" value="{!v.numberToBeUsed}" onchange="{! c.handlePhoneNumber }">
+        <aura:iteration items="{!v.availableFromNumber}" var="option" indexVar="index">
+            <option text="{!option.label}" value="{!option.phoneNumber}" selected="{! (v.numberToBeUsed == option.phoneNumber) }" />
+        </aura:iteration> 
+    </lightning:select>
+
+</aura:component>

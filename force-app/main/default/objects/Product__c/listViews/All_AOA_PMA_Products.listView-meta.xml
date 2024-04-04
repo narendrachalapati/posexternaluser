@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_AOA_PMA_Products</fullName>
+    <columns>NAME</columns>
+    <columns>Account__c</columns>
+    <columns>Unit_Price__c</columns>
+    <columns>Active__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>Product_Code__c</columns>
+    <columns>Product_Family__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Account__c</field>
+        <operation>equals</operation>
+        <value>AOA PMA</value>
+    </filters>
+    <label>All AOA PMA Products</label>
+</ListView>

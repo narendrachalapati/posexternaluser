@@ -1,0 +1,12 @@
+.THIS .slds-dropdown {
+	max-width: 100% !important;
+}
+
+.THIS .slds-input-has-icon .slds-input__icon {
+    pointer-events: none;
+}
+
+.THIS .selected {
+    cursor: pointer !important;
+    background: #ecebea;
+}

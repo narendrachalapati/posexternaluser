@@ -1,0 +1,63 @@
+<apex:page showHeader="false" sidebar="false" showChat="false" showQuickActionVfHeader="false">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <apex:includeScript value="{!$Resource.jquery}"/>
+    <apex:includeScript value="{!$Resource.transaction_js}"/>
+    <apex:stylesheet value="{!$Resource.transaction_css}"/>
+    <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+    <body style="overflow:hidden">
+    <apex:slds />
+    <div class="slds-scope slds-grow">
+        <apex:form id="payment-form">
+            <div id="spinner" class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+            <div class="group">
+
+                <section class="stripe-wrap-float-labels">
+                    <div class="cardwrapper">
+                        <div>
+                            <div class="stripe-label-row">
+                                <div class="stripelabel-field">
+                                    <div id="stripe-card-number" class="stripe-label-input empty"></div>
+                                    <label for="stripe-card-number">Card Number</label>
+                                </div>
+                            </div>
+                            <div class="stripe-label-row">
+                                <div class="stripelabel-field half-width">
+                                    <div id="stripe-card-expiry" class="stripe-label-input empty"></div>
+                                    <label class="stripe-label" for="stripe-card-expiry">Expiration</label>
+                                </div>
+                                <div class="stripelabel-field half-width">
+                                    <div id="stripe-card-cvc" class="stripe-label-input empty"></div>
+                                    <label for="stripe-card-cvc">CVC</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Handle Errors  -->
+                        <div id="card-errors" class="stripe-error error" role="alert"></div>
+                        <!-- Handle Outcome  -->
+                        <div>
+                            <div class="outcome">
+                                <span class="save-card-cb-container">
+                                    <label for="save-card">
+                                        <input type="checkbox" id="save-card" checked="checked" />
+                                        {!$Label.save_card_for_future_checkouts}
+                                    </label>
+                                </span>
+                            </div>
+                            <div style="text-align: center">
+                                <apex:commandbutton styleClass="payment-button" onclick="payInLightning()"
+                                    reRender="none" value="{!$Label.process_cart_items}" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </apex:form>
+    </div>
+    </body>
+</apex:page>

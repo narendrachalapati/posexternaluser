@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TimeZone_Validation</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( Allow_scheduling__c =true ,ISPICKVAL(TimeZone__c, &apos;&apos;))</errorConditionFormula>
+    <errorDisplayField>TimeZone__c</errorDisplayField>
+    <errorMessage>For Scheduling product Time zone is Required</errorMessage>
+</ValidationRule>

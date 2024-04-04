@@ -1,0 +1,52 @@
+<aura:component controller="SMSTemplateController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome"
+access="global">
+
+    <aura:attribute name="parsedBody" type="String" default=""></aura:attribute>
+    <aura:attribute name="templateBody" type="String" default=""></aura:attribute>
+    <aura:attribute name="selectedRecord" type="String" default=""></aura:attribute>
+    <aura:attribute name="isLoading" type="Boolean" default="false"></aura:attribute>
+    <aura:attribute name="expand" type="Boolean" default="false"></aura:attribute>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doint}" />
+    <aura:handler name="change" value="{!v.templateBody}" action="{!c.ontemplateBodyChange}" />
+    <aura:handler name="RecordLookUpComponentEvent" event="c:RecordLookUpComponentEvent" action="{!c.handleComponentEvent}"/>
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    <lightning:card>
+        <div class="slds-section slds-is-open " >
+            <h3 class="slds-section__title slds-theme_shade " >
+                <span class="slds-truncate slds-p-horizontal_small clickable" title="SMS Template Preview" onclick="{!c.handleTogglePreview}" >SMS Template Preview</span>
+                <lightning:icon iconName="{! v.expand ? 'utility:chevrondown' : 'utility:chevronright' }" class="clickable" alternativeText='chevronright' size='x-small' title='chevronright' onclick="{!c.handleTogglePreview}"></lightning:icon>
+                
+            </h3>
+        </div>
+        <aura:if isTrue="{!v.expand}">
+            <div class="slds-p-around_x-small">
+                <c:RecordLookUp objectName="Contact"></c:RecordLookUp>
+                <aura:if isTrue="{! !empty(v.parsedBody)}" >
+                    <div class="preview-body">
+                        <div class="preview-header">SMS Preview</div>
+                        <div class="chat">
+                            <div class="yours messages">
+                                <div class="message last">
+                                    {! v.parsedBody }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+            <aura:if isTrue="{! empty(v.parsedBody)}">
+                <div class="slds-illustration slds-illustration_small svg-ill" aura:id="svg_content">
+                    <img src="{!$Resource.preview_ill}" alt="SVG Image"/>
+                    <div class="preview-header">Select a contact to preview SMS.</div>
+                </div>
+                
+                
+            </aura:if>
+        </aura:if>
+        
+    </lightning:card>
+    
+</aura:component>

@@ -1,0 +1,224 @@
+<apex:page showQuickActionVfHeader="false" showheader="false" 
+controller="FormController" action="{!getForm}">
+    <head>
+        <title>Survey Creator for Knockout</title>
+        <meta charset="utf-8"/>
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/knockout-latest.js')}"></apex:includeScript>
+        <!-- <apex:includeScript value="https://unpkg.com/knockout/build/output/knockout-latest.js"></apex:includeScript> -->
+    
+        <apex:styleSheet value="{!URLFOR($Resource.surveyjs, 'surveyjs/css/defaultV2.min.css')}"/>
+        <!-- <apex:stylesheet value="https://unpkg.com/survey-core/defaultV2.min.css" ></apex:stylesheet> -->
+
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/survey.core.min.js')}"></apex:includeScript>
+        <!-- <apex:includeScript value="https://unpkg.com/survey-core/survey.core.min.js"></apex:includeScript> -->
+
+        <apex:includeScript value="{!URLFOR($Resource.surveyjs, 'surveyjs/js/survey-knockout-ui.min.js')}"></apex:includeScript>
+        <!-- <apex:includeScript value="https://unpkg.com/survey-knockout-ui/survey-knockout-ui.min.js"></apex:includeScript> -->
+        <apex:includeScript value="{!$Resource.formresource}"></apex:includeScript>
+
+        <!-- <apex:includeScript value="{!$Resource.customwidget}"></apex:includeScript> -->
+        
+<script> 
+
+console.log('json ','{!formJSON}');
+const surveyJson = JSON.parse('{!formJSON}');
+/* {
+    elements: [{
+        name: "FirstName",
+        title: "Enter your first name:",
+        type: "text"
+    }, {
+        name: "LastName",
+        title: "Enter your last name:",
+        type: "text"
+    },
+    {
+        type: "signaturepad",
+        name: "signature",
+        title: "Signature"
+    },
+    {
+        type: "file",
+        name: "fileUpload",
+        title: "Upload File"
+    }]
+}; */
+
+function uploadCompleted() {
+    console.log('upload completed');
+}
+
+console.log('{!recordId}');
+let arr =[];
+function traverse(o) {
+    for (let i in o) {
+        // console.log(i, o[i]);
+        if(i == 'elements') {
+            arr = [...arr,...o[i]];
+        }
+        // console.log(i, o[i]); 
+        if (o[i] !== null && typeof(o[i])=="object" 
+        && Array.isArray(o[i])) {
+            for(let j in o[i])
+                traverse(o[i][j]);  
+        }
+    }
+}
+
+traverse(surveyJson);
+arr = arr.filter(x=>{
+    if(x.type == 'signaturepad' || x.type == 'file') {
+        return x;
+    }
+});
+
+const survey = new Survey.Model(surveyJson);
+survey.data = JSON.parse('{!formResponseJSON}'); 
+
+function checkAttachments(data) {
+    let filearr=[];
+    console.log('arr ', arr);
+    filearr = arr.map(i => {
+        for(j in data) {
+            if(i.name == j) {
+                if(i.type == 'file') {
+                    console.log('fileattachment ', [...data[j]]);
+                    return {...i,...{data : [...data[j]]}};
+                }
+                if(i.type == 'signaturepad') {
+                    return {...i,...{data : [data[j]]}};
+                }
+            }
+        }
+    });
+    filearr = filearr.filter(i=>{
+        return i != undefined;
+    })
+    console.log('array ',filearr);
+    for(let i in filearr){
+        console.log('loop ', filearr[i]);
+        if(filearr[i].type == 'signaturepad') {
+            console.log('upload called', filearr[i].title);
+            uploadFile(
+                filearr[i].data[0]?.split('base64,')[1],
+                'signature.png',
+                filearr[i].title,
+                filearr[i].data[0]?.type
+            );
+
+            /* createContentVersion(
+                '{!domainUrl}',
+                '{!$Api.Session_ID}',
+                filearr[i].data[0],
+                'signature.png',
+            ); */
+            
+           /*  sample(
+                'filearr[i].data[0]'
+            ); */
+        } else if(filearr[i].type == "file") {
+            console.log('file upload called', filearr[i].title);
+            uploadFile(
+                filearr[i].data[0]?.content?.split('base64,')[1],
+                filearr[i].data[0]?.name,
+                filearr[i].title,
+                filearr[i].data[0]?.type
+            );
+        }
+        
+    }
+}
+
+function alertResults (sender) {
+    const results = JSON.stringify(sender.data);
+    // alert(results);
+    console.log('data ',sender.data);
+
+    checkAttachments(sender.data);
+    
+    let obj = sender.data;
+    obj.sfid = '{!recordId}';
+    for(let i in obj) {
+        for(let j in arr) {
+            if(i == arr[j].name) {
+                obj[i] = 'uploaded';
+            }
+        }
+    }
+    saveResponse(
+        JSON.stringify(obj)
+    );
+    
+}
+
+survey.onComplete.add(alertResults);
+
+document.addEventListener("DOMContentLoaded", function() {
+    ko.applyBindings({
+        model: survey
+    });
+});
+
+function saveSurveyJson(url, json) {
+    
+    console.log('json saved', json);
+    fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + '{!$Api.Session_ID}'
+        },
+        body: JSON.stringify(json)
+    })
+    .then(response => {
+        response.json()
+    })
+    .then(response => {
+        console.log(JSON.stringify(response))
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// function saveSurveyResults(url, json) {
+//     const request = new XMLHttpRequest();
+//     request.open('POST', url);
+//     request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+//     request.addEventListener('load', () => {
+//         // Handle "load"
+//     });
+//     request.addEventListener('error', () => {
+//         // Handle "error"
+//     });
+//     request.send(JSON.stringify(json));
+// } 
+
+</script>
+
+    </head>
+
+<body >
+    <survey params="survey: model"></survey>
+</body>
+<apex:form >
+    <apex:actionFunction name="uploadFile" action="{!uploadFile}" reRender=""
+    oncomplete="uploadCompleted()">
+        <apex:param name="VersionData" assignTo="{!VersionData}" value=""/>
+        <apex:param name="PathOnClient" assignTo="{!PathOnClient}" value=""/>
+        <apex:param name="Title" assignTo="{!Title}" value=""/>
+        <apex:param name="contentType" assignTo="{!contentType}" value=""/>
+    </apex:actionFunction>
+    <apex:actionFunction name="sample" action="{!sample}" reRender=""
+    oncomplete="uploadCompleted()">
+        <apex:param name="inpval" value=""/>
+    </apex:actionFunction>
+    <apex:actionFunction name="saveResponse" action="{!saveResponse}" reRender=""
+    oncomplete="uploadCompleted()">
+        <apex:param name="response" value=""/>
+    </apex:actionFunction>
+
+</apex:form>
+
+</apex:page>

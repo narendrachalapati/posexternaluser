@@ -1,0 +1,34 @@
+<aura:component controller="ChatBotController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome"
+access="global">
+    <aura:attribute name="smsTemplates" type="List" />
+    <aura:attribute name="selectedTemplate" type="String" default=""/>
+    <aura:attribute name="mergedText" type="String" default=""/>
+    <aura:attribute name="isLoading" type="Boolean" default="false" />  
+    <aura:attribute name="selectDefault" type="Boolean" default="false" />  
+    <aura:attribute name="recordId" type="String" default="" />  
+    <aura:attribute name="sObjectApiName" type="String" default="" />  
+
+    <aura:registerEvent name="selectTemplateEvent" type="c:InboxComponentEvent" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" /> 
+    <aura:handler name="change" value="{!v.recordId}" action="{!c.idChange}"/>
+    <aura:handler name="change" value="{!v.sObjectApiName}" action="{!c.sObjectApiNameChange}"/>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <div class="spinnercontain">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <lightning:select aura:id="select-template" name="sms-template" label="Select Template" value="{! v.selectedTemplate}" onchange="{! c.handleTemplateChange }">
+        <option value="" elected="{! empty(v.selectedTemplate) }">choose one...</option>    
+        <aura:iteration items="{!v.smsTemplates}" var="option" indexVar="index">
+            <option text="{!option.label}" value="{!index}" selected="{! (index == v.selectedTemplate) }"/> 
+        </aura:iteration>
+    </lightning:select>
+</aura:component>

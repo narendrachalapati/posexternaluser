@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GoogleDriveSubFolder__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <inlineHelpText>This field is filled when two Parent folders needed</inlineHelpText>
+    <label>GoogleDriveSubFolder</label>
+    <referenceTo>GoogleDriveFolder__c</referenceTo>
+    <relationshipLabel>GoogleDriveFolders (GoogleDriveSubFolder)</relationshipLabel>
+    <relationshipName>GoogleDriveFolders1</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>
