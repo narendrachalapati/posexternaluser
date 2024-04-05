@@ -9,6 +9,7 @@
            component.set('v.currentMember', contactId);
         }
         console.log('ContainermemberId' + component.get('v.currentMember'));
+        helper.GuestuserCheck(component);
         var logApiResponses = true;
         var productfromcontact = component.get('v.productData');
         console.log('productfromcontact' + productfromcontact);

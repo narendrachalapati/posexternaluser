@@ -35,7 +35,9 @@
     <aura:attribute name="allProductsMap" type="Map" />
     <aura:attribute name="productData" type="List" /> 
     <aura:attribute name="productsfromcontactserch" type="boolean" default="false" />
-
+     
+      <!--Guest user check attribute-->
+   <aura:attribute name="IsGuestUser" type="boolean"  />
     <aura:handler event="c:componentCommunicationEvent" action="{!c.handleComponentCommunicationEvent}"/>
 
      <!-- Register for Communications Application Event -->
@@ -66,10 +68,10 @@
             </aura:if> -->
             <aura:if isTrue = "{!v.showChild}">
                 <c:PmaProducts orderUUID="{!v.orderUUID}" memberId="{!v.currentMember}" AccountId="{!v.AccountId}" memberName="{!v.memberName}" userContactWrap="{!v.userContactWrap}"
-                 productData="{!v.productData}" productsfromcontactserch="{!v.productsfromcontactserch}" allProductsMap="{!v.allProductsMap}" isLoggedIn="{!v.isLoggedIn}"/>
+                 productData="{!v.productData}" productsfromcontactserch="{!v.productsfromcontactserch}" allProductsMap="{!v.allProductsMap}" IsGuestUser="{!v.IsGuestUser}"/>
             </aura:if>
             <aura:if isTrue = "{!v.showChild}">
-                <c:pmaCart orderUUID="{!v.orderUUID}" memberId="{!v.currentMember}" AccountId="{!v.AccountId}" memberName="{!v.memberName}" activityRecordid="{!v.activityRecordid}" userContactWrap="{!v.userContactWrap}" todorecord="{!v.todorecord}" uuidstring="{!v.uuidstring}"/>
+                <c:pmaCart orderUUID="{!v.orderUUID}" memberId="{!v.currentMember}" AccountId="{!v.AccountId}" memberName="{!v.memberName}" activityRecordid="{!v.activityRecordid}" userContactWrap="{!v.userContactWrap}" todorecord="{!v.todorecord}" uuidstring="{!v.uuidstring}" IsGuestUser="{!v.IsGuestUser}"/>
             </aura:if>
             <!--
             <lightning:layoutItem size="12" largeDeviceSize="8" mediumDeviceSize="8" smallDeviceSize="12">

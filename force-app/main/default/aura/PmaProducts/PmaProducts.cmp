@@ -10,7 +10,7 @@
     <aura:attribute name="uuidstring" type="String"/>
     <aura:attribute name="memberId" type="String"/>
     <aura:attribute name="AccountId" type="string" />
-    <aura:attribute name="isLoggedIn" type="Boolean"/>
+ 
     <!-- Todo Refactor Attributes -->
     <!--Init Parent Component Values-->
     <aura:attribute name="orderUUID" type="String" />
@@ -48,6 +48,8 @@
     <aura:attribute name="filtedoptions" type="List" />
     <aura:attribute name="selectedproductoption" type="List" />
     <aura:attribute name="Inactiveprodoptions" type="List" />
+       <!--Guest user check attribute-->
+   <aura:attribute name="IsGuestUser" type="boolean"  />
     <!-- Register Products Selection Application Event -->
     <aura:registerEvent name="appEvent" type="c:posCommunicationEvent"/>
 
@@ -84,7 +86,7 @@
                     </aura:if>
                     
                     <div class="slds-card">
-                        <aura:if isTrue="{!v.isLoggedIn}">
+                        <aura:if isTrue="{!v.IsGuestUser ==false}">
                         <div class="ts-back-wrap" onclick="{!c.communicationforcontactsearch}">
                             <div class="smoothscroll-back">                  
                                 <i class="fa fa-arrow-left"></i>

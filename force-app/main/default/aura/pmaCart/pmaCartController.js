@@ -9,7 +9,7 @@
         if(contactId !=null){
          component.set('v.contactRecordId', contactId);
       }
-      helper.GuestuserCheck(component);
+      
       console.log('CartmemberId' + component.get('v.contactRecordId'));
      function initToaster() {
         toastr.options = {

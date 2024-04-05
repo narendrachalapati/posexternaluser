@@ -72,7 +72,7 @@
    <aura:attribute name="ShowSavedCards" type="boolean" default="false" />
    <aura:attribute name="Tippercentageshow" type="boolean" default="True" />
     <!--Guest user check attribute-->
-   <aura:attribute name="IsGuestUser" type="boolean" default="true" />
+   <aura:attribute name="IsGuestUser" type="boolean"  />
    <!-- Wallet specific Component Values-->
    <aura:attribute name="QtyofinputBox" type="double" />
 
@@ -84,11 +84,14 @@
    <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.toasterLib + '/toastr.min.css')}"  
    scripts="{!$Resource.toasterLib + '/toastr.min.js'}"/>
    <aura:if isTrue="{!v.isAddTipPopupOpen}">
+      <aura:if isTrue="{! ( (v.isAddTipPopupOpen) &amp;&amp;(v.IsGuestUser == false ) )}" >
+
       <div class="ts-back-wrap" onclick="{!c.communicationforcontactsearch}">
          <div class="smoothscroll-back">                  
              <i class="fa fa-arrow-left"></i>
          </div>
      </div>
+     </aura:if>
       <section class="slds-grid slds-wrap slds-grid_align-center possearch d-flex-width-100">
          <div class="container">
             <!-- <div class="title" style="font-family: Inter,sans-serif;">

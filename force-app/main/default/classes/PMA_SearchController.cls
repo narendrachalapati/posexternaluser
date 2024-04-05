@@ -350,6 +350,17 @@ public without sharing class PMA_SearchController {
         }
         return mapProductsList;
     }
+          //To Return guest user details
+          @AuraEnabled
+          public static Boolean Guestusercheck () {
+               Boolean isguestuser;
+               if(UserInfo.getUserType() == 'Guest'){
+                  isguestuser =true;
+               }else{
+                  isguestuser =false;
+               }
+              return isguestuser;
+          }
     public class orderItemOptionComponentWrap{
         @AuraEnabled
         public Order_Item__c orderLineItemRecord {get;set;}

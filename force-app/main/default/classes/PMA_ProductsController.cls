@@ -421,17 +421,7 @@ public with sharing class PMA_ProductsController {
         }
         return cont;
     }
-        //To Return guest user details
-        @AuraEnabled
-        public static Boolean Guestusercheck () {
-             Boolean isguestuser;
-             if(UserInfo.getUserType() == 'Guest'){
-                isguestuser =true;
-             }else{
-                isguestuser =false;
-             }
-            return isguestuser;
-        }
+  
     @AuraEnabled
     public static User fetchCurrentUser() {
         // query current user information  
