@@ -72,7 +72,7 @@
    <aura:attribute name="ShowSavedCards" type="boolean" default="false" />
    <aura:attribute name="Tippercentageshow" type="boolean" default="True" />
     <!--Guest user check attribute-->
-   <aura:attribute name="IsGuestUser" type="boolean" default="" />
+   <aura:attribute name="IsGuestUser" type="boolean" default="true" />
    <!-- Wallet specific Component Values-->
    <aura:attribute name="QtyofinputBox" type="double" />
 
@@ -352,8 +352,9 @@
                   Cancel
                   </button>
                </aura:if>
-               <aura:if isTrue="{! ( (v.userContactWrap != null ) &amp;&amp; (v.userContactWrap.contactRecord != null ) &amp;&amp; (v.userContactWrap.contactRecord.RecordType.Name != 'Vendor' ) )}" >
-                  <button class="btn btn-danger btn-md mx-2" onclick="{! c.deletePOSTab }" style="font-size:0.8rem;">
+               <aura:if isTrue="{! ( (v.userContactWrap != null ) &amp;&amp; (v.userContactWrap.contactRecord != null ) &amp;&amp; (v.userContactWrap.contactRecord.RecordType.Name != 'Vendor' ) &amp;&amp; (v.IsGuestUser == false ) )}" >
+                  
+               <button class="btn btn-danger btn-md mx-2" onclick="{! c.deletePOSTab }" style="font-size:0.8rem;">
                   <i class="fa fa-trash" aria-hidden="true"></i>
                   Delete Tab     
                   </button> 

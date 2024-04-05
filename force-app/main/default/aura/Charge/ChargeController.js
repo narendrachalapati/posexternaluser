@@ -201,7 +201,7 @@
                 component.set('v.ShowPaymentOptions', false);                    
                 component.set('v.ShowDefaultPage', false);
                 component.set('v.initStatus', '');
-                helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
+                //helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
             }else if( (isFailedTransaction == 'true') ){//Retry Payment on POS Screen
                 component.set('v.paymentResponse', paymentsResponse);
                 console.log('isFailedTransaction Block ' + paymentsResponse);
@@ -209,7 +209,7 @@
                 component.set('v.ShowTransactionDetails', false);
                 component.set('v.ShowPaymentOptions', true);                    
                 component.set('v.ShowDefaultPage', false);
-                helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
+                // helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
             }else{//Retry Payment Virtual Terminal
                 component.set('v.paymentResponse', paymentsResponse);
                 console.log('Payment Virtual Terminal Block ' + paymentsResponse);
@@ -217,8 +217,19 @@
                 component.set('v.ShowTransactionDetails', false);
                 component.set('v.ShowPaymentOptions', true);                    
                 component.set('v.ShowDefaultPage', false);
-                helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
+                
+                // helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
             }
+            helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } )
+            .then(result => {
+                console.log(result); // Event fired successfully
+                // Handle any other logic after the event
+            })
+            .catch(error => {
+                console.error('Error firing event:', error);
+                // Handle error cases
+            });
+
             component.set('v.Loading', false);
         };
 

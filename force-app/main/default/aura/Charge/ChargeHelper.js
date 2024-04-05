@@ -2,13 +2,19 @@
     logApiResponses : true,
     
     fireApplicationEventCall : function (component, event, eventControllerName, params) {
+        return new Promise((resolve, reject) => {
             var appEvent = $A.get('e.c:' + eventControllerName);
             if (this.logApiResponses) { console.log('*** ' + 'Sending messagedata' + ' *** ' + params ); }  
             appEvent.setParams(params);
             if (this.logApiResponses) { console.log('*** ' + 'Sending messagedata' + ' *** ' + params ); }   
             if (this.logApiResponses) { console.log('*** ' + 'Sending application event' + ' *** ' + eventControllerName ); }   
-            appEvent.fire();
-            if (this.logApiResponses) { console.log('*** ' + 'Sent application event successfully' + ' *** ' + eventControllerName); }   
+            // Fire the event
+        	appEvent.fire();
+            if (this.logApiResponses) { console.log('*** ' + 'Sent application event successfully' + ' *** ' + eventControllerName); } 
+    
+            // Resolve the Promise (you can also reject it if needed)
+            resolve('Event fired successfully');
+        });
 	},
             
     createPaymentRequestsApiCall : function(component, paymentRequests, stripePaymentRequest) {
