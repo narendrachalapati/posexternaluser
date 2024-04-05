@@ -1,4 +1,6 @@
 public with sharing class PMA_ProductsController {
+    public ToDo__c todorecord { get; set; }
+    public string uuid { get; set; }
     private static TransactionService txnService = new TransactionService();
     private static StripeService stripeService = new StripeService();
 
@@ -409,7 +411,7 @@ public with sharing class PMA_ProductsController {
         Order__c currentOrder = PMA_SearchController.getOrderDetailsByIdOrUUID( orderIdOrUUID );
         return currentOrder;
     }
-
+    
     //To Return Contact Details
     @AuraEnabled
     public static Contact getContactDetails(String recordId) {
@@ -419,7 +421,17 @@ public with sharing class PMA_ProductsController {
         }
         return cont;
     }
-
+        //To Return guest user details
+        @AuraEnabled
+        public static Boolean Guestusercheck () {
+             Boolean isguestuser;
+             if(UserInfo.getUserType() == 'Guest'){
+                isguestuser =true;
+             }else{
+                isguestuser =false;
+             }
+            return isguestuser;
+        }
     @AuraEnabled
     public static User fetchCurrentUser() {
         // query current user information  

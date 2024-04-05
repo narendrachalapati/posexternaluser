@@ -9,6 +9,7 @@
         if(contactId !=null){
          component.set('v.contactRecordId', contactId);
       }
+      helper.GuestuserCheck(component);
       console.log('CartmemberId' + component.get('v.contactRecordId'));
      function initToaster() {
         toastr.options = {
@@ -1596,4 +1597,6 @@ AddOrderItemHandler: function (component, event) {
    });
 
     }
-})
+})// This is just a sample script. Paste your real code (javascript or HTML) here.
+
+if ('this_is'==/an_example/){of_beautifier();}else{var a=b?(c%d):e[f];}

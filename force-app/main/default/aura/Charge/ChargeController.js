@@ -59,15 +59,7 @@
             }
         };
 
-        component.fireApplicationEventCall = function (eventControllerName, params) {
-            var appEvent = $A.get('e.c:' + eventControllerName);
-            appEvent.setParams(params);
-            if (logApiResponses) { console.log('*** ' + 'Sending messagedata' + ' *** ' + params ); }   
-            if (logApiResponses) { console.log('*** ' + 'Sending application event' + ' *** ' + eventControllerName ); }   
-            appEvent.fire();
-            if (logApiResponses) { console.log('*** ' + 'Sent application event successfully' + ' *** ' + eventControllerName); }   
-        };
-
+        
         component.hasRecordId = function () {
             var recordId = component.get('v.recordId');
             if( (recordId != '') && (recordId != null)  && (recordId != undefined) ){
@@ -160,72 +152,6 @@
                
         };
 
-        component.processPayments = function (savedPaymentRequests, stripePaymentRequest) {
-            var isFailedTransaction = component.get('v.isFailedTransaction');
-            component.apiCall('processPayments', {
-                paymentRequests: (savedPaymentRequests== undefined) ? '' : savedPaymentRequests,
-                stripePaymentRequest: stripePaymentRequest
-            }, function(paymentsResponse) {
-                console.log('apiCall processPayments Success');
-                console.table(paymentsResponse);
-                var txnstatus,statusMessage,statusCode;
-                //isFailedTransaction
-                //initStatus
-                if ((paymentsResponse != null) && (paymentsResponse != undefined) && (paymentsResponse != '')) {
-                    if (paymentsResponse.type == 'TXN') {
-                        statusMessage = ((paymentsResponse.txn.Status__c != 'failed') ? 'Card Charged Successfully' : paymentsResponse.txn.FailureMessage__c);
-                        component.set('v.initStatus', ((paymentsResponse.txn.Status__c != 'failed') ? '' : paymentsResponse.txn.FailureMessage__c));
-                        txnstatus = ((paymentsResponse.txn.Status__c != 'failed') ? 'Success' : 'Failed');
-                        statusCode = ((paymentsResponse.txn.Status__c != 'failed') ? '' : paymentsResponse.txn.FailureCode__c);
-                    }
-                    if (paymentsResponse.type == 'OTHER') {
-                        statusMessage = ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? 'Card Charged Successfully' : 'Failed to Charge Card: Unknown Error');
-                        component.set('v.initStatus', ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? '' : 'Failed to Charge Card: Unknown Error'));
-                        txnstatus = ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? 'Success' : 'Failed');
-                        statusCode = ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? '' : 'Unknown');
-                    }
-                }
-                console.log('txnstatus ' + txnstatus);
-                console.log('statusMessage ' + statusMessage);
-                console.log('statusCode ' + statusCode);
-
-                if(txnstatus =='Success'){
-                    component.set('v.paymentResponse', paymentsResponse);	
-                    console.log('Success Block ' + paymentsResponse);	
-                    console.table( component.get('v.paymentResponse'));	 
-                    component.set('v.ShowTransactionDetails', true);
-                    component.set('v.Loading', false);
-                    component.set('v.ShowPaymentOptions', false);                    
-                    component.set('v.ShowDefaultPage', false);
-                    component.set('v.initStatus', '');
-                    component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
-                }else if( (isFailedTransaction == 'true') ){//Retry Payment on POS Screen
-                    component.set('v.paymentResponse', paymentsResponse);
-                    console.log('isFailedTransaction Block ' + paymentsResponse);
-                    console.table( component.get('v.paymentResponse'));	 				 
-                    component.set('v.ShowTransactionDetails', false);
-                    component.set('v.ShowPaymentOptions', true);                    
-                    component.set('v.ShowDefaultPage', false);
-                    component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
-                }else{//Retry Payment Virtual Terminal
-                    component.set('v.paymentResponse', paymentsResponse);
-                    console.log('Payment Virtual Terminal Block ' + paymentsResponse);
-                    console.table( component.get('v.paymentResponse'));	 					 
-                    component.set('v.ShowTransactionDetails', false);
-                    component.set('v.ShowPaymentOptions', true);                    
-                    component.set('v.ShowDefaultPage', false);
-                    component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
-                }
-                component.set('v.Loading', false);
-            }, function(paymentErrorResponse) {
-                console.log('apiCall processPayments Failed');
-                console.log('paymentError Response ' + paymentErrorResponse);
-                component.set('v.initStatus', paymentErrorResponse);
-                component.set('v.Loading', false);
-
-            });
-        };
-
         component.apiCallErrorHandling = function (errors, controllerMethodName) {
             var apiCallErrorResponse;
             if (errors && Array.isArray(errors) && errors.length > 0) {
@@ -243,7 +169,7 @@
             return apiCallErrorResponse;
         };
 
-        component.handleChargeResponseStatus = function (paymentsResponse) {
+        component.handleChargeResponseStatus = function (component, paymentsResponse) {
             console.log('handleChargeResponseStatus Init');
             var isFailedTransaction = component.get('v.isFailedTransaction');
             var txnstatus, statusMessage, statusCode;
@@ -275,7 +201,7 @@
                 component.set('v.ShowPaymentOptions', false);                    
                 component.set('v.ShowDefaultPage', false);
                 component.set('v.initStatus', '');
-                component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
+                helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
             }else if( (isFailedTransaction == 'true') ){//Retry Payment on POS Screen
                 component.set('v.paymentResponse', paymentsResponse);
                 console.log('isFailedTransaction Block ' + paymentsResponse);
@@ -283,7 +209,7 @@
                 component.set('v.ShowTransactionDetails', false);
                 component.set('v.ShowPaymentOptions', true);                    
                 component.set('v.ShowDefaultPage', false);
-                component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
+                helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
             }else{//Retry Payment Virtual Terminal
                 component.set('v.paymentResponse', paymentsResponse);
                 console.log('Payment Virtual Terminal Block ' + paymentsResponse);
@@ -291,7 +217,7 @@
                 component.set('v.ShowTransactionDetails', false);
                 component.set('v.ShowPaymentOptions', true);                    
                 component.set('v.ShowDefaultPage', false);
-                component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
+                helper.fireApplicationEventCall(component, event, 'ChargeResponseApply' , { 'paymentStatus' : txnstatus, 'event':'chargeResponse' } );
             }
             component.set('v.Loading', false);
         };
@@ -307,98 +233,65 @@
                 console.log('paymentRequestsNDR '+ paymentRequests);
                 if ((Array.isArray(savedPaymentIntents)) && (savedPaymentIntents.length != 0)) {
                     console.log('apiCall use Existing Intent Calling');
-                    // component.processPayments(savedPaymentIntents, stripePaymentRequest);
-                    var processPaymentsAction = component.get('c.processPayments');
-                    processPaymentsAction.setParams({
-                        "paymentRequests" : (savedPaymentIntents== undefined) ? '' : savedPaymentIntents,
-                        stripePaymentRequest: stripePaymentRequest
-                    });
-                    processPaymentsAction.setCallback(this, function (processPaymentsActionData) {
-                        var processPaymentsActionState = processPaymentsActionData.getState();
-                        console.log('processPaymentsAction state ' + processPaymentsActionState);
-                        if (processPaymentsActionState == "SUCCESS") {
-                            var paymentsResponse = processPaymentsActionData.getReturnValue();
+
+                    // Start promise for processPaymentsApiCall async call
+                    var processPaymentsApiCallPromise = helper.processPaymentsApiCall(component, savedPaymentIntents, stripePaymentRequest);
+                    processPaymentsApiCallPromise
+                    .then(
+                        // resolve callback of processPaymentsApiCall async call
+                        $A.getCallback(function(paymentsResponse) {
                             console.log('processPaymentsAction response ' + paymentsResponse);
-                            console.log('apiCall processPayments Success');
-                            console.table(paymentsResponse);
-
-                            component.handleChargeResponseStatus(paymentsResponse);
-
-                        } else {
-                            console.log(processPaymentsActionData.getError());
-                            var processPaymentsActionErrors = processPaymentsActionData.getError();
-                            var paymentErrorResponse = component.apiCallErrorHandling(processPaymentsActionErrors, 'processPayments');
-                            
-                            console.log('apiCall processPayments Failed');
-                            console.log('processPayments Response ' + paymentErrorResponse);
-                            component.set('v.initStatus', paymentErrorResponse);
+                    		console.log('apiCall processPayments Success');
+                    		component.handleChargeResponseStatus(component, paymentsResponse);
+                        })
+                    )
+                    .catch(
+                        // reject callback
+                        $A.getCallback(function(error) {
+                            console.error('=========== error = ' + error);
+                            console.log('=========== error = ' + error.stack);
+                            component.set('v.initStatus', error);
                             component.set('v.Loading', false);
-                        }
-                        
-                    });
-                    $A.enqueueAction(processPaymentsAction);
+                        })
+                    );
+
                 } else {
                     console.log('apiCall createPaymentRequests Calling');
-
-                    var createPaymentRequestsAction = component.get('c.createPaymentRequests');
-                    createPaymentRequestsAction.setParams({
-                        "chargeRequests": paymentRequests
-                    });
-                    createPaymentRequestsAction.setCallback(this, function (createPaymentRequestsActionResponseData) {
-                        var createPaymentRequestsActionResponseState = createPaymentRequestsActionResponseData.getState();
-                        if (createPaymentRequestsActionResponseState == "SUCCESS") {
-                            var savedPaymentRequests = createPaymentRequestsActionResponseData.getReturnValue();
-                            component.set('v.savedPaymentRequests', savedPaymentRequests);
-                            console.log('apiCall createPaymentRequests Success');
-                            // component.processPayments(savedPaymentRequests, stripePaymentRequest);
-
-                            var processPaymentsAction_Immediate = component.get('c.processPayments');
-                            processPaymentsAction_Immediate.setParams({
-                                "paymentRequests": (savedPaymentRequests== undefined) ? '' : savedPaymentRequests,
-                                "stripePaymentRequest": stripePaymentRequest
-                            });
-                            processPaymentsAction_Immediate.setCallback(this, function (processPaymentsData) {
-                                var processPaymentsAction_State = processPaymentsData.getState();
-                                console.log('processPaymentsAction_Immediate state ' + processPaymentsAction_State);
-                                if (processPaymentsAction_State == "SUCCESS") {
-                                    var paymentsResponse_Immediate = processPaymentsData.getReturnValue();
-                                    console.log('processPaymentsAction_Immediate response ' + paymentsResponse_Immediate);
-                                    console.log('apiCall processPayments Success');
-                                    console.table(paymentsResponse_Immediate);
-
-                                    component.handleChargeResponseStatus(paymentsResponse_Immediate);
-
-                                } else {
-                                    console.log(processPaymentsData.getError());
-                                    var processPayments_Errors = processPaymentsData.getError();
-                                    var paymentErrorResponse_Error = component.apiCallErrorHandling(processPayments_Errors, 'processPayments');
-                                    
-                                    console.log('apiCall processPayments Failed');
-                                    console.log('processPayments Response ' + paymentErrorResponse_Error);
-                                    component.set('v.initStatus', paymentErrorResponse_Error);
-                                    component.set('v.Loading', false);
-                                }
-                                
-                            });
-                            $A.enqueueAction(processPaymentsAction_Immediate);
-
-                        } else {
-                            console.log(createPaymentRequestsActionResponseData.getError());
-                            var createPaymentRequests_Errors = createPaymentRequestsActionResponseData.getError();
-                            console.log(createPaymentRequests_Errors);
-                            var createPaymentRequests_Error = component.apiCallErrorHandling(createPaymentRequests_Errors, 'createPaymentRequests');
-                            console.log('apiCall createPaymentRequests Failed');
-                            console.log('createPaymentRequests Response ' + createPaymentRequests_Error);
-                            component.set('v.initStatus', createPaymentRequests_Error);
+                     // Start promise for createPaymentRequestsApiCallPromise async call
+					var createPaymentRequestsApiCallPromise = helper.createPaymentRequestsApiCall(component, paymentRequests, stripePaymentRequest);
+                    createPaymentRequestsApiCallPromise
+                    .then(
+                        // resolve callback of createPaymentRequestsApiCall async call
+                        $A.getCallback(function(savedPaymentRequests) {
+                            console.log('savedPaymentRequests = ' + savedPaymentRequests);
+                            // Start promise for processPaymentsApiCallPromise async call
+                            return helper.processPaymentsApiCall(component, savedPaymentRequests, stripePaymentRequest);
+                        })
+                    )
+                    .then(
+                        // resolve callback of processPaymentsApiCall async call
+                        $A.getCallback(function(paymentsResponse) {
+                            console.log('processPaymentsAction response ' + paymentsResponse);
+                    		console.log('apiCall processPayments Success');
+                    		component.handleChargeResponseStatus(component, paymentsResponse);
+                        })
+                    )
+                    .catch(
+                        // reject callback
+                        $A.getCallback(function(error) {
+                            console.error('=========== error = ' + error);
+                            console.log('=========== error = ' + error.stack);
+                            component.set('v.initStatus', error);
                             component.set('v.Loading', false);
-                        }
-                    });
-                    $A.enqueueAction(createPaymentRequestsAction);
+                        })
+                    );
                         
                 }
             } catch (error) {
-            console.error(error);
-           
+                console.error('=========== error = ' + error);
+                console.log('=========== error = ' + error.stack);
+                component.set('v.initStatus', error);
+                component.set('v.Loading', false);
           }
         }
         

@@ -71,7 +71,7 @@
     <aura:attribute name="todoRecordId" type="String" />
 
     <!-- Register for ChargeResponseApply Application Event -->
-    <aura:registerEvent name="chargeResponse" type="c:ChargeResponseApply"/>
+    <aura:registerEvent name="ChargeResponseApply" type="c:ChargeResponseApply"/>
 
     <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
     <aura:handler event="force:refreshView" action="{!c.isRefreshed}" />

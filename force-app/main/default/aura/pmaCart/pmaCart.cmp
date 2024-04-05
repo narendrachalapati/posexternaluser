@@ -71,6 +71,8 @@
    <aura:attribute name="SelectedPaymentSource" type="String" />
    <aura:attribute name="ShowSavedCards" type="boolean" default="false" />
    <aura:attribute name="Tippercentageshow" type="boolean" default="True" />
+    <!--Guest user check attribute-->
+   <aura:attribute name="IsGuestUser" type="boolean" default="" />
    <!-- Wallet specific Component Values-->
    <aura:attribute name="QtyofinputBox" type="double" />
 
