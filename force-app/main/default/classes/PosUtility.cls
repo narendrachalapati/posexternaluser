@@ -190,5 +190,55 @@ public without sharing class PosUtility {
         }
         return (Contactdata != null) ? (Contactdata) : (new Contact());
       }
+    
+    public static List<Payment_Intent__c> createPaymentRequests(List<ChargeController.ChargeRequest> chargeRequests) {
+        List<Payment_Intent__c> paymentRequests = new List<Payment_Intent__c>();
+        try{
+            System.debug('Charge controller , chargeRequests=' + chargeRequests);
+            Id currentContactId = chargeRequests[0].contactId;
+            Id currentAccountId = chargeRequests[0].accountId;
+            PMA_SearchController.StripeApiTokensWrap apiKeyWrap = PosUtility.fetchStripeApiToken(currentAccountId);
+            
+            Contact searchContact = new Contact();
+            if( String.isBlank(currentContactId) ){
+                searchContact = ChargeController.fetchVirtualTerminalcontact();
+            }
+            List<Payment_Intent__c> createPaymentRequests = new List<Payment_Intent__c>();
+            for (ChargeController.ChargeRequest chargeRequest : chargeRequests) {
+                Id contactId = String.isNotBlank(chargeRequest.contactId) ? chargeRequest.contactId : searchContact.Id;
+                Id accountId = String.isNotBlank(chargeRequest.contactId) ? chargeRequest.accountId : searchContact.accountId;
+                Id orderId = chargeRequest.orderId;
+                String email = String.isNotBlank(chargeRequest.contactId) ? chargeRequest.email : searchContact.email;
+                Double amount = chargeRequest.amount;
+                String frequency = chargeRequest.frequency;
+                Date firstChargeDate = chargeRequest.firstChargeDate;
+                String paymentType = chargeRequest.paymentType;
+                String paymentName =  chargeRequest.paymentName;
+                //Name Field MAX Size Truncate
+                Integer fieldmaxSize = 80;
+                if(paymentName.length() > fieldmaxSize ){
+                    paymentName = paymentName.substring(0, fieldmaxSize);
+                }
+                Payment_Intent__c createPaymentRecord = new Payment_Intent__c(
+                Name = paymentName,
+                Contact__c = contactId,
+                Account__c = accountId,
+                Order__c = orderId,
+                Email__c = email,
+                Payment_Type__c = paymentType,
+                Frequency__c = frequency,
+                First_Charge_Date__c = firstChargeDate,
+                Amount__c = amount,
+                Currency_Code__c = UserInfo.getDefaultCurrency(),
+                UUID__c = SYS_Helper.getUUID());
+                
+                createPaymentRequests.add(createPaymentRecord);
+            }
+            paymentRequests = PaymentIntentService.createNewPaymentIntent(createPaymentRequests);
+        } catch(Exception e) {
+            throw new AuraHandledException (e.getMessage() + e.getStackTraceString());
+        }
+        return paymentRequests;
+    }
 
 }

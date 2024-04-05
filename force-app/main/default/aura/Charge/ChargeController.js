@@ -11,6 +11,7 @@
         //-----------------------
 
         function receiveMessage(event) {
+            console.log('receiveMessage ');
             if (event.data.paymentRequest) {
                 var paymentRequest = JSON.parse(event.data.paymentRequest);
                 console.log('paymentRequest');
@@ -225,6 +226,76 @@
             });
         };
 
+        component.apiCallErrorHandling = function (errors, controllerMethodName) {
+            var apiCallErrorResponse;
+            if (errors && Array.isArray(errors) && errors.length > 0) {
+                if (errors[0].message) {
+                    console.log(errors[0].message);
+                    apiCallErrorResponse = errors[0].message;
+                } else {
+                    console.log('Failed to perform action! ' + controllerMethodName + ' ' + JSON.stringify(errors));
+                    apiCallErrorResponse = 'Failed to perform action! ' + controllerMethodName + ' ' + JSON.stringify(errors);
+                }
+            } else {
+                console.log('Failed to perform action! ' + controllerMethodName + ' ' + JSON.stringify(errors));
+                apiCallErrorResponse = 'Failed to perform action! ' + controllerMethodName + ' ' + JSON.stringify(errors);
+            }
+            return apiCallErrorResponse;
+        };
+
+        component.handleChargeResponseStatus = function (paymentsResponse) {
+            console.log('handleChargeResponseStatus Init');
+            var isFailedTransaction = component.get('v.isFailedTransaction');
+            var txnstatus, statusMessage, statusCode;
+
+            if ((paymentsResponse != null) && (paymentsResponse != undefined) && (paymentsResponse != '')) {
+                if (paymentsResponse.type == 'TXN') {
+                    statusMessage = ((paymentsResponse.txn.Status__c != 'failed') ? 'Card Charged Successfully' : paymentsResponse.txn.FailureMessage__c);
+                    component.set('v.initStatus', ((paymentsResponse.txn.Status__c != 'failed') ? '' : paymentsResponse.txn.FailureMessage__c));
+                    txnstatus = ((paymentsResponse.txn.Status__c != 'failed') ? 'Success' : 'Failed');
+                    statusCode = ((paymentsResponse.txn.Status__c != 'failed') ? '' : paymentsResponse.txn.FailureCode__c);
+                }
+                if (paymentsResponse.type == 'OTHER') {
+                    statusMessage = ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? 'Card Charged Successfully' : 'Failed to Charge Card: Unknown Error');
+                    component.set('v.initStatus', ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? '' : 'Failed to Charge Card: Unknown Error'));
+                    txnstatus = ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? 'Success' : 'Failed');
+                    statusCode = ((paymentsResponse.paymentRequest.Status__c != 'payment_failed') ? '' : 'Unknown');
+                }
+            }
+            console.log('txnstatus ' + txnstatus);
+            console.log('statusMessage ' + statusMessage);
+            console.log('statusCode ' + statusCode);
+
+            if(txnstatus =='Success'){
+                component.set('v.paymentResponse', paymentsResponse);	
+                console.log('Success Block ' + paymentsResponse);	
+                console.table( component.get('v.paymentResponse'));	 
+                component.set('v.ShowTransactionDetails', true);
+                component.set('v.Loading', false);
+                component.set('v.ShowPaymentOptions', false);                    
+                component.set('v.ShowDefaultPage', false);
+                component.set('v.initStatus', '');
+                component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
+            }else if( (isFailedTransaction == 'true') ){//Retry Payment on POS Screen
+                component.set('v.paymentResponse', paymentsResponse);
+                console.log('isFailedTransaction Block ' + paymentsResponse);
+                console.table( component.get('v.paymentResponse'));	 				 
+                component.set('v.ShowTransactionDetails', false);
+                component.set('v.ShowPaymentOptions', true);                    
+                component.set('v.ShowDefaultPage', false);
+                component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
+            }else{//Retry Payment Virtual Terminal
+                component.set('v.paymentResponse', paymentsResponse);
+                console.log('Payment Virtual Terminal Block ' + paymentsResponse);
+                console.table( component.get('v.paymentResponse'));	 					 
+                component.set('v.ShowTransactionDetails', false);
+                component.set('v.ShowPaymentOptions', true);                    
+                component.set('v.ShowDefaultPage', false);
+                component.fireApplicationEventCall('ChargeResponseApply' , { paymentStatus : txnstatus, event:'chargeResponse' } );
+            }
+            component.set('v.Loading', false);
+        };
+
         component.checkoutItems = function (stripePaymentRequest) {
             try {
                 console.log('checkoutItems Init');
@@ -236,23 +307,94 @@
                 console.log('paymentRequestsNDR '+ paymentRequests);
                 if ((Array.isArray(savedPaymentIntents)) && (savedPaymentIntents.length != 0)) {
                     console.log('apiCall use Existing Intent Calling');
-                    component.processPayments(savedPaymentIntents, stripePaymentRequest);
+                    // component.processPayments(savedPaymentIntents, stripePaymentRequest);
+                    var processPaymentsAction = component.get('c.processPayments');
+                    processPaymentsAction.setParams({
+                        "paymentRequests" : (savedPaymentIntents== undefined) ? '' : savedPaymentIntents,
+                        stripePaymentRequest: stripePaymentRequest
+                    });
+                    processPaymentsAction.setCallback(this, function (processPaymentsActionData) {
+                        var processPaymentsActionState = processPaymentsActionData.getState();
+                        console.log('processPaymentsAction state ' + processPaymentsActionState);
+                        if (processPaymentsActionState == "SUCCESS") {
+                            var paymentsResponse = processPaymentsActionData.getReturnValue();
+                            console.log('processPaymentsAction response ' + paymentsResponse);
+                            console.log('apiCall processPayments Success');
+                            console.table(paymentsResponse);
+
+                            component.handleChargeResponseStatus(paymentsResponse);
+
+                        } else {
+                            console.log(processPaymentsActionData.getError());
+                            var processPaymentsActionErrors = processPaymentsActionData.getError();
+                            var paymentErrorResponse = component.apiCallErrorHandling(processPaymentsActionErrors, 'processPayments');
+                            
+                            console.log('apiCall processPayments Failed');
+                            console.log('processPayments Response ' + paymentErrorResponse);
+                            component.set('v.initStatus', paymentErrorResponse);
+                            component.set('v.Loading', false);
+                        }
+                        
+                    });
+                    $A.enqueueAction(processPaymentsAction);
                 } else {
                     console.log('apiCall createPaymentRequests Calling');
-                    component.apiCall('createPaymentRequests', {
-                            chargeRequests: paymentRequests
-                        },
-                        function (savedPaymentRequests) {
+
+                    var createPaymentRequestsAction = component.get('c.createPaymentRequests');
+                    createPaymentRequestsAction.setParams({
+                        "chargeRequests": paymentRequests
+                    });
+                    createPaymentRequestsAction.setCallback(this, function (createPaymentRequestsActionResponseData) {
+                        var createPaymentRequestsActionResponseState = createPaymentRequestsActionResponseData.getState();
+                        if (createPaymentRequestsActionResponseState == "SUCCESS") {
+                            var savedPaymentRequests = createPaymentRequestsActionResponseData.getReturnValue();
                             component.set('v.savedPaymentRequests', savedPaymentRequests);
                             console.log('apiCall createPaymentRequests Success');
-                            component.processPayments(savedPaymentRequests, stripePaymentRequest);
-                        },
-                        function (createPaymentRequestsErrors) {
+                            // component.processPayments(savedPaymentRequests, stripePaymentRequest);
+
+                            var processPaymentsAction_Immediate = component.get('c.processPayments');
+                            processPaymentsAction_Immediate.setParams({
+                                "paymentRequests": (savedPaymentRequests== undefined) ? '' : savedPaymentRequests,
+                                "stripePaymentRequest": stripePaymentRequest
+                            });
+                            processPaymentsAction_Immediate.setCallback(this, function (processPaymentsData) {
+                                var processPaymentsAction_State = processPaymentsData.getState();
+                                console.log('processPaymentsAction_Immediate state ' + processPaymentsAction_State);
+                                if (processPaymentsAction_State == "SUCCESS") {
+                                    var paymentsResponse_Immediate = processPaymentsData.getReturnValue();
+                                    console.log('processPaymentsAction_Immediate response ' + paymentsResponse_Immediate);
+                                    console.log('apiCall processPayments Success');
+                                    console.table(paymentsResponse_Immediate);
+
+                                    component.handleChargeResponseStatus(paymentsResponse_Immediate);
+
+                                } else {
+                                    console.log(processPaymentsData.getError());
+                                    var processPayments_Errors = processPaymentsData.getError();
+                                    var paymentErrorResponse_Error = component.apiCallErrorHandling(processPayments_Errors, 'processPayments');
+                                    
+                                    console.log('apiCall processPayments Failed');
+                                    console.log('processPayments Response ' + paymentErrorResponse_Error);
+                                    component.set('v.initStatus', paymentErrorResponse_Error);
+                                    component.set('v.Loading', false);
+                                }
+                                
+                            });
+                            $A.enqueueAction(processPaymentsAction_Immediate);
+
+                        } else {
+                            console.log(createPaymentRequestsActionResponseData.getError());
+                            var createPaymentRequests_Errors = createPaymentRequestsActionResponseData.getError();
+                            console.log(createPaymentRequests_Errors);
+                            var createPaymentRequests_Error = component.apiCallErrorHandling(createPaymentRequests_Errors, 'createPaymentRequests');
                             console.log('apiCall createPaymentRequests Failed');
-                            console.log('createPaymentRequestsErrors Response ' + createPaymentRequestsErrors);
-                            component.set('v.initStatus', createPaymentRequestsErrors);
+                            console.log('createPaymentRequests Response ' + createPaymentRequests_Error);
+                            component.set('v.initStatus', createPaymentRequests_Error);
                             component.set('v.Loading', false);
-                        });
+                        }
+                    });
+                    $A.enqueueAction(createPaymentRequestsAction);
+                        
                 }
             } catch (error) {
             console.error(error);
@@ -424,6 +566,7 @@
                             console.log(response.getReturnValue());
                             if (state == "SUCCESS") {
                                 component.set("v.SelectedContact", contact);
+                                component.set("v.obj", contact);
                                 console.log('contact++++' + component.get('v.SelectedContact'));
                                 component.set("v.PhoneNumber", contact.Phone_Number__c);
                                 component.loadUserPaymentMethods(contact.Id);

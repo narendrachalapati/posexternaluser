@@ -76,4 +76,28 @@ public without sharing class PaymentIntentService {
 
         return getPaymentIntent(paymentIntent.Id);
     }
+    
+    public static List<Payment_Intent__c> getPaymentIntent(List<String> paymentIntentIdList) {
+        List<Payment_Intent__c> paymentIntentList = new List<Payment_Intent__c>();
+        String query = 'SELECT '+ SYS_Helper.getAllFieldsFor('Payment_Intent__c')
+            +', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account')
+            +', ' + SYS_Helper.getAllParentFields('Contact__r.', 'Contact')
+            +', ' + SYS_Helper.getAllParentFields('Order__r.', 'Order__c')
+            +' FROM Payment_Intent__c WHERE Id IN :paymentIntentIdList';
+
+        paymentIntentList = Database.query(query);
+        return paymentIntentList;
+    }
+    
+    public static List<Payment_Intent__c> createNewPaymentIntent(List<Payment_Intent__c> paymentIntentRecords) {
+        List<String> paymentIntentIds = new List<String>();
+        if(paymentIntentRecords.size() > 0 ) {
+            insert paymentIntentRecords;
+        }
+        for (Payment_Intent__c iterRecord : paymentIntentRecords) {
+            paymentIntentIds.add(iterRecord.Id);
+        }
+
+        return getPaymentIntent(paymentIntentIds);
+    }
 }

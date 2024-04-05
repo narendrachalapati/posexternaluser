@@ -2,6 +2,8 @@ public without sharing class ChargeController {
     private static StripeService stripeService = new StripeService();
     private static CustomLabelsService customLabelsService = new CustomLabelsService();
     
+    public class ChargeControllerException extends Exception{}
+    
     @AuraEnabled
     public static Contact fetchVirtualTerminalcontact(){
         Id memberRecordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get('Member').getRecordTypeId();
@@ -46,30 +48,11 @@ public without sharing class ChargeController {
 
     @AuraEnabled
     public static List<Payment_Intent__c> createPaymentRequests(List<ChargeRequest> chargeRequests) {
-        System.debug('Charge controller , chargeRequests=' + chargeRequests);
-        Id currentContactId = chargeRequests[0].contactId;
-        Id currentAccountId = chargeRequests[0].accountId;
-        PMA_SearchController.StripeApiTokensWrap apiKeyWrap = PosUtility.fetchStripeApiToken(currentAccountId);
-
-        Contact searchContact = new Contact();
-        if( String.isBlank(currentContactId) ){
-            searchContact = fetchVirtualTerminalcontact();
-        }
-
         List<Payment_Intent__c> paymentRequests = new List<Payment_Intent__c>();
-        for (ChargeRequest chargeRequest : chargeRequests) {
-            Id contactId = String.isNotBlank(chargeRequest.contactId) ? chargeRequest.contactId : searchContact.Id;
-            Id accountId = String.isNotBlank(chargeRequest.contactId) ? chargeRequest.accountId : searchContact.accountId;
-            Id orderId = chargeRequest.orderId;
-            String email = String.isNotBlank(chargeRequest.contactId) ? chargeRequest.email : searchContact.email;
-            Double amount = chargeRequest.amount;
-            String frequency = chargeRequest.frequency;
-            Date firstChargeDate = chargeRequest.firstChargeDate;
-            String paymentType = chargeRequest.paymentType;
-            String paymentName =  chargeRequest.paymentName;
-
-            paymentRequests.add(PaymentIntentService.createNewPaymentIntent(paymentName , contactId, accountId, orderId, paymentType, amount, email, frequency, firstChargeDate));
-
+        try{
+            paymentRequests = PosUtility.createPaymentRequests(chargeRequests);
+        } catch(Exception e) {
+            throw new AuraHandledException (e.getMessage() + e.getStackTraceString());
         }
         return paymentRequests;
     }
