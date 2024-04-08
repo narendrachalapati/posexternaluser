@@ -79,17 +79,28 @@
             });
          } else {
             if (!component.isExternalAppsUser()) {
-               var pageReference = {
+               component.set('v.showCartComponent', false);    
+               component.set('v.isAddTipPopupOpen', false); 
+               component.set('v.isLoading', false);  
+
+               component.fireApplicationEventCall('componentCommunicationEvent', {
+                  message: 'sucessfully charged',
+                  isLoading: false,
+                  eventMessage: ''
+               });
+               component.set('v.Paymentsucess', true); 
+               /*var pageReference = {
                   type: 'standard__navItemPage',
                   attributes: {
                      apiName: 'POS_Search'
                   }
                };
                navigateLightning.navigate(pageReference);
+
             } else {
                $A.get("e.force:navigateToURL").setParams({
                   "url": urlPath
-               }).fire();
+               }).fire();*/
             }
          }
 

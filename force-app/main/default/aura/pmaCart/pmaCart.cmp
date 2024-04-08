@@ -73,6 +73,7 @@
    <aura:attribute name="Tippercentageshow" type="boolean" default="True" />
     <!--Guest user check attribute-->
    <aura:attribute name="IsGuestUser" type="boolean"  />
+   <aura:attribute name="Paymentsucess" type="Boolean"/>
    <!-- Wallet specific Component Values-->
    <aura:attribute name="QtyofinputBox" type="double" />
 
@@ -666,5 +667,13 @@
       </section>
      
    </div>
-  
+   <aura:if isTrue="{!v.Paymentsucess}">
+      <div style="position: relative;">
+         <div style="    position: relative;top: 50%;left: 50%;" >
+   <img src="{!$Resource.SucessTick}" alt="Image description"/>
+   
+</div>
+</div>
+   </aura:if>
+
 </aura:component>
