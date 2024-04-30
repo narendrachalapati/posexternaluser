@@ -1268,6 +1268,8 @@ global virtual inherited sharing class SYS_ApplicationService {
                 newSysLog.How_to_process__c = 'use_custom_apex_handler';
                 newSysLog.Custom_Apex_Handler__c = SYS_DataCacheFactory.integrationSetting.ApexHandler__c;
                 newSysLog.Parent__c = log.Id;
+                newSysLog.Integration_Type__c = log.Integration_Type__c;
+                newSysLog.Account_Id__c = log.Account_Id__c;
                 partialSysLogs.add(newSysLog);
             }
 
@@ -1304,6 +1306,11 @@ global virtual inherited sharing class SYS_ApplicationService {
             }
             if(sObjectsToDML.size() > 0)
                 mapLogrecVsObject.put(log, sObjectsToDML[0]);
+            
+            // Insert the child logs which are picked up by flows
+            if (SYS_DataCacheFactory.childRecordsToInsert.size() > 0) {
+                SYS_Helper.insertLog(SYS_DataCacheFactory.childRecordsToInsert);
+            }
         }
         return ;
     }
@@ -1401,6 +1408,8 @@ global virtual inherited sharing class SYS_ApplicationService {
             logResp.ObjectSettingId__c = log.ObjectSettingId__c;
             
         }
+        logResp.Integration_Type__c = log.Integration_Type__c;
+        logResp.Account_Id__c = log.Account_Id__c;
 
         //doDML(new List<SYS_IntegrationLog__c>{log}, 'UPSERT', '') ;
         // ##SYS_Helper.upsertLog(new List<SYS_IntegrationLog__c>{log});

@@ -409,7 +409,7 @@ public virtual class SYS_Transformer {
         }
 
         SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(fieldMappingHandler).newInstance();
-        System.debug('fieldMappingHandler '+fieldMappingHandler);
+        System.debug('fieldMappingHandler '+fieldMappingHandler + ' key :: '+mapping.key__c );
         Object value = appService.getFieldValues(obj, mapping, mapping.FieldApiName__c);
         gen.writeObjectField(key, value != null ? value : '');
         
@@ -813,7 +813,7 @@ public virtual class SYS_Transformer {
         /*--*/SYS_debug.log('jsonList=='+jsonList); 
         
         for(FieldSetting__mdt item : SYS_DataCacheFactory.FieldMappingInbound) { 
-            if(resource.equals(item.RestResource__c.toLowerCase()) /*&& item.ChildRootElement__c == null*/) {
+            if(resource.equals(item?.RestResource__c?.toLowerCase()) /*&& item.ChildRootElement__c == null*/) {
                 mappings.add(item);
                 String newKey = (isNotification && item.Key_For_Events__c!=NULL)?item.Key_For_Events__c:item.Key__c;//--M .replace( SYS_DataCache.ESCAPE_CHAR, '.'); 
                 mapOfPaths.put(newKey, item);
@@ -1048,11 +1048,13 @@ public virtual class SYS_Transformer {
                                     if(newlog!=NULL){
                                         childRecordsToInsert.add(newlog);
                                     }
+                                    system.debug('childRecordsToInsertNDR' + childRecordsToInsert);
                                 }
                             }
+
                             if(!childRecordsToInsert.isEmpty()){
                                 //appService.doDML(childRecordsToInsert, 'INSERT', '');
-                                // SYS_Helper.insertLog(childRecordsToInsert);
+                               //  SYS_Helper.insertLog(childRecordsToInsert);
                                 SYS_DataCacheFactory.childRecordsToInsert.addAll(childRecordsToInsert);
                             }
                             

@@ -1,0 +1,49 @@
+<aura:component  controller="CreateInvoiceController"
+ implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+ <aura:attribute name="todorecord" type="ToDo__c"/>
+ <aura:attribute name="uuidstring" type="String"/>
+ <aura:attribute name="memberId" type="String" default =""/>
+ <aura:attribute name="AccountId" type="string"  default =""/>
+ <aura:attribute name="ProjectRec" type="Sobject"/>
+ <aura:attribute name="Amount" type="Decimal"/>
+ <aura:attribute name="Invoicedate" type="Date"/>
+ <aura:attribute name="Description" type="string"/>
+ <aura:attribute name="Invoice" type="sobject"/>
+ <aura:attribute name="Navigateto" type="Boolean" default =""/>
+ <aura:attribute name="ButtonEnable" type="Boolean" default ="false"/>
+ <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+<div>
+<aura:if isTrue="{!(!v.Navigateto)}">
+<div class="wrapper">
+  <div class="inputtext-wrapper inputtext inputtext--md ">
+    <label for="title">Amount<i>*</i></label>
+	
+    <input id="Amount" min="0"  class="js-control" type="number" placeholder="Enter Amount"  name="title" required ="true" onkeyup="{!c.onEnterAmount}" onchange="{!c.onEnterAmountchange}" value="{!v.Amount}"/>
+   
+  </div>
+	
+	<div class="inputtext-wrapper inputtext inputtext--md ">
+    <label for="title"> Invoice Date<i>*</i></label>
+    <input class="js-control--email" type="Date" placeholder="DD/MM/YYYY" id="title" name="title" required="true" onchange="{!c.onEnterDate}"  value="{!v.Invoicedate}" />
+   
+  </div>
+	
+	<div class="inputtext-wrapper inputtext inputtext--md ">
+    <label for="title">Description</label>
+    <input class="js-control--email" type="text" placeholder="Text" id="title" name="title" onkeyup="{!c.onEnterDescription}" value="{!v.Description}"/>
+   
+  </div>
+	<div class="button-wrapper" onclick="{!c.Createinvoicehandler}">
+
+		<button id="invoiceButton"     class="{!v.ButtonEnable ? 'button button--md button--filled button--primary button--full' : 'Buttondesable button button--full button--md'}">
+			<span class="button-label">Create Invoice</span>
+		</button>
+	</div>
+</div>
+</aura:if>
+<aura:if isTrue="{!v.Navigateto}">
+	<p>Thank you</p>
+
+	</aura:if>
+</div>
+</aura:component>

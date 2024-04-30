@@ -1,0 +1,180 @@
+.THIS * {
+    font-family: 'Inter';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .THIS .wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Inter';
+  }
+ 
+  .THIS .input {
+    display: flex;
+  }
+  .THIS .inputtext-wrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    max-width: 360px;
+  }
+  .THIS .inputtext-wrapper+.inputtext-wrapper {
+    margin-top: 28px;
+  }
+  .THIS .inputtext-wrapper+.button-wrapper {
+    margin-top: 28px;
+  }
+  .THIS .error-message {
+    display: none;
+    position: absolute;
+    bottom: -20px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    color: #e51940;
+  }
+  .THIS .error-message .ti {
+    font-size: 16px;
+  }
+  .THIS .inputtext {
+    width: 100%;
+  }
+  .THIS .inputtext label {
+    width: 100%;
+    color: #00061a;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .THIS .inputtext label i {
+    margin-left: 4px;
+    color: #2051f8;
+  }
+  .THIS .inputtext input {
+    padding-left: 12px;
+    padding-right: 12px;
+    color: #00061a;
+    font-weight: 400;
+    border: 1px solid #acb1c3;
+    border-radius: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 0 0 0 #fff;
+  }
+  .THIS .inputtext input::-webkit-input-placeholder {
+    color: #9297aa;
+  }
+  .THIS .inputtext input:hover {
+    border: 1px solid #dbdfe6;
+    box-shadow: 0 0 0 3px #dbdfe6;
+  }
+  .THIS .inputtext input:focus,
+  .THIS .inputtext input:focus-visible {
+    outline: none;
+    border-color: #2051f8;
+    box-shadow: 0 0 0 3px #d6dfff;
+  }
+  .THIS .inputtext.error-input input {
+    border-color: #e51940;
+    box-shadow: 0 0 0 3px #fbdae1;
+  }
+  .THIS .inputtext.error-input.error-input--secondary .error-message--secondary {
+    display: block;
+  }
+  .THIS .inputtext.error-input.error-input--primary .error-message--primary {
+    display: block;
+  }
+  .THIS .inputtext.valid-input .ti-check {
+    color: #2051f8;
+    opacity: 1;
+    transform: scale(1);
+  }
+  .THIS .inputtext .ti-check {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    font-size: 18px;
+    color: #00061a;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s ease-in;
+  }
+  .THIS .inputtext.inputtext--md label {
+    font-size: 16px !important;
+    line-height: 20px;
+    font-weight: bold;
+
+  }
+  .THIS .inputtext.inputtext--md input {
+    height: 40px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+  .THIS .button-wrapper {
+    width: 100%;
+    display: flex;
+    max-width: 360px;
+    align-content: end;
+    flex-direction: row;
+    gap: 12px;
+  }
+  .THIS .button {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 8px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .THIS .button .button-label {
+    font-weight: 500;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .THIS .button.button--full {
+    width: 100%;
+  }
+  .THIS .button.button--md {
+    padding: 10px 12px 10px 12px;
+  }
+  .THIS .button.button--md .button-label {
+    font-size: 14px;
+    line-height: 20px;
+    color: aliceblue;
+  }
+  .THIS .button.button--md .ti {
+    font-size: 18px;
+  }
+  .THIS .button.button--filled .button-label,
+  .THIS .button.button--filled .ti {
+    color: #fff;
+  }
+  .THIS .button.button--filled.button--primary {
+    background-color: #2051f8;
+  }
+  .THIS .Buttondesable{
+    background-color: #9aaede;
+    cursor: no-drop;
+  }
+  .THIS .button.button--filled.button--primary:hover {
+    background-color: #042aaf;
+  }
+  .THIS .button.button--stroke .button-label,
+  .THIS .button.button--stroke .ti {
+    color: #00061a;
+  }
+  .THIS .button.button--stroke.button--neutral {
+    background-color: #fff;
+    border: 1px solid #acb1c3;
+  }
+  .THIS .button.button--stroke.button--neutral:hover {
+    background-color: #eff2f5;
+  }

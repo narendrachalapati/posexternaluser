@@ -5,6 +5,7 @@
 
  public without sharing class SYS_DataCacheFactory {
     public String accountId;
+    public static List<String> accountIdWithoutIS;
     public String integrationType;
 
     public SYS_DataCacheFactory(List<String> accountIds, String integrationType, 
@@ -18,9 +19,12 @@
         SYS_DataCache.INT_TYPE = int_type;
         SYS_DataCache.OBJ_TYPE = obj_type;
         
-        if(accountIds != NULL && accountIds.size()>0 && accountIds[0] != NULL) 
+        if (integrationType == NULL && int_type == NULL && obj_type == NULL) {
+            accountIdWithoutIS = accountIds;
+        }
+        if(accountIds != NULL && accountIds.size()>0 && accountIds[0] != NULL && SYS_DataCache.INT_TYPE != NULL) 
             new SYS_DataCache(accountIds);
-        if(this.accountId instanceOf Id)
+        if(this.accountId instanceOf Id && SYS_DataCache.INT_TYPE != NULL)
             SYS_DataCache.datacache = SYS_DataCache.getDataCache(this.accountId, this.integrationType);
     }
 
@@ -31,6 +35,14 @@
 
     public SYS_DataCacheFactory( String int_type, String obj_type) {
         this(new List<String>{''}, NULL , int_type, obj_type);
+    }
+
+    public SYS_DataCacheFactory( String accountId ) {
+        this(new List<String>{accountId}, NULL , NULL, NULL);
+    }
+
+    public SYS_DataCacheFactory( List<String> accountIds ) {
+        this(accountIds, NULL , NULL, NULL);
     }
 
     private SYS_DataCacheFactory() {}
@@ -172,6 +184,42 @@
                     }
                 }
             } 
+            return metadataMap;
+        }
+    }
+
+    private static Map<String, Map<String, String>> metadataWithAccountIdMap;
+    public static Map<String, Map<String, String>> metadataWithAccountId {
+        get {
+            if (metadataWithAccountIdMap == NULL 
+            && accountIdWithoutIS != NULL && accountIdWithoutIS.size() > 0) {
+                metadataWithAccountIdMap = new Map<String, Map<String, String>>();
+                String query_account = ' SELECT ' + SYS_Helper.getAllFieldsFor('SYS_Integration_Metadata__c') +' FROM SYS_Integration_Metadata__c '
+                            + ' WHERE Account__c in :accountIdWithoutIS AND Integration_Type__c = \'NA\' LIMIT 10000';
+                List<SYS_Integration_Metadata__c> metadataWhereTypeIsNA = Database.query(query_account);
+                for(SYS_Integration_Metadata__c metadata : metadataWhereTypeIsNA) {
+                    if (!metadataWithAccountIdMap.containsKey(metadata.Account__c)) {
+                        metadataWithAccountIdMap.put(metadata.Account__c, 
+                        new Map<String, String>{metadata.Key__c => metadata.Value__c});
+                    }
+                    else {
+                        metadataWithAccountIdMap.get(metadata.Account__c).put(metadata.Key__c, metadata.Value__c);
+                    }
+                }
+            }
+            return metadataWithAccountIdMap;
+        }
+    }
+
+
+    public static Map<String, String> integrationMetadataMap {
+        get{
+            Map<String, String> metadataMap = new Map<String, String>();
+            for(Integration_Metadata__mdt item : Integration_Metadata__mdt.getAll()?.values()) {
+                if(item.Integration_Setting__r.DeveloperName == NULL) {
+                    metadataMap.put(item.Key__c, item.Value__c);
+                }
+            }
             return metadataMap;
         }
     }

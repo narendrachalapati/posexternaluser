@@ -1,5 +1,10 @@
-<aura:component description="ImageUploader" controller="CustomfileuploaderController"
+<aura:component description="ImageUploader" controller="BrandController"
     implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+
+         <aura:attribute name="todorecord" type="ToDo__c"/>
+         <aura:attribute name="uuidstring" type="String"/>
+         <aura:attribute name="memberId" type="String" default =""/>
+         <aura:attribute name="AccountId" type="string"  default =""/>
        <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file --> 
        <aura:attribute name="parentId" type="Id" default="" />
        <!-- 'fileName' attribute for display the selected file name --> 
@@ -46,7 +51,7 @@
                         </div>
                         </aura:if>
                         <div class="slds-col slds-var-m-bottom_medium">
-                              <lightning:input  aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false" />
+                              <lightning:input  aura:id="fuploader" onuploadfinished="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false" />
                               <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
                               <aura:if isTrue="{!not(empty(v.imagepreview))}"> 
                             <!-- Destructive variant: Identifies a potentially negative action -->

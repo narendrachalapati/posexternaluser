@@ -52,7 +52,7 @@ public without sharing class SYS_QueueableForInboundChild implements Queueable {
         if(!childRecordsToInsert.isEmpty()){
             //appService.doDML(childRecordsToInsert, 'INSERT', '');
             // insert childRecordsToInsert;
-            SYS_Helper.insertLog(childRecordsToInsert);
+         //   SYS_Helper.insertLog(childRecordsToInsert);
         }
 
         /**
