@@ -36,8 +36,8 @@
             // set a default size or startpostiton as 0 
             var startPosition = 0;
             // calculate the end size or endPostion using Math.min() function which is return the min. value   
-            var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
-             
+          // var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
+        var endPosition = Math.max(fileContents.length, startPosition + this.CHUNK_SIZE);
             // start with the initial chunk, and set the attachId(last parameter)is null in begin
             this.uploadInChunk(component, file, fileContents, startPosition, endPosition, '');
         },

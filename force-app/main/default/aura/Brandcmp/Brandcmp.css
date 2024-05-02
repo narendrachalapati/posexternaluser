@@ -1,2 +1,114 @@
-.THIS {
-}
+/* Message and Upload Files*/
+/* Chatbox Text Input */
+.THIS textarea {
+    width: 90%;
+    resize: none;
+    height: 45px;
+    outline: none;
+    padding: 5px 10px;
+    /* font-size: 16px; */
+    border-radius: 5px;
+    max-height: 330px;
+    caret-color: #4671ea;
+  
+  }
+  .THIS textarea::placeholder {
+    color: #b3b3b3;
+  }
+  .THIS textarea:is(:focus, :valid) {
+   
+  }
+  .THIS textarea::-webkit-scrollbar {
+    width: 0px;
+  }
+  /*Hide Native Salesforce Styles*/
+  .THIS .slds-file-selector__dropzone{
+    border:unset;
+    border-radius: 5px;
+    display: block;
+    padding: 5px;
+    transition: border 300ms ease;
+    cursor: pointer;
+    text-align: center;
+    margin: 0 5px;
+  }
+  
+  .THIS .slds-file-selector__dropzone:hover {
+   
+    color: #1665c4;
+  }
+  
+  /*set the size of the button and background image*/
+  .THIS .slds-file-selector__body{
+    display: block;
+    font-size: 30px;
+    padding-bottom: 5px;
+    color: #1665c4;
+    transition: 200ms color;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    cursor: pointer;
+    text-align: center;
+  }
+  .THIS .slds-file-selector__body:before {
+    content: "\f030";
+  }
+  
+  /*get rid of the right label*/
+  .THIS .slds-file-selector__dropzone .slds-file-selector__text{ 
+    display: none;
+  }
+  
+  /*To override the text, you'll need to set the size of the current text to 0*/
+  .THIS .slds-file-selector__dropzone .slds-file-selector__button {
+    display: none;
+  }
+  
+
+
+  .THIS .body {
+    background: whitesmoke;
+    font-family: "Open Sans", sans-serif;
+  }
+  .THIS .container {
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 20px;
+  }
+  
+  .THIS .avatar-upload {
+    position: relative;
+    max-width: 205px;
+    margin: 50px auto;
+  }
+  .THIS .avatar-upload .avatar-edit {
+    position: absolute;
+    right: 12px;
+    z-index: 1;
+    bottom: 10px;
+  }
+
+ 
+  .THIS .avatar-upload .avatar-preview {
+    width: 192px;
+    height: 192px;
+    position: relative;
+    border-radius: 100%;
+    border: 6px solid #f8f8f8;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+  }
+  .THIS .avatar-upload .avatar-preview > div {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  

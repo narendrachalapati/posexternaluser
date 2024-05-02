@@ -36,7 +36,8 @@
         // set a default size or startpostiton as 0 
         var startPosition = 0;
         // calculate the end size or endPostion using Math.min() function which is return the min. value   
-        var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
+       // var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
+        var endPosition = Math.max(fileContents.length, startPosition + this.CHUNK_SIZE);
          
         // start with the initial chunk, and set the attachId(last parameter)is null in begin
         this.uploadInChunk(component, file, fileContents, startPosition, endPosition, '');
@@ -52,6 +53,8 @@
         var Contenttype = file.type;
         console.log('Contenttype' + Contenttype);
         this.imagepreview(component,Contenttype);
+        component.set('v.base64image',base64mod);
+        console.log( 'base64stringNDR' + component.get('v.base64image'));
         console.log('encodeURIComponent(getchunk)NDR' + base64mod);
         action.setParams({
             RecordId: component.get("v.memberId"),
@@ -73,6 +76,8 @@
                 console.table(attachId);
                 component.set('v.Downloadlink',attachId.DownloadLink__c);
                 component.set('v.previewlink',attachId.ThumbnailLink__c);
+                component.set('v.base64image',attachId.Preview_Link__c);
+                component.set('v.isloading', 'false');
                 // update the start position with end postion
                 startPosition = endPosition;
                 endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
@@ -82,7 +87,7 @@
                 // else, diaply alert msg and hide the loading spinner
                 if (startPosition < endPosition) {
                     this.uploadInChunk(component, file, fileContents, startPosition, endPosition, attachId);
-                } else {
+               } else {
                   //  alert('File has been uploaded successfully');
                 }
                 // handel the response errors        
@@ -169,6 +174,8 @@ EditInChunk: function(component, file, fileContents, startPosition, endPosition,
         console.log('googlefileid' + googlefileid);
         var action = component.get("c.EditFile_g");
         var base64mod = 'data:'+file.type +';base64,'+ encodeURIComponent(getchunk);
+        component.set('v.base64image',base64mod);
+        console.log( 'base64stringNDR' + component.get('v.base64image'));
         component.set('v.Contenttype',file.type);
         var Contenttype = file.type;
         console.log('Contenttype' + Contenttype);

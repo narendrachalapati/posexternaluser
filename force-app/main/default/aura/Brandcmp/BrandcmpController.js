@@ -48,15 +48,21 @@
         },
          
         handleFilesChange: function(component, event, helper) {
+            component.set('v.isloading', 'true');
             var fileName = 'No File Selected..';
+            console.log(event.getSource());
+            console.table(event.getSource());
             if (event.getSource().get("v.files").length > 0) {
                 fileName = event.getSource().get("v.files")[0]['name'];
             }
             component.set("v.fileName", fileName);
             if (component.find("fuploader").get("v.files").length > 0) {
                 helper.uploadHelper(component, event);
+                
+           
             } else {
                 alert('Please Select a Valid File');
+                component.set('v.isloading', 'false');
             }
         },
      handleFileEdit: function(component, event, helper) {

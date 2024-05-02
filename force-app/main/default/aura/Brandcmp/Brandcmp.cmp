@@ -1,77 +1,50 @@
 <aura:component description="ImageUploader" controller="BrandController"
-    implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
-
-         <aura:attribute name="todorecord" type="ToDo__c"/>
-         <aura:attribute name="uuidstring" type="String"/>
-         <aura:attribute name="memberId" type="String" default =""/>
-         <aura:attribute name="AccountId" type="string"  default =""/>
-       <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file --> 
-       <aura:attribute name="parentId" type="Id" default="" />
-       <!-- 'fileName' attribute for display the selected file name --> 
-       <aura:attribute name="fileName" type="String" default="No File Selected.." />
-       <aura:attribute name="base64" type="String" />
-       <aura:attribute name="Contenttype" type="String" />
-       <aura:attribute name="Downloadlink" type="String" />
-       <aura:attribute name="previewlink" type="String" />
-       <aura:attribute name="recordId" type="Id" />
-       <aura:attribute name="imagepreview" type="string" />
-       <aura:attribute name="googlefilerecid" type="string" />
-      <aura:attribute name="AccountField" type="string" />
-       <aura:attribute name="fileicon" type="string" default="{!$Resource.FileuploaderAsserts + '/Drivefileicon.png'}" />
-       <aura:attribute name="imageicon" type="string" default="{!$Resource.FileuploaderAsserts + '/imagepreload.png'}" />
-       <aura:attribute name="Docicon" type="string" default="{!$Resource.FileuploaderAsserts + '/documents.png'}" />
-
-       <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
-       <!-- <lightning:card footer="" title="">
-        <div class="imagesize">
-           
-            <img src="{!v.base64}" alt="Uploadfile" />
+   implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+   <aura:attribute name="todorecord" type="ToDo__c"/>
+   <aura:attribute name="uuidstring" type="String"/>
+   <aura:attribute name="memberId" type="String" default =""/>
+   <aura:attribute name="AccountId" type="string"  default =""/>
+   <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file --> 
+   <aura:attribute name="parentId" type="Id" default="" />
+   <!-- 'fileName' attribute for display the selected file name --> 
+   <aura:attribute name="fileName" type="String" default="No File Selected.." />
+   <aura:attribute name="base64" type="String" />
+   <aura:attribute name="base64image" type="String" />
+   <aura:attribute name="Contenttype" type="String" />
+   <aura:attribute name="Downloadlink" type="String" />
+   <aura:attribute name="previewlink" type="String" />
+   <aura:attribute name="recordId" type="Id" />
+   <aura:attribute name="imagepreview" type="string" />
+   <aura:attribute name="googlefilerecid" type="string" />
+   <aura:attribute name="AccountField" type="string" />
+   <aura:attribute name="isPreview" type="Boolean" default="false" />
+   <aura:attribute name="isloading" type="Boolean" default="false" />
+   <aura:attribute name="fileicon" type="string" default="{!$Resource.FileuploaderAsserts + '/Drivefileicon.png'}" />
+   <aura:attribute name="imageicon" type="string" default="{!$Resource.FileuploaderAsserts + '/imagepreload.png'}" />
+   <aura:attribute name="Docicon" type="string" default="{!$Resource.FileuploaderAsserts + '/documents.png'}" />
+   <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.jquerylib + '/css/jquery.fancybox.min.css')}"/>
+   <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   <h1>Upload your logo</h1>
+   <div class="container">
+      <div class="avatar-upload">
+         <div class="avatar-edit">
+            <lightning:input  aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="" multiple="false" accept=".png, .jpg, .jpeg, .svg" />
+         </div>
+         <div class="avatar-preview">
+            <div id="imagePreview" style="{!'background-image: url(' + v.base64image + ')'}">
+            <aura:if isTrue="{!v.isloading}">
+             <lightning:spinner variant="brand" size="small" alternativeText="Uploading"  title="Uploading"/>
+            </aura:if>
             </div>
-         <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false"  
-         />
-         <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
-    </lightning:card> -->
-
-
-    <div class="c-container slds-card">
-        <lightning:layout>
-            <lightning:layoutItem padding="around-small" size="12">
-                <div class=" slds-box">
-                    <div class="slds-grid slds-grid_vertical slds-grid_align-center">
-                        
-                        <aura:if isTrue="{!not(empty(v.imagepreview))}"> 
-                        <div class="slds-col slds-var-m-bottom_medium">
-                            <!--<lightning:fileCard> to preview file using content document Id -->
-                                <a href="{!v.previewlink}">
-                                <img src="{!v.imagepreview}" alt="Uploadfile" />
-                                <!-- <img src="{!v.imageicon}" alt="Uploadfile" /> -->
-                            </a>
-                            <!-- Brand variant: Identifies the primary action in a group of buttons -->
-                           
-                        </div>
-                        </aura:if>
-                        <div class="slds-col slds-var-m-bottom_medium">
-                              <lightning:input  aura:id="fuploader" onuploadfinished="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false" />
-                              <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
-                              <aura:if isTrue="{!not(empty(v.imagepreview))}"> 
-                            <!-- Destructive variant: Identifies a potentially negative action -->
-                            <div class="dflex">
-                                <!--<lightning:button variant="destructive" label="Delete File" title="DeleteFile" onclick="{! c.handleClick }"/> -->
-                                <a href="{!v.Downloadlink}">
-                                   <lightning:button variant="brand" label="Download" title="Download"  />
-                                    </a>
-                                                                 
-                            </div>
-                            <aura:if isTrue="{!not(empty(v.imagepreview))}">
-                                   <lightning:input  aura:id="fEdit" onchange="{!c.handleFileEdit}" type="file" name="file" label="Edit File" multiple="false" />                             
-                            </aura:if>
-                           </aura:if>
-                        </div>
-
-                    </div>
-                </div>
-            </lightning:layoutItem>
-        </lightning:layout>
-    </div>
-
+         </div>
+      </div>
+   </div>
+   <aura:if isTrue="{!v.imagepreview}">
+      <div>
+         <a href="{!v.previewlink}" target="_blank">
+         <img src="{!v.imagepreview}" alt="Uploadfile" />
+         </a>
+      </div>
+   </aura:if>
+  
 </aura:component>
