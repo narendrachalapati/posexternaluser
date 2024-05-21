@@ -155,6 +155,7 @@ public static GoogleDriveFile__c Fileupload(Id RecordId,String accountMergeField
                 googlefolderrec.WhatId__c = RecordId;
                 googlefolderrec.GoogleDrive_ID__c = googeldrivfolderId;
                 googlefolderrec.Synchronous__c = true;
+               
                 system.debug('googlefolderrec' + googlefolderrec);
                 upsert googlefolderrec;
             }
@@ -171,6 +172,7 @@ public static GoogleDriveFile__c Fileupload(Id RecordId,String accountMergeField
                 Googlefile.Google_Drivefolder_id__c = googeldrivfolderId;
                 Googlefile.DownloadLink__c = Downloadlink;
                 Googlefile.ContentType__c = contentType;
+                Googlefile.UseType__c = 'Brand';
                 upsert Googlefile;
             }
 
@@ -394,24 +396,27 @@ public static void MangergooglefilePermission(string googlefileid, string access
 
 }*/
 @AuraEnabled
-public static GoogleDriveFile__c gettingdetailsbyrecordid(string paentid, string uuid) {
+public static GoogleDriveFile__c gettingdetailsbyrecordid(string paentid, string uuid , string AccountId) {
 
     GoogleDriveFile__c googlefile = new GoogleDriveFile__c();
     list < GoogleDriveFile__c > googlefilelist = new list < GoogleDriveFile__c > ();
     if (String.isBlank(uuid) != true) {
         system.debug('uuid' + uuid);
         Contact con = [select id from Contact where UUID__c =: uuid];
-        googlefilelist = [select Preview_Link__c, BrandName__c, ThumbnailLink__c, Id, DownloadLink__c, ContentType__c from GoogleDriveFile__c where WhatId__c =: con.Id order by LastModifiedDate desc];
-
+        googlefilelist = [select Preview_Link__c, BrandName__c, ThumbnailLink__c, Id, DownloadLink__c, ContentType__c from GoogleDriveFile__c where WhatId__c =: con.Id AND UseType__c = 'Brand' order by LastModifiedDate desc];
+        googlefile = (googlefilelist.size()>0) ? (googlefilelist[0]) : (new GoogleDriveFile__c());
     } else {
-        googlefilelist = [select Preview_Link__c, BrandName__c, ThumbnailLink__c, Id, DownloadLink__c, ContentType__c from GoogleDriveFile__c where WhatId__c =: paentid order by LastModifiedDate desc];
+        googlefilelist = [select Preview_Link__c, BrandName__c, ThumbnailLink__c, Id, DownloadLink__c, ContentType__c from GoogleDriveFile__c where WhatId__c =: paentid AND UseType__c = 'Brand' order by LastModifiedDate desc];
     }
     if (googlefilelist.size() > 0) {
         system.debug(googlefilelist);
         system.debug(googlefilelist[0]);
 
-        googlefile = googlefilelist[0];
+        googlefile = (googlefilelist.size()>0) ? (googlefilelist[0]) : (new GoogleDriveFile__c());
 
+    }else{
+        googlefilelist = [select Preview_Link__c, BrandName__c, ThumbnailLink__c, Id, DownloadLink__c, ContentType__c from GoogleDriveFile__c where WhatId__c =: AccountId AND UseType__c = 'Brand' order by LastModifiedDate desc];
+        googlefile =  (googlefilelist.size()>0) ? (googlefilelist[0]) : (new GoogleDriveFile__c()) ;
     }
     return googlefile;
 

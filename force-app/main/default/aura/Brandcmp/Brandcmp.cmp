@@ -1,50 +1,52 @@
-<aura:component description="ImageUploader" controller="BrandController"
-   implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
-   <aura:attribute name="todorecord" type="ToDo__c"/>
-   <aura:attribute name="uuidstring" type="String"/>
-   <aura:attribute name="memberId" type="String" default =""/>
-   <aura:attribute name="AccountId" type="string"  default =""/>
-   <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file --> 
-   <aura:attribute name="parentId" type="Id" default="" />
-   <!-- 'fileName' attribute for display the selected file name --> 
-   <aura:attribute name="fileName" type="String" default="No File Selected.." />
-   <aura:attribute name="base64" type="String" />
-   <aura:attribute name="base64image" type="String" />
-   <aura:attribute name="Contenttype" type="String" />
-   <aura:attribute name="Downloadlink" type="String" />
-   <aura:attribute name="previewlink" type="String" />
-   <aura:attribute name="recordId" type="Id" />
-   <aura:attribute name="imagepreview" type="string" />
-   <aura:attribute name="googlefilerecid" type="string" />
-   <aura:attribute name="AccountField" type="string" />
-   <aura:attribute name="isPreview" type="Boolean" default="false" />
-   <aura:attribute name="isloading" type="Boolean" default="false" />
-   <aura:attribute name="fileicon" type="string" default="{!$Resource.FileuploaderAsserts + '/Drivefileicon.png'}" />
-   <aura:attribute name="imageicon" type="string" default="{!$Resource.FileuploaderAsserts + '/imagepreload.png'}" />
-   <aura:attribute name="Docicon" type="string" default="{!$Resource.FileuploaderAsserts + '/documents.png'}" />
-   <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.jquerylib + '/css/jquery.fancybox.min.css')}"/>
-   <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-   <h1>Upload your logo</h1>
-   <div class="container">
-      <div class="avatar-upload">
-         <div class="avatar-edit">
-            <lightning:input  aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="" multiple="false" accept=".png, .jpg, .jpeg, .svg" />
-         </div>
-         <div class="avatar-preview">
-            <div id="imagePreview" style="{!'background-image: url(' + v.base64image + ')'}">
-            <aura:if isTrue="{!v.isloading}">
-             <lightning:spinner variant="brand" size="small" alternativeText="Uploading"  title="Uploading"/>
-            </aura:if>
+<aura:component description="Brand Component" controller="BrandController"
+                implements="flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="todorecord" type="ToDo__c"/>
+    <aura:attribute name="uuidstring" type="String"/>
+    <aura:attribute name="memberId" type="String" default =""/>
+    <aura:attribute name="AccountId" type="string"  default =""/>
+    <!-- 'parentId' Aura Attribute for store the Id for Parent Record where we are attach our file --> 
+    <aura:attribute name="parentId" type="Id" default="" />
+    <!-- 'fileName' attribute for display the selected file name --> 
+    <aura:attribute name="fileName" type="String" default="No File Selected.." />
+    <aura:attribute name="base64" type="String" />
+    <aura:attribute name="base64image" type="String"   default="{!$Resource.companylogo}"/>
+    <aura:attribute name="Contenttype" type="String" />
+    <aura:attribute name="Downloadlink" type="String" />
+    <aura:attribute name="previewlink" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="imagepreview" type="string"  default="https://municorn.ai/assets/img/logo/logo-m.svg"/>
+    <aura:attribute name="googlefilerecid" type="string" />
+    <aura:attribute name="AccountField" type="string" />
+    <aura:attribute name="isuploadcmp" type="Boolean" default="true" />
+    <aura:attribute name="isloading" type="Boolean" default="false" />
+    
+    <aura:attribute name="fileicon" type="string" default="{!$Resource.FileuploaderAsserts + '/Drivefileicon.png'}" />
+    <aura:attribute name="imageicon" type="string" default="{!$Resource.FileuploaderAsserts + '/imagepreload.png'}" />
+    <aura:attribute name="Docicon" type="string" default="{!$Resource.FileuploaderAsserts + '/documents.png'}" />
+    <ltng:require styles="{!join(',', $Resource.FontAwesome+'/css/all.css', $Resource.jquerylib + '/css/jquery.fancybox.min.css')}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <span class="brand-component-wrapper">
+        <aura:if isTrue="{! (v.isuploadcmp == 'false') }">
+            <a class="brand-preview" href="{!v.previewlink}" target="_blank">
+                <img class="brand-image" src="{!v.imagepreview}" alt="Uploadfile" />
+            </a>
+        </aura:if>
+        <aura:if isTrue="{!v.isuploadcmp}">
+            <div class="container">
+                <h1 class="textstyling">Upload your logo</h1>
+                <div class="avatar-upload">
+                    <div class="avatar-edit">
+                        <lightning:input  aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="" multiple="false" accept=".png, .jpg, .jpeg, .svg" />
+                    </div>
+                    <div class="avatar-preview">
+                        <div id="imagePreview" style="{!'background-image: url(' + v.base64image + ')'}">
+                            <aura:if isTrue="{!v.isloading}">
+                                <lightning:spinner variant="brand" size="small" alternativeText="Uploading"  title="Uploading"/>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-   </div>
-   <aura:if isTrue="{!v.imagepreview}">
-      <div>
-         <a href="{!v.previewlink}" target="_blank">
-         <img src="{!v.imagepreview}" alt="Uploadfile" />
-         </a>
-      </div>
-   </aura:if>
-  
+        </aura:if>
+    </span>
 </aura:component>

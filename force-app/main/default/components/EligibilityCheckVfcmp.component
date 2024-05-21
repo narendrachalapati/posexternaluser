@@ -1,0 +1,104 @@
+<apex:component controller="EligibulityCheckController" allowDML="true">
+   <apex:stylesheet value="{! URLFOR($Resource.Eligibulity, '/invoice.css')}"/>
+   <apex:includeScript value="{! URLFOR($Resource.Eligibulity, '/Eligibulity.js')}" />
+   <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/jquery.min.js') }" />
+   <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
+   <apex:attribute name="sObject-todo" description="" type="String" default="a2K9H000002XbpFUAS"  assignTo="{!todorecordId}" />
+   <apex:attribute name="memberId" description="" type="String"  default="0039H00000A50URQAZ" assignTo="{!memberrecordid}"/>
+   <apex:attribute name="AccountId" description="" type="String"  default="" assignTo="{!Accountrecordid}"/>
+   <apex:attribute name="AppointmentRecId" description="" type="String"  default="a1K9H0000003OaTUAU" assignTo="{!AppointmentId}"/>
+   <apex:form >
+      <apex:actionFunction name="init" action="{!insuranceData}" rerender="outputPanel">
+         <apex:param name="recordid" value="{!memberId}" />
+      </apex:actionFunction>
+      <apex:actionFunction name="todocomplete" action="{!tOdocomplete}" rerender="outputPanel">
+      </apex:actionFunction>
+   </apex:form>
+   <!-- Call the 'init' JavaScript function after a delay (e.g., 2000 milliseconds) -->
+   <apex:outputPanel id="outputPanel">
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+         <!-- code here -->
+         <div class="card">
+            <div class="card-image" style="background-size: cover;">
+               <img class="brand-image" src="{!URLFOR($Resource.Eligibulity,'Eligibilitylogo.jpg')}" alt="Bg" />
+              
+            </div>
+            <div >
+            <form class="card-form">
+               <apex:outputPanel rendered="{!InsurenceList == null }">
+                  <div class="displaycenter" id="loader">
+                     <img class="loder" src="{!URLFOR($Resource.Eligibulity,
+                        'loader_animation.gif')}" alt="Bg" />
+                     
+                  </div>
+               </apex:outputPanel>
+               <apex:outputPanel rendered="{!InsurenceList != null }">
+                  <div class="input card-form">
+                     <div>
+                        <label class="input-label">Your Appointment</label>
+                     </div>
+                     <div class="input-field">
+                        {!Appointment.name}
+                     </div>
+                  </div>
+                  <div class="input">
+                     <div>
+                        <label class="input-label">Select Your Insurance</label>
+                     </div>
+                     <div class="input-field select">
+                        <apex:form style="width:100%">
+                           <apex:selectList value="{!selctedInsuranceoption}" multiselect="false" size="1" style="width:90%;">
+                              <apex:selectOptions value="{!insuranceOptions}" />
+                              <apex:actionSupport event="onchange" action="{!copayCheck}" rerender="outputPanel"  />
+                           </apex:selectList>
+                        </apex:form>
+                     </div>
+                  </div>
+                  <div class="input card-form">
+                     <div>
+                        <label class="input-label">Actual Amount</label>
+                     </div>
+                     <div class="input-field">
+                        {!TotalAmount}
+                     </div>
+                  </div>
+                  <div class="input card-form">
+                     <div>
+                        <label class="input-label">Copay</label>
+                     </div>
+                     <div class="input-field">
+                        {!CopayAmount}%
+                     </div>
+                  </div>
+                  <div class="input card-form">
+                     <div>
+                        <label class="input-label">Amount Payable</label>
+                     </div>
+                     <div class="input-field">
+                        {!Amount}
+                     </div>
+                  </div>
+                  <!--div class="input">
+                     <input type="password" class="input-field" required ='true'/>
+                     <label class="input-label">Password</label>
+                     </div-->
+                  <div class="action">
+                     <button class="action-button" type="button" onclick="handleCompleteTodo()">Procced to Pay</button>
+                  </div>
+               </apex:outputPanel>
+            </form>
+           </div>
+            <!--div class="card-info">
+               <p>Check your copay and pay <a href="#">Terms and Conditions</a></p>
+            </div-->
+         </div>
+      
+   </apex:outputPanel>
+   <script> 
+      showLoading();
+      window.setTimeout(init, 2000);
+      //document.getElementById("loader").style.display = "none";
+      //hideLoading();
+   </script>
+</apex:component>

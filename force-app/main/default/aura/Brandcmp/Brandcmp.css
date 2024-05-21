@@ -1,28 +1,13 @@
-/* Message and Upload Files*/
-/* Chatbox Text Input */
-.THIS textarea {
-    width: 90%;
-    resize: none;
-    height: 45px;
-    outline: none;
-    padding: 5px 10px;
-    /* font-size: 16px; */
-    border-radius: 5px;
-    max-height: 330px;
-    caret-color: #4671ea;
-  
-  }
-  .THIS textarea::placeholder {
-    color: #b3b3b3;
-  }
-  .THIS textarea:is(:focus, :valid) {
-   
-  }
-  .THIS textarea::-webkit-scrollbar {
-    width: 0px;
-  }
-  /*Hide Native Salesforce Styles*/
-  .THIS .slds-file-selector__dropzone{
+/* Upload Files*/
+.THIS img.brand-image {
+	max-width: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/*Hide Native Salesforce Styles*/
+.THIS .slds-file-selector__dropzone{
     border:unset;
     border-radius: 5px;
     display: block;
@@ -31,15 +16,15 @@
     cursor: pointer;
     text-align: center;
     margin: 0 5px;
-  }
-  
-  .THIS .slds-file-selector__dropzone:hover {
-   
+}
+
+.THIS .slds-file-selector__dropzone:hover {
+    
     color: #1665c4;
-  }
-  
-  /*set the size of the button and background image*/
-  .THIS .slds-file-selector__body{
+}
+
+/*set the size of the button and background image*/
+.THIS .slds-file-selector__body{
     display: block;
     font-size: 30px;
     padding-bottom: 5px;
@@ -55,60 +40,67 @@
     line-height: 1;
     cursor: pointer;
     text-align: center;
-  }
-  .THIS .slds-file-selector__body:before {
+}
+.THIS .slds-file-selector__body:before {
     content: "\f030";
-  }
-  
-  /*get rid of the right label*/
-  .THIS .slds-file-selector__dropzone .slds-file-selector__text{ 
+}
+
+/*get rid of the right label*/
+.THIS .slds-file-selector__dropzone .slds-file-selector__text{ 
     display: none;
-  }
-  
-  /*To override the text, you'll need to set the size of the current text to 0*/
-  .THIS .slds-file-selector__dropzone .slds-file-selector__button {
+}
+
+/*To override the text, you'll need to set the size of the current text to 0*/
+.THIS .slds-file-selector__dropzone .slds-file-selector__button {
     display: none;
-  }
-  
+}
 
 
-  .THIS .body {
+
+.THIS .body {
     background: whitesmoke;
     font-family: "Open Sans", sans-serif;
-  }
-  .THIS .container {
+}
+.THIS .container {
     max-width: 960px;
     margin: 30px auto;
     padding: 20px;
-  }
-  
-  .THIS .avatar-upload {
+}
+
+.THIS .avatar-upload {
     position: relative;
     max-width: 205px;
     margin: 50px auto;
-  }
-  .THIS .avatar-upload .avatar-edit {
+}
+.THIS .avatar-upload .avatar-edit {
     position: absolute;
     right: 12px;
     z-index: 1;
     bottom: 10px;
-  }
+}
+.THIS.avatar-edit:hover {
+    color: #1665c4;
+}
 
- 
-  .THIS .avatar-upload .avatar-preview {
-    width: 192px;
-    height: 192px;
+.THIS .avatar-upload .avatar-preview {
+    width: 220px;
+    height: 220px;
     position: relative;
     border-radius: 100%;
     border: 6px solid #f8f8f8;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
-  }
-  .THIS .avatar-upload .avatar-preview > div {
+}
+.THIS .avatar-upload .avatar-preview > div {
     width: 100%;
     height: 100%;
     border-radius: 100%;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-  }
-  
+}
+
+.THIS  .textstyling {
+    text-align: center;
+    font-weight: bold;
+    font-size: x-large;
+}

@@ -1,8 +1,8 @@
 ({
-        
+    
     MAX_FILE_SIZE: 4000000, //Max file size 4.5 MB 
     CHUNK_SIZE: 750000,      //Chunk Max size 750Kb 
-     
+    
     uploadHelper: function(component, event) {
         // get the selected files using aura:id [return array of files]
         var fileInput = component.find("fuploader").get("v.files");
@@ -15,7 +15,7 @@
             component.set("v.fileName", 'Alert : File size cannot exceed ' + self.MAX_FILE_SIZE + ' bytes.\n' + ' Selected file size: ' + file.size);
             return;
         }
-         
+        
         // create a FileReader object 
         var objFileReader = new FileReader();
         // set onload function of FileReader object   
@@ -23,27 +23,27 @@
             var fileContents = objFileReader.result;
             var base64 = 'base64,';
             var dataStart = fileContents.indexOf(base64) + base64.length;
-           
+            
             fileContents = fileContents.substring(dataStart);
             // call the uploadProcess method 
             self.uploadProcess(component, file, fileContents);
         });
-         
+        
         objFileReader.readAsDataURL(file);
     },
-     
+    
     uploadProcess: function(component, file, fileContents) {
         // set a default size or startpostiton as 0 
         var startPosition = 0;
         // calculate the end size or endPostion using Math.min() function which is return the min. value   
-       // var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
+        // var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
         var endPosition = Math.max(fileContents.length, startPosition + this.CHUNK_SIZE);
-         
+        
         // start with the initial chunk, and set the attachId(last parameter)is null in begin
         this.uploadInChunk(component, file, fileContents, startPosition, endPosition, '');
     },
-     
-     
+    
+    
     uploadInChunk: function(component, file, fileContents, startPosition, endPosition, attachId) {
         // call the apex method 'SaveFile'
         var getchunk = fileContents.substring(startPosition, endPosition);
@@ -62,37 +62,37 @@
             Tittle: file.name,
             base64Data: encodeURIComponent(getchunk),
             contentType: file.type,
-           // fileId: attachId
+            // fileId: attachId
         });
-         
+        
         // set call back 
         action.setCallback(this, function(response) {
             // store the response / Attachment Id   
             attachId = response.getReturnValue();
-           
+            
             var state = response.getState();
             if (state === "SUCCESS") {
                 console.log('attachId' + attachId);
                 console.table(attachId);
                 component.set('v.Downloadlink',attachId.DownloadLink__c);
                 component.set('v.previewlink',attachId.ThumbnailLink__c);
-                component.set('v.base64image',attachId.Preview_Link__c);
+                // component.set('v.base64image',attachId.Preview_Link__c);
                 component.set('v.isloading', 'false');
                 // update the start position with end postion
                 startPosition = endPosition;
                 endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
-
+                
                 // check if the start postion is still less then end postion 
                 // then call again 'uploadInChunk' method , 
                 // else, diaply alert msg and hide the loading spinner
                 if (startPosition < endPosition) {
                     this.uploadInChunk(component, file, fileContents, startPosition, endPosition, attachId);
-               } else {
-                  //  alert('File has been uploaded successfully');
+                } else {
+                    //  alert('File has been uploaded successfully');
                 }
                 // handel the response errors        
             } else if (state === "INCOMPLETE") {
-               // alert("From server: " + response.getReturnValue());
+                // alert("From server: " + response.getReturnValue());
             } else if (state === "ERROR") {
                 var errors = response.getError();
                 if (errors) {
@@ -113,23 +113,23 @@
         var file = component.get('v.fileicon');
         var imageurl = component.get('v.base64');
         console.log('imageurl ' + imageurl);
-         if (Contenttype === 'image/jpeg' || Contenttype === 'image/gif' || Contenttype === 'image/png' || Contenttype === 'image/jpg') {
-             if(imageurl != null){
-                 component.set('v.imagepreview',imageurl);
-             }else{
+        if (Contenttype === 'image/jpeg' || Contenttype === 'image/gif' || Contenttype === 'image/png' || Contenttype === 'image/jpg') {
+            if(imageurl != null){
+                component.set('v.imagepreview',imageurl);
+            }else{
                 component.set('v.imagepreview',image); 
-             }
-             console.log(component.get('v.imageicon'));
-           } else if (Contenttype ==='application/msword') {
-             component.set('v.imagepreview',Doc);
-             console.log(component.get('v.imagepreview'));
-           } else {
-             component.set('v.imagepreview',file);
-             console.log(component.get('v.imagepreview'));
-           }
-           
-     },
-       EditHelper: function(component, event) {
+            }
+            console.log(component.get('v.imageicon'));
+        } else if (Contenttype ==='application/msword') {
+            component.set('v.imagepreview',Doc);
+            console.log(component.get('v.imagepreview'));
+        } else {
+            component.set('v.imagepreview',file);
+            console.log(component.get('v.imagepreview'));
+        }
+        
+    },
+    EditHelper: function(component, event) {
         // get the selected files using aura:id [return array of files]
         var fileInput = component.find("fEdit").get("v.files");
         // get the first file using array index[0]  
@@ -141,7 +141,7 @@
             component.set("v.fileName", 'Alert : File size cannot exceed ' + self.MAX_FILE_SIZE + ' bytes.\n' + ' Selected file size: ' + file.size);
             return;
         }
-         
+        
         // create a FileReader object 
         var objFileReader = new FileReader();
         // set onload function of FileReader object   
@@ -149,25 +149,25 @@
             var fileContents = objFileReader.result;
             var base64 = 'base64,';
             var dataStart = fileContents.indexOf(base64) + base64.length;
-           
+            
             fileContents = fileContents.substring(dataStart);
             // call the uploadProcess method 
             self.Editprocess(component, file, fileContents);
         });
-         
+        
         objFileReader.readAsDataURL(file);
     },
- Editprocess: function(component, file, fileContents) {
+    Editprocess: function(component, file, fileContents) {
         // set a default size or startpostiton as 0 
         var startPosition = 0;
         // calculate the end size or endPostion using Math.min() function which is return the min. value   
         var endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
-         
+        
         // start with the initial chunk, and set the attachId(last parameter)is null in begin
         this.EditInChunk(component, file, fileContents, startPosition, endPosition, '');
     },
-        
-EditInChunk: function(component, file, fileContents, startPosition, endPosition, attachId) {
+    
+    EditInChunk: function(component, file, fileContents, startPosition, endPosition, attachId) {
         // call the apex method 'SaveFile'
         var getchunk = fileContents.substring(startPosition, endPosition);
         var googlefileid = component.get("v.googlefilerecid");
@@ -186,14 +186,14 @@ EditInChunk: function(component, file, fileContents, startPosition, endPosition,
             Tittle: file.name,
             base64Data: encodeURIComponent(getchunk),
             contentType: file.type,
-           // fileId: attachId
+            // fileId: attachId
         });
-         
+        
         // set call back 
         action.setCallback(this, function(response) {
             // store the response / Attachment Id   
             attachId = response.getReturnValue();
-           
+            
             var state = response.getState();
             if (state === "SUCCESS") {
                 console.log('attachId' + attachId);
@@ -203,18 +203,18 @@ EditInChunk: function(component, file, fileContents, startPosition, endPosition,
                 // update the start position with end postion
                 startPosition = endPosition;
                 endPosition = Math.min(fileContents.length, startPosition + this.CHUNK_SIZE);
-
+                
                 // check if the start postion is still less then end postion 
                 // then call again 'uploadInChunk' method , 
                 // else, diaply alert msg and hide the loading spinner
                 if (startPosition < endPosition) {
                     this.uploadInChunk(component, file, fileContents, startPosition, endPosition, attachId);
                 } else {
-                  //  alert('File has been uploaded successfully');
+                    //  alert('File has been uploaded successfully');
                 }
                 // handel the response errors        
             } else if (state === "INCOMPLETE") {
-               // alert("From server: " + response.getReturnValue());
+                // alert("From server: " + response.getReturnValue());
             } else if (state === "ERROR") {
                 var errors = response.getError();
                 if (errors) {
