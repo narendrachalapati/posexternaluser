@@ -1,31 +1,26 @@
 ({
     doInit: function(component, event, helper) {
-        var action = component.get('c.gettingdetailsbyrecordid');
-        var patientid = component.get("v.memberId");
-        console.log('patientid'+patientid);
+        //helper.finalizeTodo(component, event);
+        var accountId = component.get("v.accountId");
+        var action = component.get('c.fetchFileRecordDetailsByWhattId');
+        console.log('accountId ' + accountId);
         action.setParams({
-            "paentid": patientid,
-            "uuid": '',
-            "AccountId":component.get("v.AccountId")
+            "recordId": accountId
             
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
             if (state == "SUCCESS") {
-                var googlefile = response.getReturnValue(); 
-                console.log('googlefile '+ googlefile);
-                console.table(googlefile);
-                
-                component.set('v.googlefilerecid',googlefile.Id);
-                console.log('googlefile.Id' + googlefile.Id);
-                var googlefileid = googlefile.Id;
-                if(googlefileid != 'undefined' && googlefileid != null){
-                    component.set('v.base64',googlefile.ThumbnailLink__c);  
-                    component.set('v.previewlink',googlefile.Preview_Link__c);
-                    component.set('v.Downloadlink',googlefile.DownloadLink__c); 
+                var googleFileRecord = response.getReturnValue();
+                if( (googleFileRecord) && !(!googleFileRecord.Id) ){
+                    var googleFileRecordId = googleFileRecord.Id;
+                    component.set('v.googlefilerecid', googleFileRecordId);
+                	console.log('googlefile.Id' + googleFileRecordId);
+                    component.set('v.base64',googleFileRecord.ThumbnailLink__c);  
+                    component.set('v.previewlink',googleFileRecord.Preview_Link__c);
+                    component.set('v.Downloadlink',googleFileRecord.DownloadLink__c); 
                     
-                    helper.imagepreview(component,googlefile.ContentType__c);
-                    console.log('b64stringNDR23' + googlefile);
+                    helper.imagepreview(component, googleFileRecord.ContentType__c);
                 }
             } else { // if any callback error, display error msg
                 var errors = response.getError();

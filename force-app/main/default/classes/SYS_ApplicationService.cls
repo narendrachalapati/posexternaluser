@@ -1635,6 +1635,13 @@ global virtual inherited sharing class SYS_ApplicationService {
 
     global virtual List<sObject> fetchSobject(String query, List<Id> parentIds) { 
         List<sObject> records = Database.query(query);
+        
+        return records;
+    }
+
+    global virtual List<sObject> fetchSobject(String query, List<Id> parentIds, List<sObject> sObjects) { 
+        List<sObject> records = Database.query(query);
+        
         return records;
     }
 

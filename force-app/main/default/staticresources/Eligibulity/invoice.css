@@ -295,9 +295,13 @@ input {
 	position: absolute;
 	top: 0.5rem;
 	transition: 0.25s ease;
+	font-family: 'Inter';
+    font-weight: 600;
 }
 
 .input-field {
+	font-family: 'Inter';
+    font-weight: 600;
 	border: 0;
 	z-index: 1;
 	background-color: transparent;
@@ -321,6 +325,8 @@ input {
 }
 
 .action-button {
+	font-family: 'Inter';
+    font-weight: 600;
 	font: inherit;
 	font-size: 1.25rem;
 	padding: 1em;
@@ -355,5 +361,8 @@ input {
     height: 100px;
 }
 
-
+.app {
+    font-size: large;
+    padding-top: 200px;
+}
 

@@ -178,3 +178,7 @@
   .THIS .button.button--stroke.button--neutral:hover {
     background-color: #eff2f5;
   }
+  .THIS .imgsize {
+    width:25%;
+    padding-bottom: 25px;
+  }

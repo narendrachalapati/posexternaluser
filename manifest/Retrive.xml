@@ -2,16 +2,20 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 
 <types>
- <members>EligibulityCheckController</members>
+ <members>CreateInvoiceController</members>
  <name>ApexClass</name>
 </types>
  <types>
-     <members>EligibulityCheckVfcmp</members>
+     <members>CreateInvoiceCreateVFcmp</members>
     <name>ApexComponent</name>
  </types>
   <types>
-     <members>Eligibulity</members>
+     <members>Square</members>
     <name>staticResource</name>
+ </types>
+ <types>
+     <members>CreateInvoiceAuracmp</members>
+    <name>AuraDefinitionBundle</name>
  </types>
 <version>56.0</version>
 </Package>

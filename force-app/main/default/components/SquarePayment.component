@@ -1,0 +1,96 @@
+<apex:component controller="SquarePaymentController" allowDML="true">
+   <apex:attribute name="memberId" description="" type="String"  default="0039H00000ANrFZQA1" assignTo="{!memberrecordid}"/>
+   <apex:attribute name="AccountId" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!AccountrecId}"/>
+   <apex:attribute name="Amount" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!AccountrecId}"/>
+   <apex:attribute name="savedcardId" description="" type="String"   assignTo="{!selectedcardId}"/>
+   <apex:form>
+      <apex:actionFunction name="init" action="{!fetchCustomerCards}" rerender="outputPanelcardlist">
+      </apex:actionFunction>
+      <apex:actionFunction name="gettingselectedcardId" action="{!setorderID}"  rerender="selectionpannel">
+         <apex:param assignto="{!selectedcardId}" name="selectedcard" value="" />
+      </apex:actionFunction>
+      <apex:actionFunction name="paymenthandling" action="{!Paymentcreation}" rerender="outputPanelcardlist" oncomplete="PaymentsyncAPIcall()">
+   </apex:actionFunction>
+   </apex:form>
+   <apex:includeScript value="{! URLFOR($Resource.Square, 'squarepayment.js')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.Square, 'app.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.Square, 'dark-mode.css')}"/>
+   <apex:outputPanel id ="outputPanel">
+      <div class="card mt-50 mb-50">
+         <div class="card-title mx-auto"> Payment </div>
+         <div class="nav">
+            <ul class="mx-auto disp">
+               <div id="tab1" onclick="handelsavedcards();">
+                  <li>
+                     Saved cards
+                  </li>
+               </div>
+               <div id="tab2" class="active" onclick="handlenewcard();">
+                  <li>Add card {!selectedcardId}</li>
+               </div>
+            </ul>
+         </div>
+         <form>
+            <!-- The content areas for each tab -->
+            <div id="savedcards" style="display:none">
+            <apex:outputPanel id ="outputPanelcardlist">   
+               <apex:repeat value="{!cardslist}" var="card" >
+                  <div class="row row-1">
+                     <div class="col-2 visa">
+                        <div class="master">
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'VISA')}"
+                              value="{!$Resource.visa}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'MASTERCARD')}"
+                              value="{!$Resource.Mastercard}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'CIRRUS')}"
+                              value="{!$Resource.Cirrus}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'AMERICAN EXPRESS')}"
+                              value="{!$Resource.AmericanExpress}" width="40"
+                              height="40" alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'DISCOVER')}"
+                              value="{!$Resource.Discover}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'DINERS CLUB')}"
+                              value="{!$Resource.DinersClub}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'JCB')}"
+                              value="{!$Resource.JCB}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'UNIONPAY')}"
+                              value="{!$Resource.UnionPay}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                           <apex:image rendered="{!contains(card.CardBrand__c, 'UNKNOWN') || isBlank(card.CardBrand__c)}"
+                              value="{!$Resource.UnknownCard}" width="40" height="40"
+                              alt="{!card.CardBrand__c}" />
+                        </div>
+                        <!--img class="img-fluid" src="{!$Resource.Maestro}" /-->
+                     </div>
+                     <div class="col-7 fourdigit"> **** **** **** {!card.Last_Four_Digits__c} {!card.CardBrand__c}  </div>
+                     <div class="col-3 d-flex justify-content-center "></div>
+                     <apex:outputPanel id ="selectionpannel">  
+                     <input type="radio" clas="radio" id="cardid" name="fav_language" value="{!card.Square_Id__c}" onclick="onIdselection();"/>
+                     </apex:outputPanel>
+                  </div>
+               </apex:repeat>
+            </apex:outputPanel>
+               <button class="btn d-flex mx-auto"   onclick="SavedcardsPaymenthandling();"><b>Pay</b></button>
+            </div>
+            <div id="newcard" >
+              <c:SquareCardui memberId="{!memberrecordid}" AccountId="{!AccountrecId}" />
+            </div>
+         </form>
+       
+         
+      </div>
+   </apex:outputPanel>
+   <script> 
+      window.setTimeout(init, 2000);
+      console.log('fourdegits' + '{!Lastfourdegits}');
+      console.log( 'testing the cards '+'{!cardslist}' + '{!memberrecordid}' + '{!Lastfourdegits}');
+      
+   </script>
+</apex:component>

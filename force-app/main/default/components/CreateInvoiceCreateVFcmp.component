@@ -1,0 +1,40 @@
+<apex:component controller="CreateInvoiceController" allowDML="true">
+     <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
+    <apex:attribute name="todo-id" description="" type="String" assignTo="{!todorecordid}" />
+   <apex:attribute name="sObject-todo" description="" type="ToDo__c" assignTo="{!todorecord}" />
+   <apex:attribute name="memberId" description="" type="String"  default="0039H000001ML8TQAW" assignTo="{!memberrecordid}"/>
+   <apex:attribute name="AccountId" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!Accountrecordid}"/>
+    <apex:includeLightning />
+     <apex:includeScript value="{!$Site.BaseUrl}/lightning/lightning.out.js?v=2" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title> Invoice</title>
+    <div id="invoice"></div>
+    <script>
+    try{  
+        var uuid = "{!uuid}";
+        var AccountId = "{!Accountrecordid}";
+        var memberId = "{!memberrecordid}";
+        var todorecord = "{!todorecord}";
+        var todorecordId = "{!todorecordid}";
+        console.log('todorecord ' + todorecord);
+        console.log('todorecord ' + AccountId);
+        console.log('todorecord ' + memberId);
+        console.log('todorecord ' + uuid);
+        $Lightning.use("c:CreateInvoiceapp", function() {
+            $Lightning.createComponent(
+                "c:CreateInvoiceAuracmp",{ "AccountId":AccountId,
+                                       "memberId":memberId,
+                                       "todorecord":todorecord,
+                                       "uuidstring":uuid,
+                                       "todorecordId":todorecordId,
+                                      },"invoice",function(cmp) {
+                                          console.log("Lightning Aura Component is Loaded...");
+                                      }
+            );
+        });
+    }catch(e){  
+        console.log("There is error which shows "+e.message); //Handling error  
+    }       
+    
+    </script>
+</apex:component>

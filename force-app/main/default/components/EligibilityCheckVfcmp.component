@@ -3,7 +3,8 @@
    <apex:includeScript value="{! URLFOR($Resource.Eligibulity, '/Eligibulity.js')}" />
    <apex:includeScript value="{! URLFOR( $Resource.Calendar , '/fullcalendar390/lib/js/jquery.min.js') }" />
    <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
-   <apex:attribute name="sObject-todo" description="" type="String" default="a2K9H000002XbpFUAS"  assignTo="{!todorecordId}" />
+   <apex:attribute name="todo-id" description="" type="String" assignTo="{!todorecordId}" />
+   <!--apex:attribute name="sObject-todo" description="" type="String" default="a2K9H000002XbpFUAS"  assignTo="{!todorecordId}" /-->
    <apex:attribute name="memberId" description="" type="String"  default="0039H00000A50URQAZ" assignTo="{!memberrecordid}"/>
    <apex:attribute name="AccountId" description="" type="String"  default="" assignTo="{!Accountrecordid}"/>
    <apex:attribute name="AppointmentRecId" description="" type="String"  default="a1K9H0000003OaTUAU" assignTo="{!AppointmentId}"/>
@@ -24,8 +25,9 @@
                <img class="brand-image" src="{!URLFOR($Resource.Eligibulity,'Eligibilitylogo.jpg')}" alt="Bg" />
               
             </div>
+            <apex:outputPanel id="formid" rendered="{!Copay != null}">
             <div >
-            <form class="card-form">
+             <form class="card-form">
                <apex:outputPanel rendered="{!InsurenceList == null }">
                   <div class="displaycenter" id="loader">
                      <img class="loder" src="{!URLFOR($Resource.Eligibulity,
@@ -89,6 +91,12 @@
                </apex:outputPanel>
             </form>
            </div>
+         </apex:outputPanel>
+         <apex:outputPanel id="noappointment" rendered="{!Copay == null}">
+            <div class="app">
+             You Don't have Appointments
+           </div>
+            </apex:outputPanel>
             <!--div class="card-info">
                <p>Check your copay and pay <a href="#">Terms and Conditions</a></p>
             </div-->
@@ -98,6 +106,7 @@
    <script> 
       showLoading();
       window.setTimeout(init, 2000);
+      
       //document.getElementById("loader").style.display = "none";
       //hideLoading();
    </script>

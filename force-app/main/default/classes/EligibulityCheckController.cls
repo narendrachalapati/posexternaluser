@@ -47,7 +47,9 @@ public with sharing class EligibulityCheckController {
           system.debug('AppoinmentNDR' + Appointment.Id + Appointment.Name);
           system.debug('#################Appointmentinfo ################################');
          TotalAmount = Appointment.Product__r.Max_Price__c;
+         if(TotalAmount != null){
         Amount = (CopayAmount / 100) * TotalAmount;
+      }
         system.debug('Amount NDR' + Amount);
       }
       system.debug('InsurenceList' + InsurenceList);
@@ -56,11 +58,11 @@ public with sharing class EligibulityCheckController {
       SelectedInsurance = EligibulityUtility.copayCheckUtility(
           InsurenceList, selctedInsuranceoption);
       system.debug('SelectedInsurance' + SelectedInsurance);
-      if (SelectedInsurance != null) {
+      //if (SelectedInsurance != null) {
         CopayAmount = SelectedInsurance.Copay__c;
         Amount = (CopayAmount / 100) * TotalAmount;
         system.debug('CopayAmountNDR' + CopayAmount);
-      }
+     // }
     }
     public void tOdocomplete() {
       system.debug(

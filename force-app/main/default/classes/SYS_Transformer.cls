@@ -67,7 +67,7 @@ public virtual class SYS_Transformer {
         List<Id> parentIds = new List<Id>();
         
         for(sObject record : sObjects) {
-            parentIds.add((Id)record.get('id'));
+            parentIds.add((String)record.get('id'));
         }
         
         for(FieldSetting__mdt mapping : SYS_DataCacheFactory.FieldMappingOutbound) { 
@@ -145,10 +145,10 @@ public virtual class SYS_Transformer {
                     SYS_DataCacheFactory.integrationSetting.ApexHandler__c : 'SYS_ApplicationService';
                     
                     SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(apexHandler).newInstance();
-                    List<sObject> records = appService.fetchSobject(query, parentIds);
+                    List<sObject> records = appService.fetchSobject(query, parentIds, sObjects);
 
                     for(sObject item:records) {
-                        parentIds.add((Id)item.get('Id'));
+                        parentIds.add((String)item.get('Id'));
                     }
                     levelVsRecordsMap.get(level)?.get(objectApiName).addAll(records);
                 }
@@ -179,6 +179,29 @@ public virtual class SYS_Transformer {
         }
 
         return ChildRecords;
+    }
+
+    public static Map<String, Object> buildNestedMap(String input, Map<String, Object> outerMap, List<Map<String, Object>> listPtr) {
+        List<String> keys = input.split('\\.');
+
+        Map<String, Object> currentMap = outerMap;
+
+        for (Integer i = 0; i < keys.size(); i++) {
+            String key = keys[i];
+            
+            if (i == keys.size() - 1) {
+                currentMap.put(key, listPtr);
+            } else {
+                Map<String, Object> nextMap = new Map<String, Object>();
+                if(!currentMap.containsKey(key))
+	                currentMap.put(key, nextMap);
+                else if (currentMap.get(key) instanceof Map<String,Object>)
+                    nextMap = (Map<String,Object>)currentMap.get(key);
+                currentMap = nextMap;
+            }
+        }
+        
+        return outerMap;
     }
 
     public static Map<String, Object> getRequestJsonRecurseNew(sObject singleObj,String level, Map<String, Map<String, List<sObject>>> levelVsRecordsMap) {
@@ -272,17 +295,25 @@ public virtual class SYS_Transformer {
         for(sObject obj : objs) {
             System.debug('object '+obj);
             jsonMapObject = getRequestJsonSingle(parentLevel,obj,SYS_DataCacheFactory.FieldMappingOutbound, parentChildObjMap);
-           
+            
             String objId = (String)obj.get('Id');
             
             if(SYS_DataCacheFactory.BYPASS_ORDER) {
                 if(parentChildObjMap.get(objId) != null ) {
                     for(String childObjectName : parentChildObjMap.get(objId).keySet()) {
                        if(childMappingsMap.get(childObjectName)[0].ChildRootElement__c != null){
-   
-                           if(jsonMapObject.get(childMappingsMap.get(childObjectName)[0].ChildRootElement__c) == null) {
-                               jsonMapObject.put(childMappingsMap.get(childObjectName)[0].ChildRootElement__c, new List<Map<String, Object>>()); 
-                           } 
+
+                        String childRootKey = (childMappingsMap.get(childObjectName)[0].ChildRootElement__c);//?.toLowerCase();
+                        List<Map<String, Object>> listPtr = new List<Map<String, Object>>();
+                        if (childRootKey.contains('.')) {
+                            jsonMapObject = buildNestedMap(childRootKey, jsonMapObject, listPtr);
+                            
+                        }
+                        else if(jsonMapObject.get(childMappingsMap.get(childObjectName)[0].ChildRootElement__c) == null) {
+                            jsonMapObject.put(childMappingsMap.get(childObjectName)[0].ChildRootElement__c, new List<Map<String, Object>>()); 
+                            listPtr = ((List<Map<String, Object>>)jsonMapObject.get((String)childMappingsMap.get(childObjectName)[0].ChildRootElement__c));
+                        } 
+                        
                            /*--*/SYS_debug.log('hbdebug getRequestJsonSingle child - '+ childObjectName);
                        
                            for(sObject childObj : parentChildObjMap.get(objId).get(childObjectName)) {
@@ -291,8 +322,7 @@ public virtual class SYS_Transformer {
                                Integer nextLevel = Integer.valueOf(childLevel); 
                                
                                if(nextLevel <= SYS_Constants.MAX_CHILD_NESTING_DEPTH) {
-   
-                                   ((List<Map<String, Object>>)jsonMapObject.get((String)childMappingsMap.get(childObjectName)[0].ChildRootElement__c)).add(getRequestJsonRecurseNew(childObj, String.valueOf(nextLevel), levelVsRecordsMap)); 
+                                    listPtr.add(getRequestJsonRecurseNew(childObj, String.valueOf(nextLevel), levelVsRecordsMap)); 
                                }
                                
                            }
@@ -719,7 +749,8 @@ public virtual class SYS_Transformer {
                     SYS_ApplicationService appService = (SYS_ApplicationService)Type.forName(fieldMappingHandler).newInstance();
                     
                     jsonMapObject.put(nodeList[0], appService.getFieldValues(obj, mapping, mapping.FieldApiName__c));
-                
+
+                    System.debug(' JSON inprogress'+JSON.serialize(jsonMapObject));
                     
                 }
                 else {
@@ -1048,13 +1079,11 @@ public virtual class SYS_Transformer {
                                     if(newlog!=NULL){
                                         childRecordsToInsert.add(newlog);
                                     }
-                                    system.debug('childRecordsToInsertNDR' + childRecordsToInsert);
                                 }
                             }
-
                             if(!childRecordsToInsert.isEmpty()){
                                 //appService.doDML(childRecordsToInsert, 'INSERT', '');
-                               //  SYS_Helper.insertLog(childRecordsToInsert);
+                                // SYS_Helper.insertLog(childRecordsToInsert);
                                 SYS_DataCacheFactory.childRecordsToInsert.addAll(childRecordsToInsert);
                             }
                             
@@ -1121,10 +1150,12 @@ public virtual class SYS_Transformer {
         if(extIdMapping.size()>0){
             String externalIdField = extIdMapping[0].FieldApiName__c;
             String mappingIsAllowedFor = mapping.Mapping_is_for__c;
-
-            externalIdField = externalIdField != null ? externalIdField.replace(SYS_DataCacheFactory.integrationSetting?.EscapeCharacter__c, SYS_DataCache.namespacePrefix) : externalIdField;
-
             
+            externalIdField = (externalIdField!= null)? 
+                (SYS_DataCacheFactory.integrationSetting?.EscapeCharacter__c!= null)? 
+                externalIdField.replace(SYS_DataCacheFactory.integrationSetting.EscapeCharacter__c, SYS_DataCache.namespacePrefix) : 
+            externalIdField : 
+            externalIdField;            
             if(mappingIsAllowedFor == NULL || mappingIsAllowedFor == 'All Records'){
                 return skip;
             } 

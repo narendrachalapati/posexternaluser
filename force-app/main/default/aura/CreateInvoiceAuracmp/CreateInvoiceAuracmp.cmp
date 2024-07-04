@@ -1,49 +1,75 @@
 <aura:component  controller="CreateInvoiceController"
- implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
- <aura:attribute name="todorecord" type="ToDo__c"/>
- <aura:attribute name="uuidstring" type="String"/>
- <aura:attribute name="memberId" type="String" default =""/>
- <aura:attribute name="AccountId" type="string"  default =""/>
- <aura:attribute name="ProjectRec" type="Sobject"/>
- <aura:attribute name="Amount" type="Decimal"/>
- <aura:attribute name="Invoicedate" type="Date"/>
- <aura:attribute name="Description" type="string"/>
- <aura:attribute name="Invoice" type="sobject"/>
- <aura:attribute name="Navigateto" type="Boolean" default =""/>
- <aura:attribute name="ButtonEnable" type="Boolean" default ="false"/>
- <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
-<div>
-<aura:if isTrue="{!(!v.Navigateto)}">
-<div class="wrapper">
-  <div class="inputtext-wrapper inputtext inputtext--md ">
-    <label for="title">Amount<i>*</i></label>
-	
-    <input id="Amount" min="0"  class="js-control" type="number" placeholder="Enter Amount"  name="title" required ="true" onkeyup="{!c.onEnterAmount}" onchange="{!c.onEnterAmountchange}" value="{!v.Amount}"/>
-   
-  </div>
-	
-	<div class="inputtext-wrapper inputtext inputtext--md ">
-    <label for="title"> Invoice Date<i>*</i></label>
-    <input class="js-control--email" type="Date" placeholder="DD/MM/YYYY" id="title" name="title" required="true" onchange="{!c.onEnterDate}"  value="{!v.Invoicedate}" />
-   
-  </div>
-	
-	<div class="inputtext-wrapper inputtext inputtext--md ">
-    <label for="title">Description</label>
-    <input class="js-control--email" type="text" placeholder="Text" id="title" name="title" onkeyup="{!c.onEnterDescription}" value="{!v.Description}"/>
-   
-  </div>
-	<div class="button-wrapper" onclick="{!c.Createinvoicehandler}">
-
-		<button id="invoiceButton"     class="{!v.ButtonEnable ? 'button button--md button--filled button--primary button--full' : 'Buttondesable button button--full button--md'}">
-			<span class="button-label">Create Invoice</span>
-		</button>
-	</div>
-</div>
-</aura:if>
-<aura:if isTrue="{!v.Navigateto}">
-	<p>Thank you</p>
-
-	</aura:if>
-</div>
+   implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+   <aura:attribute name="todorecordid" type="String"/>
+   <aura:attribute name="todorecord" type="ToDo__c"/>
+   <aura:attribute name="uuidstring" type="String"/>
+   <aura:attribute name="memberId" type="String" default =""/>
+   <aura:attribute name="AccountId" type="string"  default =""/>
+   <aura:attribute name="membername" type="String"/>
+   <aura:attribute name="selectedProjectId" type="String"/>
+   <aura:attribute name="ProjectRecList" type="Sobject[]"/>
+   <aura:attribute name="ProjectRec" type="Sobject"/>
+   <aura:attribute name="Amount" type="Decimal"/>
+   <aura:attribute name="Invoicedate" type="Date"/>
+   <aura:attribute name="Duedate" type="Date"/>
+   <aura:attribute name="Selectedterm" type="string"/>
+   <aura:attribute name="Description" type="string"/>
+   <aura:attribute name="Invoice" type="sobject"/>
+   <aura:attribute name="Navigateto" type="Boolean" default =""/>
+   <aura:attribute name="ButtonEnable" type="Boolean" default ="false"/>
+   <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+   <div>
+      <aura:if isTrue="{!(!v.Navigateto)}">
+         <div class="wrapper">
+          <aura:if isTrue="{! (v.ProjectRecList != null)}">
+         
+               <div class="imgsize">
+                  <img src="https://municorn.ai/assets/img/logo/logo-m.svg"   ></img>
+               </div>
+               <div class="inputtext-wrapper inputtext inputtext--md ">
+                  <label for="title">{!v.membername}</label>
+                  <lightning:select aura:id="select" name="select" label="Select your Project" onchange="{!c.Projectchange }" required="true">
+                     <aura:iteration items="{!v.ProjectRecList}" var="option">
+                        <option value="{!option.Id}" title="{!option.id}">{!option.Name}</option>
+                     </aura:iteration>
+                  </lightning:select>
+                  <label for="title">Amount<i>*</i></label>
+                  <input id="Amount" min="0"  class="js-control" type="number" placeholder="Enter Amount"  name="title" required ="true" onkeyup="{!c.onEnterAmount}" onchange="{!c.onEnterAmountchange}" value="{!v.Amount}"/>
+               </div>
+               <div class="inputtext-wrapper inputtext inputtext--md ">
+                  <label for="title">Description<i>*</i></label>
+                  <input class="js-control--email" type="text" placeholder="Text" id="title" name="title" required ="true" onkeyup="{!c.onEnterDescription}" value="{!v.Description}"/>
+               </div>
+               <div class="inputtext-wrapper inputtext inputtext--md ">
+                  <lightning:select aura:id="term" name="Term" label="Term" onchange="{! c.onChange }">
+                     <option value="5" title="Net 10">Net 10</option>
+                     <option value="2" title="Net 15">Net 15</option>
+                     <option value="3" title="Net 30">Net 30</option>
+                     <option value="4" title="Net 60">Net 60</option>
+                     <option value="1" title="Due on receipt">Due on receipt</option>
+                  </lightning:select>
+               </div>
+               <div class="inputtext-wrapper inputtext inputtext--md ">
+                  <label for="title"> Invoice Date<i>*</i></label>
+                  <input class="js-control--email" type="Date" placeholder="DD/MM/YYYY" id="title" name="title" required="true" onchange="{!c.onEnterDate}"  value="{!v.Invoicedate}" />
+               </div>
+               <div class="inputtext-wrapper inputtext inputtext--md ">
+                  <label for="title"> Due Date<i>*</i></label>
+                  <input class="js-control--email" type="text" placeholder="DD/MM/YYYY" id="Duedate" name="title" required="true" onchange="{!c.onEnterDate}"  value="{!v.Duedate}" readonly="true"/>
+               </div>
+               <div class="button-wrapper" onclick="{!c.FinalInvoicehandling}">
+                  <button id="invoiceButton"     class="{!v.ButtonEnable ? 'button button--md button--filled button--primary button--full' : 'Buttondesable button button--full button--md'}">
+                  <span class="button-label">Create Invoice</span>
+                  </button>
+               </div>
+               <aura:set attribute="else">
+                Contact your Admin you are not assigned with any Project
+              </aura:set>
+          </aura:if>
+          </div>
+      </aura:if>
+      <aura:if isTrue="{!v.Navigateto}">
+         <p>Thank you</p>
+      </aura:if>
+   </div>
 </aura:component>

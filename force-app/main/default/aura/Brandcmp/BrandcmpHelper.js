@@ -3,6 +3,14 @@
     MAX_FILE_SIZE: 4000000, //Max file size 4.5 MB 
     CHUNK_SIZE: 750000,      //Chunk Max size 750Kb 
     
+    finalizeTodo: function(component, event) {
+        var todoRecordId = component.get("v.todorecordid");
+		todoRecordId = 'a2K9H000002dPi9UAE';        
+        if(todoRecordId && typeof window.finalizeTodo === 'function') {
+            window.finalizeTodo(todoRecordId, true);
+        }
+    },
+    
     uploadHelper: function(component, event) {
         // get the selected files using aura:id [return array of files]
         var fileInput = component.find("fuploader").get("v.files");
