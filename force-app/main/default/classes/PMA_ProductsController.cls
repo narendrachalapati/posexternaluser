@@ -237,12 +237,12 @@ public with sharing class PMA_ProductsController {
         Decimal memberAge = currentOrder.Member__r.Age__c;
 
         try {           
-            String product = 'SELECT ' + SYS_Helper.getAllFieldsFor('Product__c') +
+            String product = 'SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItem__c') +
                 ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
             	', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
                 ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
                 ', ( SELECT ' + SYS_Helper.getAllFieldsFor('Product_Option__c') + ' FROM Product_Option__r)' +
-                ' FROM Product__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
+                ' FROM CatalogItem__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
             productsList = Database.query(product); 
            system.debug('productsList:::'+ productsList);
             //Init Record Picture Urls
@@ -324,14 +324,14 @@ public with sharing class PMA_ProductsController {
         List<Product__c> productsList = new List<Product__c>();
         Map <Id, SelectedProductWrapper > mapProductsList = new Map <Id, SelectedProductWrapper >();
         try {           
-            String product = 'SELECT ' + SYS_Helper.getAllFieldsFor('Product__c') +
-                ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
-            	', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
-                ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
-                ', ( SELECT ' + SYS_Helper.getAllFieldsFor('Product_Option__c') + ' FROM Product_Option__r)' +
-                ' FROM Product__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
-            productsList = Database.query(product); 
-           system.debug('productsList:::'+ productsList);
+            String product = 'SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItem__c') +
+            ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
+            ', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
+            ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
+            ', ( SELECT ' + SYS_Helper.getAllFieldsFor('Product_Option__c') + ' FROM Product_Option__r)' +
+            ' FROM CatalogItem__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
+        productsList = Database.query(product); 
+       system.debug('productsList:::'+ productsList);
             //Init Record Picture Urls
             List<Id> WhattIdsList = new List<Id>(); 
             for( Product__c prod: productsList){

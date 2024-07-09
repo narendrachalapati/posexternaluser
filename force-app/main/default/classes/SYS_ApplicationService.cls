@@ -263,7 +263,55 @@ global virtual inherited sharing class SYS_ApplicationService {
         }
         return fvalue;
     }
+    /* ---------------------------------------------------------------------------------------------------*/
 
+    global virtual Object getFieldValues(sObject obj, IntegrationMetadata.FlatKey mapping, String fieldAPIName){
+        //TODO - handle case - Account."CreatedBy".Name, where CreatedBy is not an sobject - This can be handled by overriding the current method and add the handler
+        // on field setting
+
+        String fvalue= (mapping.sendBlankAsEmptyString)?'':null;
+        
+        if(fieldAPIName == null){
+            fvalue = mapping.staticValue;
+        }
+        else if(fieldAPIName.contains(SYS_DataCacheFactory.FLAT_KEY_SEPERATOR)){
+            List<String> splitedFields = fieldAPIName.split('\\'+SYS_DataCacheFactory.FLAT_KEY_SEPERATOR);
+            try{
+                for(Integer i = 0; i < splitedFields.size() - 1; i++){
+                    obj = obj.getSobject(splitedFields[i]);   
+                } 
+                return obj.get(splitedFields[splitedFields.size()-1]);
+            }catch(exception ex){
+               /*--*/SYS_debug.log('****** Exception while fetching fieldValues as relationship '+fieldAPIName+'  value is blank.'+ex.getmessage()); 
+               return null;
+            }
+            
+        } 
+        /*
+        else if(obj.get(fieldAPIName)!=null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Is_Taxable__c') { //TODO - specific to quickbooks
+            return ((Boolean)obj.get(fieldAPIName)) ? 'TAX' : 'NON';
+        } 
+        else if(obj.get(fieldAPIName) != null && fieldAPIName == SYS_DataCache.namespacePrefix + 'Total_Tax__c') {
+            return ((Decimal)obj.get(fieldAPIName)) == 0.00 ? 'null' : obj.get(fieldAPIName);  
+        }
+        */
+        else if(obj.get(fieldAPIName)!=null){
+            SObjectType r = obj.getSObjectType();
+            DescribeSObjectResult d = r.getDescribe();
+                    
+            String fieldType = d.fields
+                                .getMap()
+                                .get(mapping.field)
+                                .getDescribe()
+                                .getType()+'';
+            if(fieldType == 'MULTIPICKLIST'){
+                return ((String)obj.get(fieldAPIName)).split(';');
+            }
+            else
+                return obj.get(fieldAPIName);
+        }
+        return fvalue;
+    }
     /* ---------------------------------------------------------------------------------------------------*/
 
     global virtual Datetime getDatetimeValue(FieldSetting__mdt mapping, String dt){
@@ -412,6 +460,65 @@ global virtual inherited sharing class SYS_ApplicationService {
         return sObj;
     }
 
+    /* ------------------------------------------------------------------------ */
+    
+    /**
+     * INBOUND
+     * This hook is called from SYS_Transformer to set values for sObject record
+     * Default is mapping based on field type
+     * Relies on Integration Setting in DataCache
+     * Override if custom field mapping is required
+     */
+    global virtual sObject processFieldMapping(IntegrationMetadata.FlatKey mapping,sObject sObj,Object value, String sObjectApiName){
+
+        /*--*/SYS_debug.log(mapping.field+' +MS+ '+value);
+        // if(mapping.Get_value_from_Log__c)
+        //     value = SYS_DataCache.log.get(mapping.Log_API_for_field_mapping__c);
+
+        // if(mapping.Is_Lookup__c && mapping.Lookup_External_Key__c!=NULL && mapping.Lookup_Object_API_Name__c!=NULL){
+        //     value = getIdFromExternalKey(mapping.Lookup_Object_API_Name__c,mapping.Lookup_External_Key__c,String.valueOf(value));
+        // }
+
+        if(mapping.staticValue != NULL)
+            value = mapping.staticValue;
+            
+
+        if(value==NULL) return sObj;
+
+        SObjectType r = ((SObject)(Type.forName('Schema.'+sObjectApiName).newInstance())).getSObjectType();
+        DescribeSObjectResult d = r.getDescribe();
+                
+        String fieldType = d.fields
+                            .getMap()
+                            .get(mapping.field)
+                            .getDescribe()
+                            .getType()+'';
+
+        //TODO add other field types
+        // if(fieldType=='DATE'){
+        //     sObj.put(mapping.field, getDateValue(mapping,String.valueOf(value)) /*Date.valueOf((String)value)*/);
+        // }
+        // else if(fieldType=='DATETIME'){
+        //     sObj.put(mapping.field, getDatetimeValue(mapping, String.valueOf(value)));
+        // }
+        // else if(fieldType=='TIME'){
+        //     sObj.put(mapping.field, getTimeValue(mapping, String.valueOf(value)));
+        // }
+        // else if (fieldType == 'STRING') {
+        //     sObj.put(mapping.field, String.valueof(value));
+        // }else if (fieldType == 'BOOLEAN') {
+        //     sObj.put(mapping.field, Boolean.valueof(value));
+        // }
+        // else if(fieldType == 'MULTIPICKLIST'){
+        //     sObj.put(mapping.field,  String.valueof(value));
+        // }
+        // else{
+            sObj.put(mapping.field, value);
+        // }
+
+        SYS_debug.log('MS FINAL SOBJ:'+sObj);
+        return sObj;
+    }
     /* ------------------------------------------------------------------------ */ 
     
     /**

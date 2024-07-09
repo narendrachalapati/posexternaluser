@@ -1,0 +1,9 @@
+<apex:component controller="PaymentCollectionController" allowDML="true">
+    <apex:attribute name="memberId" description="" type="String"  default="0039H00000A50URQAZ" assignTo="{!memberrecordid}"/>
+    <apex:attribute name="AccountId" description="" type="String"  default="" assignTo="{!Accountrecordid}"/>
+    <apex:attribute name="Amount" description="" type="decimal"  default="" assignTo="{!paymentAmount}"/>
+    <apex:attribute name="todoid" description="" type="string"  default="" assignTo="{!todorecordId}"/>
+    
+
+
+ </apex:component>

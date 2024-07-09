@@ -29,7 +29,7 @@ public without sharing class SquarePaymentController {
         Map<string,string> headersmap = new Map<string,string>();
        
         string callouturl = 'https://connect.squareupsandbox.com/v2/cards?customer_id=SVCC1607AWR9KGXG2C8GCVBXY8&include_disabled=false';
-        HttpResponse response =  SquarePaymentUtility.buildOutboundHttpRequest(AccountrecId,'Square','Square_Listofcards','UPSERT','GET',callouturl,'',headersmap);
+        HttpResponse response =  SquarePaymentUtility.buildOutboundHttpRequest(AccountrecId,'Square','Square_cards','UPSERT','GET',callouturl,'',headersmap);
         string responseBody =  response.getBody();
         List<String> childRecList = new List<String>();
        // CardsWrapper obj = CardsWrapper.parse(responseBody);
@@ -52,8 +52,18 @@ public without sharing class SquarePaymentController {
                             }
                           }
                     }
-                    for( string childrec : childRecList ){
-                      List<sObject>  sobjectList = SYS_Transformer.getSObjectsToUpsert(new List<String>{childrec},'cards',true);
+                    for( String childrec : childRecList ){
+                        Object cardJsonObject = System.JSON.deserializeUntyped(childrec);
+                        Object dataObj = new Map<String, Object>();
+                        Object objectChildObj = new Map<String, Object>();
+                        Object cardChildObj = new Map<String, Object>();
+                        
+                        ((Map<String, Object>)cardChildObj).put('card', cardJsonObject);
+                        ((Map<String, Object>)objectChildObj).put('object', cardChildObj);
+                        ((Map<String, Object>)dataObj).put('data', objectChildObj);
+                        childrec = JSON.serialize(dataObj);
+                
+                      List<sObject>  sobjectList = SYS_Transformer.getSObjectsToUpsert(new List<String>{childrec},'card',true);
                       System.debug('sobjectListNDR' + sobjectList);
                       if(sobjectList.size()>0){
                       if (sobjectList[0] instanceof card__c) {
