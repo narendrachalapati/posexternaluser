@@ -1,10 +1,4 @@
-* {
-  box-sizing: border-box;
-}
 
-body {
-  font-family: Arial, sans-serif;
-}
 
 #payment-form {
   max-width: 550px;
@@ -22,13 +16,15 @@ body {
 }
 
 #card-container {
-  margin-top: 45px;
+  /* margin-top: 45px; */
   /* this height depends on the size of the container element */
   /* We transition from a single row to double row at 485px */
   /* Settting this min-height minimizes the impact of the card form loading */
   min-height: 90px;
 }
-
+#card-container.mt-2rem{
+  margin-top: 2rem;
+}
 #gift-card-container {
   margin-top: 45px;
   min-height: 90px;
@@ -140,6 +136,7 @@ button:disabled {
   width: 225px;
   height: 48px;
   visibility: hidden;
+  display: none;
 }
 
 #payment-status-container.missing-credentials {
@@ -287,25 +284,25 @@ input {
   margin: 0 !important
 }
 
-form a {
+.parentwrapper a {
   color: grey !important;
   text-decoration: none !important;
   font-size: 0.87rem !important;
   font-weight: bold !important
 }
 
-form a:hover {
+.parentwrapper a:hover {
   color: grey !important;
   text-decoration: none !important
 }
 
-form .row {
+.parentwrapper .row {
   display: flex;
   margin: 0 !important;
   overflow: hidden !important
 }
 
-form .row-1 {
+.parentwrapper .row-1 {
   display: flex;
   border: 1px solid rgba(0, 0, 0, 0.137)!important;
   padding: 0.5rem !important;
@@ -319,7 +316,7 @@ form .row-1 {
   overflow: hidden !important
 }
 
-form .row-2 {
+.parentwrapper .row-2 {
   border: none !important;
   outline: none !important;
   background-color: transparent !important;
@@ -327,7 +324,7 @@ form .row-2 {
   padding: 0 0.8rem !important
 }
 
-form .row .row-2 {
+.parentwrapper .row .row-2 {
   border: none !important;
   outline: none !important;
   background-color: transparent !important;
@@ -335,7 +332,7 @@ form .row .row-2 {
   padding: 0 0.8rem !important
 }
 
-form .row .col-2,
+.parentwrapper .row .col-2,
 .col-7,
 .col-3 {
   display: flex !important;
@@ -344,7 +341,7 @@ form .row .col-2,
   padding: 0 1vh !important
 }
 
-form .row .col-2 {
+.parentwrapper .row .col-2 {
   padding-right: 0 !important
 }
 
@@ -437,4 +434,51 @@ input:focus:-ms-input-placeholder {
 .radio {
   flex: 0 0 50px;
 }
+
 /* Payment screen UI design css end */
+/* loader styling start*/
+.skeleton-active .skeleton-box {
+  display: inline-block;
+  height: 48px;
+  position: relative;
+  overflow: hidden;
+  background-color: #dddbdd;
+  margin-top: 2rem;
+}
+.skeleton-active .skeleton-box::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0));
+  -webkit-animation: shimmer 5s infinite;
+          animation: shimmer 5s infinite;
+  content: "";
+}
+
+.skeleton-active .skeleton-w60 {
+  width: 60%;
+ 
+}
+.skeleton-active .skeleton-w10 {
+  width: 10%;
+ 
+}
+.skeleton-active .skeleton-w25 {
+  width: 25%;
+ 
+}
+@-webkit-keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/*loader style end */

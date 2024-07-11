@@ -2,28 +2,28 @@ public without sharing class SquarePaymentController {
   
     public string memberrecordid {get; set; }
     public string  AccountrecId {get; set; }
+    public string  uuid  {get; set; }
+    public string  todorecordId {get; set; }
     public string  cardToken {get; set; }
+    public string payableOrderId {get; set; } 
+    public string payableAppointmentId {get; set; }
+    public string paymentId {get; set; }
     public Boolean  isCardcreated {get; set; }
     public card__c   card {get; set; }
     public  string  cardId {get; set; }
     public  Decimal  Amount {get; set; }
+    public  Decimal  AmountTOpay {get; set; }
     public  string  Lastfourdegits {get; set; }
     public  string  selectedcardId {get; set; }
     public transient  list<card__c>  cardslist {get; set; }
-
+    public  string  paymentCollectioncardId {get; set; } 
 
  
- public void PaymentsyncAPIcall() {
-  try{
-    SquarePaymentUtility.paymentRecCreationUtility( memberrecordid, AccountrecId, Amount, selectedcardId);
-      SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,card.Id,'POST','INSERT','Square','Square_Payment');
-  } catch(DmlException e) {
-        System.debug('The following exception has occurred: ' + e.getMessage());
-    }
-}
+
+
  public void fetchCustomerCards() {
   try{
-
+       
         cardslist = new list<card__c>();
         system.debug('cardId' + cardId + card);
         Map<string,string> headersmap = new Map<string,string>();
@@ -85,20 +85,45 @@ public without sharing class SquarePaymentController {
         System.debug('The following exception has occurred: ' + e.getMessage());
     }
   }
-  public void setorderID() {
+ public void onClickCardinfo() {
     try{
           system.debug('cardId' + selectedcardId + card);
+          card__c card = [select Square_Id__c,Id from card__c where Square_Id__c =:selectedcardId];
+          if(card != null){
+            paymentCollectioncardId = card.Square_Id__c;
+          }else{
+            Card__c newcard = new Card__c ();
+            newcard.Customer__c = memberrecordid;
+            newcard.Account__c =  AccountrecId;
+            newcard.Square_Id__c = selectedcardId;
+            newcard.Synchronous__c = true;
+            insert card;
+            card__c cardfetch = [select Square_Id__c,Id from card__c where Square_Id__c =:selectedcardId];
+            paymentCollectioncardId = cardfetch.Square_Id__c;
+          }
+         
        } catch(DmlException e) {
           System.debug('The following exception has occurred: ' + e.getMessage());
    }
  }
  public void Paymentcreation() {
   try{
-    system.debug('selectedcardIdNDRcontroller' + selectedcardId);
-    SquarePaymentUtility.paymentRecCreationUtility( memberrecordid, AccountrecId, Amount, selectedcardId);
-     // SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,card.Id,'POST','INSERT','Square','Square_cards');
+    system.debug('selectedcardIdNDRcontroller' + paymentCollectioncardId);
+    Payments__c payment = SquarePaymentUtility.paymentRecCreationUtility( memberrecordid, AccountrecId, AmountTOpay, paymentCollectioncardId);
+    paymentId = payment.Id;
   } catch(DmlException e) {
         System.debug('The following exception has occurred: ' + e.getMessage());
     }
+}
+public void PaymentsyncAPIcall() {
+  try{
+   SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,paymentId,'POST','INSERT','Square','Square_Payment');
+  } catch(DmlException e) {
+        System.debug('The following exception has occurred: ' + e.getMessage());
+    }
+}
+public void paymentAmount(){
+  AmountTOpay = SquarePaymentUtility.gettingAmountForPayment(payableOrderId,payableAppointmentId,100);
+  system.debug('PayableAmountNDR' + AmountTOpay);
 }
 }

@@ -2,11 +2,12 @@ public without sharing class SquareCardController {
       
     public transient string memberrecordid {get; set; }
     public transient  string  AccountrecId {get; set; }
-    public transient string  cardToken {get; set; }
-    public transient Boolean  isCardcreated {get; set; }
-    public transient card__c   card {get; set; }
-    public transient  string  cardId {get; set; }
-  
+    public  string  cardToken {get; set; }
+    public  string  paymentRecordId {get; set; }
+    public  Boolean  isCardcreated {get; set; }
+    public  card__c   card {get; set; }
+    public   string  cardId {get; set; } 
+    public  decimal  Amount {get; set; }
        
     public void cardRecCreation() {
         card  = SquarePaymentUtility.cardRecCreationUtility(memberrecordid,AccountrecId,cardToken);
@@ -25,6 +26,22 @@ public without sharing class SquareCardController {
            System.debug('The following exception has occurred: ' + e.getMessage());
     }
   }
- 
-   
+ //used for creating payment record when clicking on pay button
+  public void cardPaymentcreation() {
+    try{
+      system.debug('selectedcardIdNDRcontroller' + cardToken);
+      Payments__c payment = SquarePaymentUtility.paymentRecCreationUtility( memberrecordid, AccountrecId, Amount, cardToken);
+      paymentRecordId = payment.Id;
+    } catch(DmlException e) {
+          System.debug('The following exception has occurred: ' + e.getMessage());
+      }
+  }
+  //used for Api call om  payment  when clicking on pay button
+  public void cardPaymentsyncAPIcall() {
+    try{
+     SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,paymentRecordId,'POST','INSERT','Square','Square_Payment');
+    } catch(DmlException e) {
+          System.debug('The following exception has occurred: ' + e.getMessage());
+      }
+  }
 }

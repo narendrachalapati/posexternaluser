@@ -13,13 +13,31 @@ function handelsavedcards() {
 function onIdselection() {
  var cardid =  document.getElementById("cardid").value;
  gettingselectedcardId(cardid);
-alert('test' + cardid);
+//alert('test' + cardid);
 }
 function SavedcardsPaymenthandling() {
  // var cardid =  document.getElementById("cardid").value;
  paymenthandling();
-alert('test' + cardid);
+//alert('test' + cardid);
  }
+ function PaymentsyncronousAPIcall() {
+  // var cardid =  document.getElementById("cardid").value;
+  paymentAPIcall();
+  handleFullfillment();
+
+ //alert('test' + cardid);
+  }
+function handleFullfillment() {
+    showLoader();
+    //Finalize Todo 
+    var todorecordidInputElement = document.querySelector('.square-payment-wrapper .todorecordid');
+    var todoRecordId = (todorecordidInputElement) ? todorecordidInputElement.value: '' ;
+    if( (todoRecordId) && (eval("typeof finalizeTodo") == 'function') ) {
+        finalizeTodo(todoRecordId, true);
+    } else {
+      hideLoader();
+    }
+  }
 function handlenewcard() {
   document.getElementById('savedcards').style.display = 'none';
   document.getElementById('newcard').style.display = 'block';

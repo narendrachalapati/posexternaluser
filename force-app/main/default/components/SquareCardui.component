@@ -1,66 +1,95 @@
 <apex:component controller="SquareCardController" allowDML="true">
-    <apex:attribute name="memberId" description="" type="String"  default="0039H00000ANrFZQA1" assignTo="{!memberrecordid}"/>
-    <apex:attribute name="AccountId" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!AccountrecId}"/>
-    <apex:attribute name="token" description="" type="String"  assignTo="{!cardToken}"/>
-    <apex:form>
-    <apex:actionFunction name="cardcreation" action="{!cardRecCreation}" rerender="outputPanelcard" oncomplete="cardapi()">
-    <apex:param name="valueFromJS" value="" assignTo="{!cardToken}"/>
-    </apex:actionFunction>
-    <apex:actionFunction name="cardapi" action="{!cardApicallout}" rerender="outputPanelcard">
-    </apex:actionFunction>
-</apex:form>
-<head>
-    <apex:includeScript value="{! URLFOR($Resource.Square, 'squarepayment.js')}" />
-    <apex:stylesheet value="{!URLFOR($Resource.Square, 'app.css')}"/>
-    <apex:stylesheet value="{!URLFOR($Resource.Square, 'dark-mode.css')}"/>
- 
-<script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
-</head>
-<body>
-  <apex:outputPanel id="outputPanelcard">
-<div id="payment-form">
-<!--div id="payment-status-container"></div-->
-<div id="card-container"></div>
-<apex:outputPanel rendered="{!isCardcreated != true }">
-<button id="card-button" type="button" >Add card </button>
-</apex:outputPanel>
-<apex:outputPanel rendered="{!isCardcreated == true }">
-Thank you you sucessfully added the card
-</apex:outputPanel>
-</div>
-</apex:outputPanel >
-<script type="module">
-const payments = Square.payments('sandbox-sq0idb-Mq1T5mAUhIYjYDdMVM66cQ', 'L5AMZP3JG68BG');
-const card = await payments.card();
-await card.attach('#card-container');
-
-const cardButton = document.getElementById('card-button');
-cardButton.addEventListener('click', async () => {
-  const statusContainer = document.getElementById('payment-status-container');
-
-  try {
-    const result = await card.tokenize();
-    if (result.status === 'OK') {
-      cardcreation(result.token);
-      console.log('result object' + result.token);
-      console.table(result);
-      statusContainer.innerHTML = "Payment Successful";
-    } else {
-      let errorMessage = `Tokenization failed with status: ${result.status}`;
-      if (result.errors) {
-        errorMessage += ` and errors: ${JSON.stringify(
-          result.errors
-        )}`;
-      }
-
-      throw new Error(errorMessage);
-    }
-  } catch (e) {
-    console.error(e);
-    statusContainer.innerHTML = "Payment Failed";
-  }
-});
+   <apex:attribute name="memberId" description="" type="String"  default="0039H00000ANrFZQA1" assignTo="{!memberrecordid}"/>
+   <apex:attribute name="AccountId" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!AccountrecId}"/>
+   <apex:attribute name="token" description="" type="String"  assignTo="{!cardToken}"/>
+   <apex:attribute name="PaymentAmount" description="" type="decimal"  assignTo="{!Amount}"/>
+   <apex:form >
+      <apex:actionFunction name="cardcreation" action="{!cardRecCreation}" rerender="outputPanelcard" oncomplete="cardapi()">
+         <apex:param name="valueFromJS" value="" assignTo="{!cardToken}"/>
+      </apex:actionFunction>
+      <apex:actionFunction name="cardapi" action="{!cardApicallout}" oncomplete="paymenthandler()" rerender="outputPanelcard">
+      </apex:actionFunction>
+      <apex:actionFunction name="paymenthandler" action="{!cardPaymentcreation}"  oncomplete="cardPaymentsyncAPIcall()" rerender="outputPanelcard">
+      </apex:actionFunction>
+   </apex:form>
+   <apex:includeScript value="{! URLFOR($Resource.Square, 'squarecard.js')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.Square, 'app.css')}"/>
+   <apex:stylesheet value="{!URLFOR($Resource.Square, 'dark-mode.css')}"/>
+   <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+   <apex:outputPanel id="outputPanelcard">
+      <div id="payment-form">
+        
+         <div class="skeleton-active" id="card-container">
+             <span class="skeleton-box skeleton-w60"></span>
+             <span class="skeleton-box skeleton-w10"></span>
+             <span class="skeleton-box skeleton-w25"></span>
+         </div>
+        
+         <apex:outputPanel rendered="{!isCardcreated != true }">
+            <button id="card-button" type="button" >Pay $</button>
+         </apex:outputPanel>
+         <apex:outputPanel rendered="{!isCardcreated == true }">
+            Thank you you sucessfully added the card
+         </apex:outputPanel>
+      </div>
+   </apex:outputPanel>
+   <script type="module">
+       const appId = 'sandbox-sq0idb-Mq1T5mAUhIYjYDdMVM66cQ';
+	   const locationId = 'L5AMZP3JG68BG';
+    debugger;
+       async function initializeCard(payments) {
+           const card = await payments.card();
+           await card.attach('#card-container'); 
+           return card; 
+       }
     
-</script>
-</body>
+       if (!window.Square) {
+           throw new Error('Square.js failed to load properly');
+       }
+        const payments = window.Square.payments(appId, locationId);
+        let card;
+        try {
+            card = await initializeCard(payments);
+            var cardElement = document.querySelector('#card-container');
+            if(cardElement) {
+                cardElement.classList.remove('skeleton-active');
+            }
+        } catch (e) {
+            console.error('Initializing Card failed', e);
+        }
+    
+    //const payments = Square.payments('sandbox-sq0idb-Mq1T5mAUhIYjYDdMVM66cQ', 'L5AMZP3JG68BG');
+    //const card = await payments.card();
+    //await card.attach('#card-container');
+      
+      const cardButton = document.getElementById('card-button');
+      cardButton.addEventListener('click', async () => {
+       // const statusContainer = document.getElementById('payment-status-container');
+      
+        try {
+          const result = await card.tokenize();
+          if (result.status === 'OK') {
+            cardcreation(result.token);
+            console.log('result object' + result.token);
+            console.table(result);
+
+          //  statusContainer.innerHTML = "Payment Successful";
+           // statusContainer.style.display = 'block';
+          } else {
+            let errorMessage = `Tokenization failed with status: ${result.status}`;
+            if (result.errors) {
+              errorMessage += ` and errors: ${JSON.stringify(
+                result.errors
+              )}`;
+            }
+      
+            throw new Error(errorMessage);
+          }
+        } catch (e) {
+          console.error(e);
+        //  statusContainer.innerHTML = "Payment Failed";
+        //  statusContainer.style.display = 'block';
+        }
+      });
+   </script>
 </apex:component>

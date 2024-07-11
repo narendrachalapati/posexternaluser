@@ -8,7 +8,8 @@ public without sharing class SquarePaymentUtility {
         card.Source_Id__c = token;
         card.Synchronous__c = true;
         insert card;
-     return card;
+        card__c cardfetch = [SELECT Id,Customer__c,Account__c,Source_Id__c from Card__c where Source_Id__c=:token AND Account__c=:AccountId AND Customer__c =:memberId AND Synchronous__c =true];
+     return cardfetch;
     }
          /* RecordId Based API Callout Outbound Synchronous */
          @AuraEnabled
@@ -143,7 +144,9 @@ public without sharing class SquarePaymentUtility {
         payment.Account__c =  AccountId;
         payment.Currency__c = 'USD';
         payment.Customer__c = memberId;
+        payment.Synchronous__c = true;
         insert payment;
+        system.debug('payment NDR' + payment);
      return payment;
     }
 
@@ -267,6 +270,22 @@ public without sharing class SquarePaymentUtility {
             throw new CreateInvoicControllerException(e.getMessage()+'\n'+e.getStackTraceString()); 
         }
     }
-    
-
+    /* This method is used for getting the amount for the payment */
+    public static  decimal gettingAmountForPayment(string orderId,string AppointmentId,Decimal amount, string customerId) {
+        decimal payableamount;
+        if(amount != null){
+            payableamount = amount;
+        }
+        else if(orderId != null){
+            order__c order = [select Id,Total_Price__c from order__c where Id =:orderId];
+            payableamount = order.Total_Price__c;
+        }else if{
+            Appointment_Scheduling__c Appointment = [SELECT Product__r.Default_Price__c from Appointment_Scheduling__c where Id =:AppointmentId ];
+            payableamount = Appointment.Product__r.Default_Price__c;
+        }else {
+            Contact con = [SELECT Balance__c from Contact where Id =:customerId ];
+            payableamount = con.Balance__c;
+        }
+        return  payableamount;
+    }
 }
