@@ -2,7 +2,7 @@
    <apex:attribute name="memberId" description="" type="String"  default="0039H00000ANrFZQA1" assignTo="{!memberrecordid}"/>
    <apex:attribute name="AccountId" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!AccountrecId}"/>
    <apex:attribute name="token" description="" type="String"  assignTo="{!cardToken}"/>
-   <apex:attribute name="PaymentAmount" description="" type="decimal"  assignTo="{!Amount}"/>
+   <apex:attribute name="Payment-Amount" description="" type="decimal"  assignTo="{!Amount}"/>
    <apex:form >
       <apex:actionFunction name="cardcreation" action="{!cardRecCreation}" rerender="outputPanelcard" oncomplete="cardapi()">
          <apex:param name="valueFromJS" value="" assignTo="{!cardToken}"/>
@@ -26,7 +26,7 @@
          </div>
         
          <apex:outputPanel rendered="{!isCardcreated != true }">
-            <button id="card-button" type="button" >Pay $</button>
+            <button id="card-button" type="button" >Pay $ {!Amount}</button>
          </apex:outputPanel>
          <apex:outputPanel rendered="{!isCardcreated == true }">
             Thank you you sucessfully added the card
@@ -36,7 +36,7 @@
    <script type="module">
        const appId = 'sandbox-sq0idb-Mq1T5mAUhIYjYDdMVM66cQ';
 	   const locationId = 'L5AMZP3JG68BG';
-    debugger;
+    
        async function initializeCard(payments) {
            const card = await payments.card();
            await card.attach('#card-container'); 
