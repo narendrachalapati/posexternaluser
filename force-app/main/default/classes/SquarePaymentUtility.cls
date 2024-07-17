@@ -238,7 +238,9 @@ public without sharing class SquarePaymentUtility {
             
             //Do HTTP Callout
             HttpResponse outboundResponse = http.send(req);
-
+            string responseBody = outboundResponse.getBody();
+            system.debug('##### responseBody #######' + responseBody);
+            if(responseBody != '{}'){
             if(!outboundRequestSysLogs.isEmpty() && SYS_DataCacheFactory.enableCheck){ 
                 SYS_IntegrationLog__c outboundRequestLog = outboundRequestSysLogs[0]; 
                 
@@ -260,9 +262,9 @@ public without sharing class SquarePaymentUtility {
                 }
                 SYS_Helper.upsertLog(outboundResponseLogs);
             } 
-
-            System.debug('Outbound Response: ' + outboundResponse.getBody() );
-
+              System.debug('Outbound Response: ' + outboundResponse.getBody() );
+            }
+            
             return outboundResponse;
         } catch (Exception e) {
             // throw new AuraHandledException(e.getMessage());
@@ -273,18 +275,22 @@ public without sharing class SquarePaymentUtility {
     /* This method is used for getting the amount for the payment */
     public static  decimal gettingAmountForPayment(string orderId,string AppointmentId,Decimal amount, string customerId) {
         decimal payableamount;
-        if(amount != null){
+        if(amount != 0.00 || amount != 0) {
             payableamount = amount;
+            system.debug('from amount' + payableamount);
         }
-        else if(orderId != null){
+        else if(String.isNotBlank(orderId)){
             order__c order = [select Id,Total_Price__c from order__c where Id =:orderId];
             payableamount = order.Total_Price__c;
-        }else if{
+            system.debug('from order' + payableamount);
+        }else if(String.isNotBlank(AppointmentId)){
             Appointment_Scheduling__c Appointment = [SELECT Product__r.Default_Price__c from Appointment_Scheduling__c where Id =:AppointmentId ];
             payableamount = Appointment.Product__r.Default_Price__c;
-        }else {
-            Contact con = [SELECT Balance__c from Contact where Id =:customerId ];
-            payableamount = con.Balance__c;
+            system.debug('from Appointment' + payableamount);
+        }else{
+         contact con = [SELECT Balance__c,Id from contact where Id =:customerId];
+         payableamount = con.Balance__c;
+         system.debug('from contact' + payableamount);
         }
         return  payableamount;
     }

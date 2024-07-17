@@ -1,4 +1,6 @@
-
+.sq-card-iframe-container{
+  height:48px !important;
+}
 
 #payment-form {
   max-width: 550px;
@@ -100,9 +102,9 @@ input:focus {
   border: 1px solid #006aff;
 }
 
-button {
+.paybutton {
   color: #ffffff;
-  background-color: #006aff;
+  background: #006aff;
   border-radius: 5px;
   cursor: pointer;
   border-style: none;
@@ -116,12 +118,12 @@ button {
   box-shadow: 1px;
 }
 
-button:active {
-  background-color: rgb(0, 85, 204);
+.paybutton:active {
+  background: rgb(0, 85, 204);
 }
 
 button:disabled {
-  background-color: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   color: rgba(0, 0, 0, 0.3);
 }
 
@@ -145,7 +147,7 @@ button:disabled {
 
 #payment-status-container.is-success:before {
   content: '';
-  background-color: #00b23b;
+  background: #00b23b;
   width: 16px;
   height: 16px;
   margin-right: 16px;
@@ -161,7 +163,7 @@ button:disabled {
 
 #payment-status-container.is-failure:before {
   content: '';
-  background-color: #cc0023;
+  background: #cc0023;
   width: 16px;
   height: 16px;
   margin-right: 16px;
@@ -177,7 +179,7 @@ button:disabled {
 
 #payment-status-container.missing-credentials:before {
   content: '';
-  background-color: #cc0023;
+  background: #cc0023;
   width: 16px;
   height: 16px;
   margin-right: 16px;
@@ -279,7 +281,7 @@ input {
   color: #000 !important;
   width: 100% !important;
   min-width: unset !important;
-  background-color: transparent !important;
+  background: transparent !important;
   border-color: transparent !important;
   margin: 0 !important
 }
@@ -310,7 +312,7 @@ input {
   width: 100% !important;
   min-width: unset !important;
   border-radius: 5px !important;
-  background-color: rgba(221, 228, 236, 0.301) !important;
+  background: rgba(221, 228, 236, 0.301) !important;
   border-color: rgba(221, 228, 236, 0.459) !important;
   margin: 2vh 0 !important;
   overflow: hidden !important
@@ -319,7 +321,7 @@ input {
 .parentwrapper .row-2 {
   border: none !important;
   outline: none !important;
-  background-color: transparent !important;
+  background: transparent !important;
   margin: 0 !important;
   padding: 0 0.8rem !important
 }
@@ -327,7 +329,7 @@ input {
 .parentwrapper .row .row-2 {
   border: none !important;
   outline: none !important;
-  background-color: transparent !important;
+  background: transparent !important;
   margin: 0 !important;
   padding: 0 0.8rem !important
 }
@@ -371,7 +373,7 @@ input {
   width: 100% !important;
   min-width: unset !important;
   border-radius: 5px !important;
-  background-color: rgba(221, 228, 236, 0.301) !important;
+  background: rgba(221, 228, 236, 0.301) !important;
   border-color: rgba(221, 228, 236, 0.459) !important;
   margin: 2vh 0 !important;
   width: fit-content !important;
@@ -385,7 +387,7 @@ input {
 
 .btn {
   width: 100% !important;
-  background-color: #0075ff !important;
+  background: #0075ff !important;
   border-color: #0075ff !important;
   color: white !important;
   justify-content: center !important;
@@ -442,7 +444,7 @@ input:focus:-ms-input-placeholder {
   height: 48px;
   position: relative;
   overflow: hidden;
-  background-color: #dddbdd;
+  background: #dddbdd;
   margin-top: 2rem;
 }
 .skeleton-active .skeleton-box::after {

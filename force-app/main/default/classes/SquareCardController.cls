@@ -1,14 +1,18 @@
 public without sharing class SquareCardController {
       
-    public transient string memberrecordid {get; set; }
-    public transient  string  AccountrecId {get; set; }
-    public  string  cardToken {get; set; }
-    public  string  paymentRecordId {get; set; }
-    public  Boolean  isCardcreated {get; set; }
-    public  card__c   card {get; set; }
-    public   string  cardId {get; set; } 
-    public  decimal  Amount {get; set; }
-       
+    public string memberrecordid {get; set; }
+    public string AccountrecId {get; set; }
+    public string cardToken {get; set; }
+    public string paymentRecordId {get; set; }
+    public Boolean isCardcreated {get; set; }
+    public card__c card {get; set; }
+    public string cardId {get; set; } 
+    public decimal Amount {get; set; }
+    
+    public void initCardCmp() {
+       System.debug('memberrecordid ' + memberrecordid);
+    }
+    
     public void cardRecCreation() {
         card  = SquarePaymentUtility.cardRecCreationUtility(memberrecordid,AccountrecId,cardToken);
         if(card != null){
@@ -30,8 +34,15 @@ public without sharing class SquareCardController {
   public void cardPaymentcreation() {
     try{
       system.debug('selectedcardIdNDRcontroller' + cardToken);
-      Payments__c payment = SquarePaymentUtility.paymentRecCreationUtility( memberrecordid, AccountrecId, Amount, cardToken);
+      card__c card = [SELECT Square_Id__c from card__c where Id =:cardId];
+      string  cardExId = card.Square_Id__c;
+      if(string.isNotBlank(cardExId)){
+       Payments__c payment = SquarePaymentUtility.paymentRecCreationUtility( memberrecordid, AccountrecId, Amount, cardExId);
       paymentRecordId = payment.Id;
+      }else{
+        system.debug('########################### cardExtId is coming as null############');
+      }
+     
     } catch(DmlException e) {
           System.debug('The following exception has occurred: ' + e.getMessage());
       }

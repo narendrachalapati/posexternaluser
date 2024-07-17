@@ -14,7 +14,7 @@
     <apex:stylesheet value="{!URLFOR($Resource.Square, 'dark-mode.css')}"/>
     
     <apex:form >
-        <apex:actionFunction name="fetchCustomerCards" action="{!fetchCustomerCards}" oncomplete="squarePaymentPageCompleted()" rerender="square-payment-outputPanel"/>
+        <apex:actionFunction name="fetchCustomerCards" action="{!fetchCustomerCards}" oncomplete="squarePaymentPageCompleted()" rerender="outputPanelcardlist, paybutton, cardui"/>
         <apex:actionFunction name="gettingselectedcardId" action="{!onClickCardinfo}" rerender="">
             <apex:param assignto="{!selectedcardId}" name="selectedcard" value="" />
         </apex:actionFunction>
@@ -22,7 +22,6 @@
         </apex:actionFunction>
         <apex:actionFunction name="paymentAPIcall" action="{!PaymentsyncAPIcall}" rerender="outputPanelcardlist">
         </apex:actionFunction>
-        <apex:actionFunction name="findAmount" action="{!paymentAmount}" rerender="paybutton"/> 
 
     </apex:form>
     
@@ -50,7 +49,6 @@
                     <!-- The content areas for each tab -->
                     
                     <div id="savedcards" >
-                        
                         <apex:outputPanel styleClass="{! if( (cardslist = null) , 'skeleton-active' ,'' ) }" id="outputPanelcardlist">
                             <div>
                                 <span class="skeleton-box skeleton-w60" ></span>
@@ -59,13 +57,13 @@
                             </div>
                             <div>
                                 <span class="skeleton-box skeleton-w60" ></span>
-                            <span class="skeleton-box skeleton-w10" ></span>
-                            <span class="skeleton-box skeleton-w25" ></span>
+                                <span class="skeleton-box skeleton-w10" ></span>
+                                <span class="skeleton-box skeleton-w25" ></span>
                             </div>
                             <div>
                                 <span class="skeleton-box skeleton-w60" ></span>
-                            <span class="skeleton-box skeleton-w10" ></span>
-                            <span class="skeleton-box skeleton-w25" ></span>
+                                <span class="skeleton-box skeleton-w10" ></span>
+                                <span class="skeleton-box skeleton-w25" ></span>
                             </div>
                             
                             
@@ -111,16 +109,17 @@
                             </apex:repeat>
                              
                       </apex:outputPanel>
-                      <apex:outputPanel  id="paybutton">
-                      <button class="btn d-flex mx-auto" onclick="SavedcardsPaymenthandling();"><b>Pay## {!AmountTOpay}</b></button>
-                     </apex:outputPanel>
-                    </div>
-                    <div id="newcard" style="display:none">
-                     <apex:outputPanel  id="cardui">
-
-                        <c:SquareCardui memberId="{!memberrecordid}" AccountId="{!AccountrecId}"  Payment-Amount ="{!AmountTOpay}"/>
+                        <apex:outputPanel id="paybutton">
+                            <button class="btn paybutton d-flex mx-auto" onclick="SavedcardsPaymenthandling();"><b>Pay $ {!AmountTOpay}</b></button>
                         </apex:outputPanel>
                     </div>
+                    
+                     <apex:outputPanel id="cardui">
+                        <div id="newcard" style="display:none">
+                        	<c:SquareCardui memberId="{!memberrecordid}" AccountId="{!AccountrecId}" Payment-Amount="{!AmountTOpay}" />
+                       </div>
+                    </apex:outputPanel>
+                   
                 </div>
 			</div>
         </apex:outputPanel>
@@ -128,7 +127,6 @@
         console.log('fetchCustomerCards');
         fetchCustomerCards();
         function squarePaymentPageCompleted() {
-           findAmount();
             console.log('squarePaymentPageCompleted');
         }
         </script>
