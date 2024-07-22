@@ -6,11 +6,11 @@
  <name>ApexClass</name>
 </types>
  <types>
-     <members>CreateInvoiceCreateVFcmp</members>
+     <members>Products</members>
     <name>ApexComponent</name>
  </types>
   <types>
-     <members>Square</members>
+     <members>pointOfSale</members>
     <name>staticResource</name>
  </types>
  <types>

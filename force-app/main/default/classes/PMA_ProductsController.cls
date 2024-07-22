@@ -231,37 +231,36 @@ public with sharing class PMA_ProductsController {
     //To return initial records
     @AuraEnabled
     public static Map<Id, SelectedProductWrapper> getAllProductRecords( String orderIdOrUUID ) {
-        List<Product__c> productsList = new List<Product__c>();
+        List<CatalogItem__c> productsList = new List<CatalogItem__c>();
         Map <Id, SelectedProductWrapper > mapProductsList = new Map <Id, SelectedProductWrapper >();
-        Order__c currentOrder = PMA_SearchController.getOrderDetailsByIdOrUUID( orderIdOrUUID );
-        Decimal memberAge = currentOrder.Member__r.Age__c;
-
         try {           
             String product = 'SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItem__c') +
                 ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
             	', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
                 ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
-                ', ( SELECT ' + SYS_Helper.getAllFieldsFor('Product_Option__c') + ' FROM Product_Option__r)' +
+                ', ( SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItemVariation__c') + ' FROM CatalogItemVariations__r)' +
                 ' FROM CatalogItem__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
+                system.debug('productNDR' + product);
             productsList = Database.query(product); 
+            //AND Is_options_Available__c > 0
            system.debug('productsList:::'+ productsList);
             //Init Record Picture Urls
             List<Id> WhattIdsList = new List<Id>(); 
-            for( Product__c prod: productsList){
+            for( CatalogItem__c prod: productsList){
                 WhattIdsList.add(prod.Id);
             }             
             Map<Id, String> WhattIdRecordImagesMap = ImageController.loadWhattIdRecordImagesMap(WhattIdsList);
 
-            for( Product__c prod: productsList){
+            for( CatalogItem__c prod: productsList){
 
                 String recordPictureURL = WhattIdRecordImagesMap.get(prod.Id);
                 recordPictureURL = (String.IsNotBlank(recordPictureURL)) ? recordPictureURL : 'noimage';
                 System.debug('Prod Name ' + prod.Name + ' recordPictureURL '+ recordPictureURL);
                 Decimal prodAge = ( prod.Special_Status__c == true ) ? ( prod.Special_Minimum_Age__c ) :  (prod.Minimum_Age__c);
-                Boolean prodVisible = ( ( prodAge == null ) || ( prodAge <= memberAge) ) ? true : false;                
+                Boolean prodVisible = true;                
                 SelectedProductWrapper selectedproduct = new SelectedProductWrapper();
                 selectedproduct.baseproduct = prod;
-                selectedproduct.optionsCount = prod.Product_Option__r.size();
+                selectedproduct.optionsCount = prod.CatalogItemVariations__r.size();
                 selectedproduct.quantity = 1;
                 selectedproduct.isVisible = prodVisible;
                 selectedproduct.prodMinimumAge = prodAge;
@@ -272,7 +271,7 @@ public with sharing class PMA_ProductsController {
                 Map<Id, Map <Id, SelectedProductWrapper > > iterProductMapOptionsWrapper = new Map<Id, Map <Id, SelectedProductWrapper > >();
 
                 Map<Id, SelectedProductWrapper > mapProductOptionsList = new Map<Id, SelectedProductWrapper >();
-                for( Product_Option__c prodOption: prod.Product_Option__r){
+                for( CatalogItemVariation__c prodOption: prod.CatalogItemVariations__r){
                      recordPictureURL = WhattIdRecordImagesMap.get(prodOption.Id);
                      recordPictureURL = (String.IsNotBlank(recordPictureURL)) ? recordPictureURL : 'noimage';
                     // System.debug('Prod Name ' + prodOption.Name + ' recordPictureURL '+ recordPictureURL);
@@ -321,25 +320,27 @@ public with sharing class PMA_ProductsController {
     }
     @AuraEnabled(cacheable=true)
     public static Map<Id, SelectedProductWrapper> initialproductsfetch() {
-        List<Product__c> productsList = new List<Product__c>();
+        List<CatalogItem__c> productsList = new List<CatalogItem__c>();
         Map <Id, SelectedProductWrapper > mapProductsList = new Map <Id, SelectedProductWrapper >();
         try {           
             String product = 'SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItem__c') +
-            ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
-            ', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
-            ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
-            ', ( SELECT ' + SYS_Helper.getAllFieldsFor('Product_Option__c') + ' FROM Product_Option__r)' +
-            ' FROM CatalogItem__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
-        productsList = Database.query(product); 
-       system.debug('productsList:::'+ productsList);
+                ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
+            	', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
+                ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
+                ', ( SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItemVariation__c') + ' FROM CatalogItemVariations__r)' +
+                ' FROM CatalogItem__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
+                system.debug('productNDR' + product);
+            productsList = Database.query(product); 
+            //AND Is_options_Available__c > 0
+           system.debug('productsList:::'+ productsList);
             //Init Record Picture Urls
             List<Id> WhattIdsList = new List<Id>(); 
-            for( Product__c prod: productsList){
+            for( CatalogItem__c prod: productsList){
                 WhattIdsList.add(prod.Id);
             }             
             Map<Id, String> WhattIdRecordImagesMap = ImageController.loadWhattIdRecordImagesMap(WhattIdsList);
 
-            for( Product__c prod: productsList){
+            for( CatalogItem__c prod: productsList){
 
                 String recordPictureURL = WhattIdRecordImagesMap.get(prod.Id);
                 recordPictureURL = (String.IsNotBlank(recordPictureURL)) ? recordPictureURL : 'noimage';
@@ -348,7 +349,7 @@ public with sharing class PMA_ProductsController {
                 Boolean prodVisible = true;                
                 SelectedProductWrapper selectedproduct = new SelectedProductWrapper();
                 selectedproduct.baseproduct = prod;
-                selectedproduct.optionsCount = prod.Product_Option__r.size();
+                selectedproduct.optionsCount = prod.CatalogItemVariations__r.size();
                 selectedproduct.quantity = 1;
                 selectedproduct.isVisible = prodVisible;
                 selectedproduct.prodMinimumAge = prodAge;
@@ -359,7 +360,7 @@ public with sharing class PMA_ProductsController {
                 Map<Id, Map <Id, SelectedProductWrapper > > iterProductMapOptionsWrapper = new Map<Id, Map <Id, SelectedProductWrapper > >();
 
                 Map<Id, SelectedProductWrapper > mapProductOptionsList = new Map<Id, SelectedProductWrapper >();
-                for( Product_Option__c prodOption: prod.Product_Option__r){
+                for( CatalogItemVariation__c prodOption: prod.CatalogItemVariations__r){
                      recordPictureURL = WhattIdRecordImagesMap.get(prodOption.Id);
                      recordPictureURL = (String.IsNotBlank(recordPictureURL)) ? recordPictureURL : 'noimage';
                     // System.debug('Prod Name ' + prodOption.Name + ' recordPictureURL '+ recordPictureURL);
@@ -438,9 +439,9 @@ public with sharing class PMA_ProductsController {
         @AuraEnabled
         public Integer quantity = 0;
         @AuraEnabled
-        public Product_Option__c product = new Product_Option__c ();
+        public CatalogItemVariation__c product = new CatalogItemVariation__c ();
         @AuraEnabled
-        public Product__c baseproduct = new Product__c ();
+        public CatalogItem__c baseproduct = new CatalogItem__c ();
         
         @AuraEnabled
         public Map<Id, Map <Id, SelectedProductWrapper > > productMapOptionsWrapper = new Map <Id, Map <Id, SelectedProductWrapper > >();

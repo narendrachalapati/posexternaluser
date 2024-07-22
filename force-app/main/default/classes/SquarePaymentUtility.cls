@@ -138,6 +138,9 @@ public without sharing class SquarePaymentUtility {
       /* This method is used for creating a card record */
       public static  Payments__c paymentRecCreationUtility(string memberId,string AccountId,Decimal amount,string selectedcardId) {
         system.debug('selectedcardIdNDR ' + selectedcardId);
+        if(amount < 0){
+         amount = amount * -1;
+        }
         Payments__c payment = new Payments__c ();
         payment.Source_Id__c = selectedcardId;
         payment.Amount__c = amount;

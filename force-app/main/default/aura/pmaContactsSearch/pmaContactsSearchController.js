@@ -54,7 +54,7 @@
         $A.enqueueAction(fetchUserAction);
          // pos Guest user check
       
-        if ( (memberid != null) && (AccountId != null) ) {
+        if ( (memberid != null) && (memberid != "")&& (AccountId != null) && (AccountId != "")) {
             component.set('v.isLoading',true);
             console.log('AccountId' + AccountId);
             var guestuserorderaction = component.get('c.GuestUsercreateDraftOrderRecord');

@@ -19,7 +19,8 @@ public without sharing class PMA_SearchController {
         List<Order__c> ordersList = new List< Order__c >();
         List<membersOrdersWrapper> orderWrapperList = new List<membersOrdersWrapper>();
         
-        ordersList = [SELECT Id,Name,Order_Type__c,Member__c,Member__r.Name,Member__r.Active__c,Member__r.Age__c,Member__r.Subscribed_Products_Catalog__r.Name,Member__r.Subscribed_Products_Catalog__r.Priority__c,Member__r.Subscribed_Products_Catalog__r.Subscription_colour__c,Member__r.Subscribed_Products_Catalog__c,Vendor__c,Vendor__r.Name,Account__c,Account__r.Name,Status__c,Total_Price__c,UUID__c,CreatedDate,LastModifiedDate,OwnerId FROM Order__c WHERE ( Order_Type__c = 'POS' ) AND ( Status__c != 'Completed' ) AND ( Status__c != 'Closed' ) ];
+        ordersList = [SELECT Id,Name,Order_Type__c,Member__c,Member__r.Name,Member__r.Active__c,Member__r.Age__c,Member__r.Subscribed_Products_Catalog__r.Name,Member__r.Subscribed_Products_Catalog__r.Priority__c,Member__r.Subscribed_Products_Catalog__r.Subscription_colour__c,Member__r.Subscribed_Products_Catalog__c,Vendor__c,Vendor__r.Name,Account__c,Account__r.Name,Status__c,Total_Price__c,UUID__c,CreatedDate,LastModifiedDate,OwnerId FROM Order__c
+         WHERE ( Order_Type__c = 'POS' ) AND ( Status__c != 'Completed' ) AND ( Status__c != 'Closed' ) AND ( Member__c != null ) LIMIT 10];
         System.debug('ordersList '  + ordersList);
 
         //Init Record Picture Urls
@@ -271,8 +272,9 @@ public without sharing class PMA_SearchController {
                 ', ' + SYS_Helper.getAllParentFields('Account__r.', 'Account') +
             	', ' + SYS_Helper.getAllParentFields('Catalog__r.', 'Catalog__c') +
                 ', ' + SYS_Helper.getAllParentFields('Catalog__r.Catalog__r.', 'Catalog__c') +
-                ', ( SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItemVariation__c') + ' FROM CatalogItemVariation__r)' +
+                ', ( SELECT ' + SYS_Helper.getAllFieldsFor('CatalogItemVariation__c') + ' FROM CatalogItemVariations__r)' +
                 ' FROM CatalogItem__c WHERE Name != \'Tip\' AND Name != \'Wallet\' AND Product_Family__c = \'POS\' AND Is_options_Available__c > 0 ORDER BY Name ASC';
+                system.debug('productNDR' + product);
             productsList = Database.query(product); 
             //AND Is_options_Available__c > 0
            system.debug('productsList:::'+ productsList);

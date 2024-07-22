@@ -1,6 +1,6 @@
 <apex:component controller="SquarePaymentController" allowDML="true">
-   <apex:attribute name="member-record-id" description="" type="String"  default="0039H00000ANrFZQA1" assignTo="{!memberrecordid}"/>
-   <apex:attribute name="account-record-id" description="" type="String"  default="0019H000004a9SJQAY" assignTo="{!AccountrecId}"/>
+   <apex:attribute name="member-record-id" description="" type="String"   assignTo="{!memberrecordid}"/>
+   <apex:attribute name="account-record-id" description="" type="String"  assignTo="{!AccountrecId}"/>
    <apex:attribute name="payable-amount" description="" type="decimal"  assignTo="{!Amount}"/>
    <apex:attribute name="order-record-id" description="" type="string"  default="" assignTo="{!payableOrderId}"/>
    <apex:attribute name="appointment-record-id" description="" type="string"  default="" assignTo="{!payableAppointmentId}"/>
