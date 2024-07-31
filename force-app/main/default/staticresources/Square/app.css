@@ -7,7 +7,12 @@
   min-width: 300px;
  
 }
-
+.displaynone{
+  display: none;
+}
+.displayBlock{
+  display: block;
+}
 .buyer-inputs {
   display: flex;
   gap: 20px;
@@ -208,7 +213,7 @@ button:disabled {
 /* Payment screen UI design css start */
 body {
   background: #fff !important;
-  min-height: 100vh !important;
+  min-height: 95vh !important;
   vertical-align: middle !important;
  /* display: flex  !important;*/
 }
@@ -340,11 +345,13 @@ input {
   display: flex !important;
   align-items: center !important;
   text-align: center !important;
-  padding: 0 1vh !important
+  padding: 0 1vh !important;
+  width: 115px;
 }
 
 .parentwrapper .row .col-2 {
   padding-right: 0 !important
+
 }
 
 #card-header {

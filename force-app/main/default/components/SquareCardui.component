@@ -34,7 +34,7 @@
           </div>
           
           <apex:outputPanel id="charge-action-status">       
-              <apex:outputPanel rendered="{!isCardcreated != true }">
+              <apex:outputPanel rendered="{! ( (Amount != null) && (Amount > 0) && (isCardcreated != true)) }">
                   <button  class="btn paybutton d-flex mx-auto" id="card-button"  type="button" >Pay $ {!Amount}</button>
               </apex:outputPanel>
               <apex:outputPanel rendered="{!isCardcreated == true }">

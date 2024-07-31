@@ -5,6 +5,7 @@
    <apex:attribute name="order-record-id" description="" type="string"  default="" assignTo="{!payableOrderId}"/>
    <apex:attribute name="appointment-record-id" description="" type="string"  default="" assignTo="{!payableAppointmentId}"/>
    <apex:attribute name="savedcardId" description="" type="String"   assignTo="{!selectedcardId}"/>
+   
    <!--todo recrod -->
    <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
    <apex:attribute name="todo-id" description="" type="String" assignTo="{!todorecordId}" />
@@ -14,13 +15,40 @@
     <apex:stylesheet value="{!URLFOR($Resource.Square, 'dark-mode.css')}"/>
     
     <apex:form >
-        <apex:actionFunction name="fetchCustomerCards" action="{!fetchCustomerCards}" oncomplete="squarePaymentPageCompleted()" rerender="outputPanelcardlist, paybutton, cardui"/>
+        <apex:actionFunction name="fetchCustomerCards" action="{!fetchCustomerCards}" oncomplete="squarePaymentPageCompleted()" 
+                             rerender="square-payment-outputPanel"/>
+        
+        <script>
+        console.log('fetchCustomerCards');
+        fetchCustomerCards();
+        function squarePaymentPageCompleted() {
+            var activeTabPanel = '{!activeTabPanel}';
+            console.log('activeTabPanel ' + activeTabPanel);
+            var cardList = '{!cardslist}';
+            console.table(cardList);
+            console.log('cardlistndr'+cardList);
+            if(cardList == null || cardList == ''){
+                //handlenewcard(); 
+            }
+            console.log('squarePaymentPageCompleted');
+        }
+        function handelsavedcards() {
+            changeActiveTabPanel('saved-cards-tab');
+        }
+        function handlenewcard() {
+            changeActiveTabPanel('add-card-tab');
+        }
+        </script>
+        
+        <apex:actionFunction name="changeActiveTabPanel" action="{!changeActiveTabPanel}" rerender="square-payment-outputPanel">
+            <apex:param assignto="{!activeTabPanel}" name="activeTabPanel" value="" />
+        </apex:actionFunction>
         <apex:actionFunction name="gettingselectedcardId" action="{!onClickCardinfo}" rerender="">
             <apex:param assignto="{!selectedcardId}" name="selectedcard" value="" />
         </apex:actionFunction>
-        <apex:actionFunction name="paymenthandling" action="{!Paymentcreation}" rerender="outputPanelcardlist" oncomplete="PaymentsyncronousAPIcall()">
+        <apex:actionFunction name="paymenthandling" action="{!Paymentcreation}" rerender="square-payment-outputPanel" oncomplete="PaymentsyncronousAPIcall()">
         </apex:actionFunction>
-        <apex:actionFunction name="paymentAPIcall" action="{!PaymentsyncAPIcall}" rerender="outputPanelcardlist">
+        <apex:actionFunction name="paymentAPIcall" action="{!PaymentsyncAPIcall}" rerender="square-payment-outputPanel">
         </apex:actionFunction>
 
     </apex:form>
@@ -28,6 +56,7 @@
     <div class="square-payment-wrapper">
         
         <apex:outputPanel id="square-payment-outputPanel">
+         <apex:pageMessages />
          <div class="initsquareVariables">
             <input type="hidden" value="{!todorecordid}" name="todorecordid" class="todorecordid" /> 
          </div>
@@ -36,20 +65,20 @@
                     <div class="card-title mx-auto"> Payment </div>
                     <div class="nav">
                         <ul class="mx-auto disp">
-                            <div id="tab1" class="active" onclick="handelsavedcards();">
+                            <div id="tab1" class="{! IF( (activeTabPanel == 'saved-cards-tab') ,'active' , '') }" onclick="handelsavedcards();">
                                 <li>
                                     Saved cards
                                 </li>
                             </div>
-                            <div id="tab2" onclick="handlenewcard();">
+                            <div id="tab2" class="{! IF( (activeTabPanel == 'add-card-tab') ,'active' , '') }" onclick="handlenewcard();">
                                 <li>Add Card</li>
                             </div>
                         </ul>
                     </div>
                     <!-- The content areas for each tab -->
                     
-                    <div id="savedcards" >
-                        <apex:outputPanel styleClass="{! if( (cardslist = null) , 'skeleton-active' ,'' ) }" id="outputPanelcardlist">
+                    <apex:outputPanel rendered="{! IF( (activeTabPanel == 'saved-cards-tab') ,true , false) }" id="savedcards" >
+                        	<div class="{! if( (cardslist = null) , 'skeleton-active' ,'' ) }">
                             <div>
                                 <span class="skeleton-box skeleton-w60" ></span>
                                 <span class="skeleton-box skeleton-w10" ></span>
@@ -65,11 +94,10 @@
                                 <span class="skeleton-box skeleton-w10" ></span>
                                 <span class="skeleton-box skeleton-w25" ></span>
                             </div>
-                            
                             
                             <apex:repeat value="{!cardslist}" var="card" >
                                 <div class="row row-1">
-                                    <div class="col-2 visa">
+                                    <div class="col-2 ">
                                         <div class="master">
                                             <apex:image rendered="{!contains(card.CardBrand__c, 'VISA')}"
                                                         value="{!$Resource.visa}" width="40" height="40"
@@ -107,28 +135,20 @@
                                     
                                 </div>
                             </apex:repeat>
-                             
-                      </apex:outputPanel>
-                        <apex:outputPanel id="paybutton">
-                            <button class="btn paybutton d-flex mx-auto" onclick="SavedcardsPaymenthandling();"><b>Pay $ {!AmountTOpay}</b></button>
-                        </apex:outputPanel>
-                    </div>
+                                
+                                <apex:outputPanel id="paybutton" rendered="{! (AmountTOpay > 0.0 ) }">
+                                    <button class="btn paybutton d-flex mx-auto" onclick="SavedcardsPaymenthandling();"><b>Pay $ {!AmountTOpay}</b></button>
+                                </apex:outputPanel>
+                      	</div>
+                    </apex:outputPanel>
                     
-                     <apex:outputPanel id="cardui">
-                        <div id="newcard" style="display:none">
-                        	<c:SquareCardui memberId="{!memberrecordid}" AccountId="{!AccountrecId}" Payment-Amount="{!AmountTOpay}" />
-                       </div>
+                     <apex:outputPanel rendered="{! IF( (activeTabPanel == 'add-card-tab') ,true , false) }" id="cardui">
+                        <c:SquareCardui memberId="{!memberrecordid}" AccountId="{!AccountrecId}" Payment-Amount="{!AmountTOpay}" />
                     </apex:outputPanel>
                    
                 </div>
 			</div>
         </apex:outputPanel>
-        <script>
-        console.log('fetchCustomerCards');
-        fetchCustomerCards();
-        function squarePaymentPageCompleted() {
-            console.log('squarePaymentPageCompleted');
-        }
-        </script>
+        
     </div> 
 </apex:component>

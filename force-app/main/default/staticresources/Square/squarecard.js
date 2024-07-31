@@ -73,17 +73,7 @@ function handelsavedcards1() {
    }
 
 
-   function handelsavedcards() {
-    document.getElementById('newcard').style.display = 'none';
-    document.getElementById('savedcards').style.display = 'block';
-    var tab1 = document.querySelector('#tab1');
-    tab1.classList.add('active');
-    var tab2 = document.querySelector('#tab2');
-    tab2.classList.remove('active');
-    // You can also call an Apex controller method using AJAX
-    // var action = '{!myControllerMethod}';
-    // action();
-  }
+ 
   function onIdselection() {
    var cardid =  document.getElementById("cardid").value;
    gettingselectedcardId(cardid);
@@ -110,27 +100,22 @@ function handelsavedcards1() {
      //alert('test' + cardid);
       }
   function handleFullfillment() {
+    if ((eval("typeof showLoader") == 'function')) {
       showLoader();
+  }
       //Finalize Todo
       var todorecordidInputElement = document.querySelector('.square-payment-wrapper .todorecordid');
       var todoRecordId = (todorecordidInputElement) ? todorecordidInputElement.value: '' ;
       if( (todoRecordId) && (eval("typeof finalizeTodo") == 'function') ) {
           finalizeTodo(todoRecordId, true);
       } else {
-        hideLoader();
+        if ((eval("typeof hideLoader") == 'function')) {
+          hideLoader();
+      }
+       
       }
     }
-  function handlenewcard() {
-    document.getElementById('savedcards').style.display = 'none';
-    document.getElementById('newcard').style.display = 'block';
-    var tab1 = document.querySelector('#tab1');
-    tab1.classList.remove('active');
-    var tab2 = document.querySelector('#tab2');
-    tab2.classList.add('active');
-    // You can also call an Apex controller method using AJAX
-    // var action = '{!myControllerMethod}';
-    // action();
-  }
+
  
   async function verifyBuyer(payments, token) {
       const verificationDetails = {
@@ -178,6 +163,27 @@ function handelsavedcards1() {
  
       const errorBody = await paymentResponse.text();
       throw new Error(errorBody);
+    }
+
+    var webPortalListenerAdded = false;
+
+
+var webPortalWrapperContainer = document.querySelector('.web-portal-wrapper');
+    if( (webPortalWrapperContainer) && (!webPortalListenerAdded) ) {
+        webPortalListenerAdded = true;
+        // Click handler for entire DIV webPortalWrapperContainer
+        webPortalWrapperContainer.addEventListener('click', function (e) {
+            if( (e.target.classList.contains('home-nav-link')) || (e.target.classList.contains('webportal-nav-link')) ) {
+                showLoader();
+                var selectedPortalTabElement = e.target;
+                var selectedTabName = selectedPortalTabElement.getAttribute('data-tabname');
+                var selectedPortalTabTodoId = selectedPortalTabElement.getAttribute('data-todorecordid');
+                if( (selectedTabName!= undefined) && (selectedTabName != null) && (selectedTabName != '') ) {
+                    selectedTabName = generateSlug(selectedTabName);
+                    setSelectedTabActive(selectedTabName, selectedPortalTabTodoId);
+                }
+            }
+        });
     }
  
 
