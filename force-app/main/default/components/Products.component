@@ -17,7 +17,9 @@
         <apex:actionFunction name="addtocart" action="{!addingToCart}" rerender="cartpanel">
          <apex:param assignto="{!selectedProductId}" name="selectedProdId" value=""/>
         </apex:actionfunction>
-       
+        <apex:actionFunction name="ProductFiltering" action="{!productSearch}" rerender="outputPanel">
+         <apex:param assignto="{!productSearchName}" name="prodName" value=""/>
+        </apex:actionfunction>
     </apex:form>
     <script>
         initProductsList();
@@ -29,65 +31,45 @@
     
     <div class="product-cart-wrap bootstrap-scope displayflex" >
         <div class="flexgrow">
-            <header class="header-area header-style-1 header-height-2">
-                <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="header-area header-style-1 header-height-2">
+                <div class="header-middle">
                     <div class="container">
                         <div class="header-wrap">
                             <div class="header-right">
                                 <div class="search-style-2">
                                     <form action="#">
-                                        <select class="select-active">
+                                        <!--select class="select-active">
                                          
-                                            </select>
-                                        <input type="text" placeholder="Search for items..." />
+                                            </select-->
+                                        <input type="text" id="productname" placeholder="Search for items..." onkeyup="productFiltering()"/>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </header>
+               </div>
             <!--End header-->
-            <apex:outputPanel id="outputPanel">
-                <main class="main">
-                    <div class="container mb-30">
-                        <div class="row">
-                            <div class="col-lg-4-5">
-                                <div class="row product-grid boxsize">
-                                    <apex:pageMessages />
-                                    <script> 
-                                    var productwrapperList = '{!productwrapperList}';
-                                    </script>
-                                    <apex:repeat value="{!productwrapperList}" var="productwrapper" id="theRepeat">
-                                        <div class="col-lg-2 col-md-2 col-12 col-sm-6 product-class product-wrapper" data-ProductId="{!productwrapper.catalogItem.Id}">
-                                            <div class="mb-30" style="pointer-events:none;background-color: #7A511F;">
-                                                <div class="product-img-action-wrap" >
-                                                    <div class="product-img product-img-zoom">
-                                                 </div>
-                                                </div>
-                                                <div class="product-content-wrap" >
-                                                   <h2 class="fontcolor">{!productwrapper.shortNameCode}</h2>
-                                                    <h2 class="fontcolor" >{!productwrapper.catalogItem.Name} {!productwrapper.catalogVariantsCount} </h2>
-                                                    <div class="product-price fontcolor">
-                                                        <span class="fontcolor">${!productwrapper.catalogItem.Default_Price__c}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </apex:repeat>
-                                </div>
-                                <!--product grid-->
-                                <!--End Deals-->
-                            </div>
-                        </div>
-                    </div>
-                </main>
+            <apex:outputPanel layout="block" styleclass="product-badges" id="outputPanel">
+               
+               <apex:repeat value="{!productwrapperList}" var="productwrapper" id="theRepeat">
+                
+                <div class="prod-card product-wrapper product-class" data-ProductId="{!productwrapper.catalogItem.Id}">
+                  <img style="
+                  width: 200px;
+                  height: 150px;pointer-events:none" src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/RX_THUMBNAIL/IMAGES/VENDOR/2024/4/17/3334c8c2-3a17-4531-a91d-fe43776e2df1_458210.JPG"/>
+                    <p>{!productwrapper.catalogItem.Name}</p> <br/>
+                 
+                </div>
+               
+                </apex:repeat>
+               
             </apex:outputPanel>
         </div>
         <div class="flexbasis">
             <apex:outputPanel id="cartpanel">
                 <h1>Current sale</h1>
-                <div class="row">
+                
                     <div class="column">
                         <div class="card">
                            <div class="scroll-y">
@@ -105,7 +87,7 @@
                            </div>
                         </div>
                     </div>
-                </div>
+                
                 <div class="row">
                     <div class="column">
                         <!--div class="card">

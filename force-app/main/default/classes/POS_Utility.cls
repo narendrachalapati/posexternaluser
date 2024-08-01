@@ -99,4 +99,21 @@ public without sharing class POS_Utility {
         //  orderItemList.add(orderItemNew);
         // order
     }
+    /*on key enter filtering the Product*/
+    public static List < CatalogItem__c > productSearchUtil(string productName,list<catalogItem__c> productList) {
+        list<catalogItem__c> catItemList = new list<CatalogItem__c> ();
+        if(string.isNotBlank(productName) ){
+        for (catalogItem__c catalogItem : productList) {
+            if (catalogItem.Name.toLowerCase().contains(productName.toLowerCase())) {
+                catItemList.add(catalogItem);
+            }
+            
+        }
+        system.debug('catItemListNdr' + catItemList );
+        return catItemList;
+    }else{
+        return productList;
+    }
+        
+    }
 }
