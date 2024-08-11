@@ -1,112 +1,275 @@
 <apex:component controller="POS_Products" allowDML="true">
- 
-    <!--attributes section start-->
-    <!--todo recrod -->
-    <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
-    <apex:attribute name="todo-id" description="" type="String" assignTo="{!todorecordId}" />
-    <!--todo recrod -->
-    <apex:attribute name="member-record-id" description="" type="String"  default="0039H00000AgUGrQAN"  assignTo="{!memberrecordId}"/>
-    <apex:attribute name="account-record-id" description="" default="0019H000004a9SJQAY" type="String"  assignTo="{!accountrecId}"/>
-    <!--attributes section end -->
-    <!-- actionFunction section start -->
-    <apex:form >
-        <apex:actionFunction name="initProductsList" action="{!fetchProducts}" rerender="outputPanel, cartpanel, modaloutputpanel" oncomplete="posPageLoaded()">
-        </apex:actionFunction>
-        <apex:actionFunction name="gettingorderDetails" action="{!getorderDetails}" rerender="cartpanel">
-        </apex:actionFunction>
-        <apex:actionFunction name="addtocart" action="{!addingToCart}" rerender="cartpanel">
-         <apex:param assignto="{!selectedProductId}" name="selectedProdId" value=""/>
-        </apex:actionfunction>
-        <apex:actionFunction name="ProductFiltering" action="{!productSearch}" rerender="outputPanel">
-         <apex:param assignto="{!productSearchName}" name="prodName" value=""/>
-        </apex:actionfunction>
-    </apex:form>
-    <script>
-        initProductsList();
-    </script>
-    <!-- actionFunction section END -->
-    <apex:stylesheet value="{!URLFOR($Resource.pointOfSale, 'css/main5103.css?v=6.0')}"/>
-    <apex:stylesheet value="{! URLFOR( $Resource.external_library , '/bootstrap/css/5_0_2/bootstrap.min.css') }" />
-    <apex:includeScript value="{! URLFOR( $Resource.pointOfSale , 'js/pos.js') }" />
-    
-    <div class="product-cart-wrap bootstrap-scope displayflex" >
-        <div class="flexgrow">
-            <div class="header-area header-style-1 header-height-2">
-                <div class="header-middle">
-                    <div class="container">
-                        <div class="header-wrap">
-                            <div class="header-right">
-                                <div class="search-style-2">
-                                    <form action="#">
-                                        <!--select class="select-active">
-                                         
-                                            </select-->
-                                        <input type="text" id="productname" placeholder="Search for items..." onkeyup="productFiltering()"/>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+   <!--attributes section start-->
+   <!--todo recrod -->
+   <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
+   <apex:attribute name="todo-id" description="" type="String" assignTo="{!todorecordId}" />
+   <!--todo recrod -->
+   <apex:attribute name="member-record-id" description="" type="String" default="0039H00000AgUGrQAN" assignTo="{!memberrecordId}"
+   />
+   <apex:attribute name="account-record-id" description="" default="0019H000004a9SJQAY" type="String" assignTo="{!accountrecId}"
+   />
+   <!--attributes section end -->
+   <!-- actionFunction section start -->
+   <apex:form>
+      <apex:actionFunction name="initProductsList" action="{!fetchProducts}" rerender="outputPanel, cartpanel, modaloutputpanel, skeletonpanel, paybuttonpanels"
+         oncomplete="posPageLoaded()">
+      </apex:actionFunction>
+      <apex:actionFunction name="gettingorderDetails" action="{!getorderDetails}" rerender="cartpanel">
+      </apex:actionFunction>
+      <apex:actionFunction name="deselectproduct" action="{!deSelectedProductDetails}" rerender="catalogVariantsPanel">
+      </apex:actionFunction>
+      <apex:actionFunction name="addtocart" action="{!addingToCart}" rerender="cartpanel, catalogVariantsPanel" oncomplete="gettingorderDetails()">
+         <apex:param assignto="{!selectedProductId}" name="selectedProdId" value="" />
+         <apex:param assignto="{!selectedProductVariant}" name="selectedcatalogvariantId" value="" />
+         <apex:param assignto="{!selectedProductModifer}" name="selectedcatalogmodifierId" value="" />
+         <apex:param assignto="{!OrderAmount}" name="amount" value="" />
+         <apex:param assignto="{!quantity}" name="quanty" value="" />
+         <apex:param assignto="{!notes}" name="note" value="" />
+
+      </apex:actionfunction>
+      <apex:actionFunction name="ProductFiltering" action="{!productSearch}" rerender="outputPanel">
+         <apex:param assignto="{!productSearchName}" name="prodName" value="" />
+      </apex:actionfunction>
+      <apex:actionFunction name="selectedProductDetails" action="{!getSelectedProductDetails}" rerender="catalogVariantsPanel" oncomplete="onmodalopenaction()">
+         <apex:param assignto="{!selectedProductId}" name="productId" value="" />
+      </apex:actionfunction>
+      <apex:actionFunction name="deleteOrderLine" action="{!orderLineDelete}" rerender="outputPanel" oncomplete="gettingorderDetails()">
+         <apex:param assignto="{!orderLineId}" name="orderline" value="" />
+      </apex:actionfunction>
+   </apex:form>
+   <script>
+      initProductsList();
+   </script>
+   <!-- actionFunction section END -->
+   <apex:stylesheet value="{!URLFOR($Resource.pointOfSale, 'css/main5103.css?v=6.0')}" />
+   <apex:stylesheet value="{! URLFOR( $Resource.FontAwesome, 'css/all.css') }" />
+   <apex:includeScript value="{! URLFOR( $Resource.pointOfSale , 'js/pos.js') }" />
+
+   <div class="product-cart-wrap bootstrap-scope">
+      <div class="flexgrow">
+         <div class="container">
+            <div class="boader-container">
+               <div>
+                  <input class="product-search" type="text" id="productname" placeholder="Search for items..." />
                </div>
-            <!--End header-->
-            <apex:outputPanel layout="block" styleclass="product-badges" id="outputPanel">
-               
-               <apex:repeat value="{!productwrapperList}" var="productwrapper" id="theRepeat">
-                
-                <div class="prod-card product-wrapper product-class" data-ProductId="{!productwrapper.catalogItem.Id}">
-                  <img style="
-                  width: 200px;
-                  height: 150px;pointer-events:none" src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/RX_THUMBNAIL/IMAGES/VENDOR/2024/4/17/3334c8c2-3a17-4531-a91d-fe43776e2df1_458210.JPG"/>
-                    <p>{!productwrapper.catalogItem.Name}</p> <br/>
-                 
-                </div>
-               
-                </apex:repeat>
-               
-            </apex:outputPanel>
-        </div>
-        <div class="flexbasis">
-            <apex:outputPanel id="cartpanel">
-                <h1>Current sale</h1>
-                
-                    <div class="column">
-                        <div class="card">
-                           <div class="scroll-y">
-                            <table class="width-inhert">
-                                <apex:repeat value="{!order.Order_Items__r}" var="orderlines" id="orderiter">
-                                    <tr>
-                                        <td class="fontweight">
-                                            {!orderlines.Product_Name__c}
-                                            <p>{!orderlines.Catalog_variant_Name__c}</p>
-                                        </td>
-                                        <td class="textalign">${!orderlines.Total_Price__c}</td>
-                                    </tr>
-                                </apex:repeat>
-                            </table>
-                           </div>
+               <div>
+                  <i class="fa fa-search fafastyle"></i>
+               </div>
+            </div>
+         </div>
+
+         <!--End header-->
+         <apex:outputPanel id="skeletonpanel">
+         <apex:outputpanel rendered="{!isproductsloaded == false}">
+         <div Class="ponte-event-none">
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+         </div>
+      </apex:outputpanel>
+      </apex:outputPanel>
+         <apex:outputPanel layout="block" styleclass="product-badges" id="outputPanel">
+            
+            <apex:repeat value="{!productwrapperList}" var="productwrapper" id="theRepeat">
+               <div class="prod-card product-wrapper product-class" data-ProductId="{!productwrapper.catalogItem.Id}" data-variantscount="{!productwrapper.catalogVariantsCount}"
+                  data-ModifierCount="{!productwrapper.catalogVariantsCount}" data-defaultprice="{!productwrapper.catalogItem.Default_Price__c}">
+                  <apex:outputpanel rendered="{!productwrapper.imageUrl != ''}" styleClass="ponte-event-none">
+                     <img class="ponte-event-none image-size" src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/RX_THUMBNAIL/IMAGES/VENDOR/2024/4/17/3334c8c2-3a17-4531-a91d-fe43776e2df1_458210.JPG"
+                     />
+                  </apex:outputpanel>
+                  <apex:outputpanel rendered="{!productwrapper.imageUrl == ''}" styleClass="ponte-event-none prod-card-shortcode">
+                     <div class="prodName">
+                        {!productwrapper.shortNameCode}
+                     </div>
+                  </apex:outputpanel>
+                  <div class="padding">{!productwrapper.catalogItem.Name}</div>
+                  <br/>
+
+               </div>
+
+            </apex:repeat>
+
+         </apex:outputPanel>
+         <!--######################Popup Block open#################### -->
+
+         <div id="id01" class="modal ProductVariant-modal">
+
+            <div class="modal-content">
+               <apex:outputPanel id="catalogVariantsPanel">
+                  <div>
+                     <div Class="ponte-event-none skeletonclass">
+                        <div>
+                           <span class="skeleton-box skeleton-w60"></span>
+                           <span class="skeleton-box skeleton-w10"></span>
+                           <span class="skeleton-box skeleton-w25"></span>
                         </div>
-                    </div>
-                
-                <div class="row">
-                    <div class="column">
-                        <!--div class="card">
-                        <table>
-                        <tr>
-                        <td class="fontweight">Subtotal</td>
-                        <td class="textalign">$12.50</td>
-                        </tr>
-                        <tr>
-                        <td class="fontweight">Total</td>
-                        <td class="textalign">${!order.Total_Price__c}</td>
-                        </tr>
-                        </table>
-                        </div-->
-                    </div>
-                </div>
-                <button  class="btn paybutton d-flex mx-auto" onclick=""><b>Charge ${!order.Total_Price__c}</b></button>
-            </apex:outputPanel>
-        </div>
-    </div>
-    
+                        <div>
+                           <span class="skeleton-box skeleton-w60"></span>
+                           <span class="skeleton-box skeleton-w10"></span>
+                           <span class="skeleton-box skeleton-w25"></span>
+                        </div>
+                        <div>
+                           <span class="skeleton-box skeleton-w60"></span>
+                           <span class="skeleton-box skeleton-w10"></span>
+                           <span class="skeleton-box skeleton-w25"></span>
+                        </div>
+                     </div>
+                     <apex:outputpanel rendered="{!isModalOpen == true}">
+                        <div>
+                           <table class="width-inhert">
+                              <tr>
+                                 <td class="fontweight close-wind-pad">
+                                    <div onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</div>
+                                 </td>
+                                 <td class="text-align-modal">
+                                    <h1>{!selectedProduct.Name}</h1>
+                                 </td>
+                                 <td class="textalign">
+                                    <button type="button" class="addbutton">Add</button>
+                                 </td>
+                              </tr>
+
+                           </table>
+                           <hr></hr>
+                        </div>
+                        <div class="clearfix modal-container">
+                           <h3 class="modal-content-left">Choose one</h3>
+                           <apex:repeat value="{!selectedProduct.CatalogItemVariations__r}" var="catalogVariants" id="variantsIter">
+                              <button type="button" class="popupbuttons catVariants" data-catalogvatiant="{!catalogVariants.Id}" data-variantamount="{!catalogVariants.PriceMoney__c}">{!catalogVariants.Name} ${!catalogVariants.PriceMoney__c}</button>
+                           </apex:repeat>
+                           <h3 class="modal-content-left">Choose you like</h3>
+                           <div class="displayflex">
+                              <apex:repeat value="{!selectedProduct.CatalogModifier__r}" var="catalogmodifier" id="modifierIter">
+
+                                 <button type="button" class="popupbuttons catmodifier" data-catalogmodifier="{!catalogmodifier.Id}" data-modifierAmount="{!catalogmodifier.PriceMoney__c}">{!catalogmodifier.Name} ${!catalogmodifier.PriceMoney__c}</button>
+
+                              </apex:repeat>
+                           </div>
+                           <table class="width-inhert">
+                              <tr>
+                                 <td class="modal-content-left input-border">
+                                    <label for="fname">QUANTITY</label>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td>
+                                    <input class="posorderquantity" type="number" id="posorderquantity" value="1" />
+                                 </td>
+                              </tr>
+
+                              <tr>
+                                 <td class="modal-content-left input-border">
+                                    <label for="fname">NOTES</label>
+
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td>
+                                    <input class="posordernotes" type="text" id="posordernotes" name="notes" placeholder="Add a note" />
+                                 </td>
+
+                              </tr>
+                           </table>
+
+
+
+                        </div>
+                     </apex:outputPanel>
+                  </div>
+               </apex:outputPanel>
+            </div>
+         </div>
+
+         <!--Popup Block closed -->
+      </div>
+      <apex:outputPanel id="cartpanel" styleClass="flexbasis">
+         <h1>Current sale</h1>
+        
+         <div>
+            <div class="textalign-center">
+               <table>
+                  <tr>
+                     <td>
+                        <i class="fa fa-solid fa-user"></i>
+                     </td>
+                     <td class="addcustomer">
+                        {!order.Member__r.Name}
+                     </td>
+
+                  </tr>
+               </table>
+            </div>
+             <!--- skeleton Element start for cart -->
+         <apex:outputpanel rendered="{!iscartloaded == false}">
+         <div Class="ponte-event-none">
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+            <div>
+               <span class="skeleton-box skeleton-w60"></span>
+               <span class="skeleton-box skeleton-w25"></span>
+            </div>
+         </div>
+         </apex:outputpanel>
+           <!--- skeleton Element end for cart -->
+            <div class="column">
+               <div class="card">
+                  <div class="scroll-y">
+                     <table class="width-inhert">
+                        <apex:repeat value="{!order.Order_Items__r}" var="orderlines" id="orderiter">
+                           <tr class="orderline">
+                              <td class="fontweight">
+                                 {!orderlines.Product_Name__c}
+                                 <apex:outputpanel rendered="{!orderlines.quantity__c > 1}">
+                                    <span class="quantity">x{!orderlines.quantity__c}</span>
+                                 </apex:outputpanel>
+                                 <div class="font-color">{!orderlines.Catalog_variant_Name__c}
+                                    <br></br>
+                                    {!orderlines.catalog_Modifer_Name__c}
+                                 </div>
+                                 <apex:outputpanel rendered="{!orderlines.Notes__c != ''}">
+                                    <span class="quantity">Note:{!orderlines.Notes__c}</span>
+                                 </apex:outputpanel>
+                              </td>
+                              <td class="textalign">${!orderlines.Total_Price__c}
+                                 <i data-orderlineid="{!orderlines.Id}" class="fa fa-minus-circle fafadelete"></i>
+                              </td>
+                           </tr>
+                        </apex:repeat>
+                     </table>
+                  </div>
+               </div>
+            </div>
+
+            <apex:outputPanel id="paybuttonpanels" styleClass="{!IF(NOT(ISNULL(order.Total_Price__c)) && order.Total_Price__c > 0, 'paybutton d-flex mx-auto', 'paybuttoninactive d-flex mx-auto')}">
+               <b>Charge ${!order.Total_Price__c}</b>
+           </apex:outputPanel>
+         </div>
+      </apex:outputPanel>
+
+   </div>
+
 </apex:component>

@@ -81,19 +81,35 @@ public without sharing class POS_Utility {
     /*#########
     Hook is called when orderlineitem  adding
         ###############*/
-    public static void OrderlineItem(order__c order,string memberId, string selectedItem,List<CatalogItem__c> ProductsList) {
-        Map<Id, CatalogItem__c> catalogItemMap = new Map<Id, CatalogItem__c>();
-        
-        for(CatalogItem__c catalogprod : ProductsList){
-            catalogItemMap.put(catalogprod.Id, catalogprod);
-        }
+    public static void OrderlineItem(order__c order,string memberId, string selectedItem, string selectedVariant, string selectedModifier,Decimal amount,integer quantity, string notes, Map<Id, CatalogItem__c> catItemMap) {
+     
         Order_Item__c orderItemNew = new Order_Item__c();
         orderItemNew.Order__c = order.Id;
         orderItemNew.Item_Status__c =  'New';
         orderItemNew.CatalogItem__c = selectedItem;
-        // orderItemNew.CatalogItemVariation__c = selectedItem;
-        //// orderItemNew.CatalogModifier__c = selectedItem;
-        orderItemNew.Quantity__c = 1;
+         if(string.isNotBlank(selectedVariant)){
+         orderItemNew.CatalogItemVariation__c = selectedVariant;
+         }
+         if(string.isNotBlank(selectedModifier)){
+         orderItemNew.CatalogModifier__c = selectedModifier;
+         }else{
+            CatalogItem__c catalogItem = catItemMap.get(selectedItem);
+           if(catalogItem.CatalogItemVariations__r.size()>0){
+            orderItemNew.CatalogItemVariation__c = catalogItem.CatalogItemVariations__r[0].Id;
+           }
+          
+         }
+         if(quantity > 0){
+        orderItemNew.Quantity__c = quantity;
+         }else{
+            orderItemNew.Quantity__c = 1;  
+         }
+         if(string.isNotBlank(notes)){
+            orderItemNew.Notes__c = notes;
+             }else{
+                orderItemNew.Notes__c = '';  
+             }
+        orderItemNew.Total_Price__c = amount;
         insert orderItemNew;
         //   orderItemNew.Notes__c = selectedProduct.orderNotes;
         //  orderItemList.add(orderItemNew);
@@ -115,5 +131,19 @@ public without sharing class POS_Utility {
         return productList;
     }
         
+    }
+    /*This helper class is called when User clicks the Product only when options are there for the user selected product*/
+    public static CatalogItem__c getSelectedProductUtil(string prodId,Map<Id,catalogItem__c> catalogItemsMap) { 
+        CatalogItem__c catlogItemutil = catalogItemsMap.get(prodId);
+        return catlogItemutil;
+
+    }
+      /*This helper class is called for deleteing the orderlineintem*/
+      public static Boolean deleteOrderItemUtil(string orderItemId) {
+        Boolean isDelete;
+        Order_Item__c orderedItem =[SELECT Id from Order_Item__c wHERE Id=:orderItemId];
+        delete orderedItem;
+        isDelete = true;
+        return isDelete;
     }
 }
