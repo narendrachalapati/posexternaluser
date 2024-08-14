@@ -27,15 +27,9 @@ async function initSquareCardUi() {
        console.error('Initializing Card failed', e);
    }
 
-
-//const payments = Square.payments('sandbox-sq0idb-Mq1T5mAUhIYjYDdMVM66cQ', 'L5AMZP3JG68BG');
-//const card = await payments.card();
-//await card.attach('#card-container');
- 
  const cardButton = document.getElementById('card-button');
  cardButton.addEventListener('click', async () => {
-  // const statusContainer = document.getElementById('payment-status-container');
- 
+  
    try {
      const result = await card.tokenize();
      if (result.status === 'OK') {
@@ -72,11 +66,33 @@ function handelsavedcards1() {
   }
    }
 
-
- 
+   function posPageLoaded() {
+    var squarePaymentPageListenerAdded = false;
+    var squarePaymentWrapperContainer = document.querySelector('.square-payment-wrapper');
+    
+    if ((squarePaymentWrapperContainer) && (!squarePaymentPageListenerAdded)) {
+        posProductPageListenerAdded = true;
+        // Click handler for entire DIV posPageWrapperContainer
+        posPageWrapperContainer.addEventListener('click', function (e) {
+           
+          
+            //############################## click for getting card id
+            // #########################
+            if ((e.target.classList.contains('cardid'))) {
+                console.log('methodcalled cardid');
+                var selectedCardElement = e.target;
+                var cardId = selectedCardElement.getAttribute('data-cardId');
+                console.log('cardIdNDR : ' + cardId);
+                gettingselectedcardId(cardId);
+            }
+          
+      
+        });
+      }
+    }
   function onIdselection() {
    var cardid =  document.getElementById("cardid").value;
-   gettingselectedcardId(cardid);
+   
   //alert('test' + cardid);
   }
   function SavedcardsPaymenthandling() {

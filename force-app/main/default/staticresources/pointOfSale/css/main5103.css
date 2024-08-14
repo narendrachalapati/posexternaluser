@@ -288,7 +288,7 @@ button[type=submit]:hover {
  
 }
 
-.product-cart-wrap .paybutton {
+.product-cart-wrap .posproductspaybutton {
   color: #ffffff;
   background: #006aff;
   cursor: pointer;
@@ -326,7 +326,7 @@ button[type=submit]:hover {
   padding: 2vh 0 !important;
   margin-top: 3vh !important
 }
-.product-cart-wrap .paybutton:active {
+.product-cart-wrap .posproductspaybutton:active {
   background: rgb(0, 85, 204);
 }
 .product-cart-wrap .flexbasis {
@@ -587,6 +587,7 @@ searchbox styles
   font-size: 17px;
   border: none !important;
   background: transparent;
+  width: 500px;
 }
 .product-cart-wrap .product-search:focus {
 
@@ -631,7 +632,7 @@ searchbox styles
     width: 50%;
     display: flex;
     height: 50px;
-    justify-content: space-between;;
+   
    
 }
 .product-cart-wrap .fafastyle{

@@ -1,8 +1,8 @@
 var selectedProductId;
 var selectedProductvariantId;
 var selectedProductmodifierId;
-var orderAmount;
-var modierAmount;
+var orderAmount = 0;
+var modierAmount = 0;
 function posPageLoaded() {
    
     var productwrap =  '{!productwrapperList}';
@@ -50,7 +50,13 @@ function posPageLoaded() {
                  selectedProductvariantId = selectedProductElement.getAttribute('data-catalogvatiant');
                  variantAmount = selectedProductElement.getAttribute('data-variantamount');
                 console.log('variantAmount' + variantAmount);
-                orderAmount =  variantAmount;
+                if(variantAmount != ''){
+                    orderAmount =  variantAmount;
+                    console.log('orderAmountNDR' + orderAmount);
+                }else{
+                    orderAmount = 0;
+                }
+               
                 var navLinkCurrentActiveElementsList = document.querySelectorAll(".catVariants.onselect-color");
                 
                 if(navLinkCurrentActiveElementsList) {
@@ -63,7 +69,7 @@ function posPageLoaded() {
                         // Add "active" class to the setSelectedTab link
                         selectedProductElement.classList.add('onselect-color');
                     }
-              console.log('selectedProductvariantId : ' + selectedProductvariantId);
+              console.log('selectedProductvariantId : ' + selectedProductvariantId + 'orderAmountNDR : ' +orderAmount);
             }
              //########################## Catalog modifier selection click listner ########################
              if ((e.target.classList.contains('catmodifier'))) {
@@ -98,6 +104,7 @@ function posPageLoaded() {
                         modal.style.display = 'none';
                     });
                     gettingorderDetails();
+                    var orderAmount = 0;
                 }
                   
              }
@@ -105,13 +112,23 @@ function posPageLoaded() {
                if ((e.target.classList.contains('fafadelete'))) {
                 console.log('methodcalled orderdelete');
                 var selectedProductElement = e.target;
-                 // Find the parent <tr> and hide it
-              const parentTr = selectedProductElement.closest('tr');
-              parentTr.style.display = 'none';
-               var orderlineId = selectedProductElement.getAttribute('data-orderlineid');
-               console.log('orderlineId NDR' + orderlineId);
+                 var orderlineId = selectedProductElement.getAttribute('data-orderlineid');
+               const myElement = document.getElementById(orderlineId);
+               myElement.style.display = 'none';
                deleteOrderLine(orderlineId);
-            }
+           
+               
+                  
+             }
+               //################## OrderSquare sync   click listner ##############
+               if ((e.target.classList.contains('posproductspaybutton'))) {
+                console.log('methodcalled charge');
+             
+                ordercallout();
+                handleFullfillment();
+               
+                  
+             }
         //Close Modal Lisner
           //Close Modal Lisner
           if ((e.target.classList.contains('close'))) {
@@ -123,7 +140,7 @@ function posPageLoaded() {
             closemodals.forEach(function(modal) {
                 modal.style.display = 'none';
             });
-          
+            var orderAmount = 0;
       
         }
       
@@ -154,3 +171,20 @@ console.log(navLinkCurrentActiveElementsList);
 //   }
 
 }
+//############################### Handling the fullfillment #####################################//
+function handleFullfillment() {
+    if ((eval("typeof showLoader") == 'function')) {
+      showLoader();
+  }
+      //Finalize Todo
+      var todorecordidInputElement = document.querySelector('.square-payment-wrapper .todorecordid');
+      var todoRecordId = (todorecordidInputElement) ? todorecordidInputElement.value: '' ;
+      if( (todoRecordId) && (eval("typeof finalizeTodo") == 'function') ) {
+          finalizeTodo(todoRecordId, true);
+      } else {
+        if ((eval("typeof hideLoader") == 'function')) {
+          hideLoader();
+      }
+       
+      }
+    }

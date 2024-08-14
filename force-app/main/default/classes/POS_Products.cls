@@ -22,6 +22,7 @@ public with sharing class POS_Products {
     public Boolean isproductsloaded {get; set; }
     public integer quantity {get; set; }
     public string notes {get; set; }
+    public string  lastdeletedItem {get; set; }
     public void   fetchProducts() {
         catalogItemList = new list<CatalogItem__c>();
         catItemMap = new Map<Id, CatalogItem__c>();
@@ -92,9 +93,16 @@ public with sharing class POS_Products {
         }
      /*This  method is called for deleteing the orderlineintem*/
     public void orderLineDelete() {
-        iscartloaded = false;
-        isDeleted =   POS_Utility.deleteOrderItemUtil(orderLineId);
-        iscartloaded = true;
+        lastdeletedItem =   POS_Utility.deleteOrderItemUtil(orderLineId,lastdeletedItem);
+       
+    }
+     /*This  method is called for doing apicallout to square*/
+     public void orderApiCallout() {
+    SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,order.Id,'POST','INSERT','Square','Square_Orders');
+    }
+    /*This  method is called for for updating the order status to active*/
+    public void updateorder(){
+        POS_Utility.orderUpdateUtil(order);
     }
     public class Productwrapper {
         

@@ -37,6 +37,12 @@
       <apex:actionFunction name="deleteOrderLine" action="{!orderLineDelete}" rerender="outputPanel" oncomplete="gettingorderDetails()">
          <apex:param assignto="{!orderLineId}" name="orderline" value="" />
       </apex:actionfunction>
+      <apex:actionFunction name="ordercallout" action="{!orderApiCallout}" rerender="outputPanel" oncomplete="orderupdate()">
+     
+      </apex:actionfunction>
+      <apex:actionFunction name="orderupdate" action="{!updateorder}" rerender="outputPanel">
+     
+   </apex:actionfunction>
    </apex:form>
    <script>
       initProductsList();
@@ -92,11 +98,11 @@
                      />
                   </apex:outputpanel>
                   <apex:outputpanel rendered="{!productwrapper.imageUrl == ''}" styleClass="ponte-event-none prod-card-shortcode">
-                     <div class="prodName">
+                     <div class="prodName ponte-event-none">
                         {!productwrapper.shortNameCode}
                      </div>
                   </apex:outputpanel>
-                  <div class="padding">{!productwrapper.catalogItem.Name}</div>
+                  <div class="padding ponte-event-none">{!productwrapper.catalogItem.Name}</div>
                   <br/>
 
                </div>
@@ -149,13 +155,21 @@
                         <div class="clearfix modal-container">
                            <h3 class="modal-content-left">Choose one</h3>
                            <apex:repeat value="{!selectedProduct.CatalogItemVariations__r}" var="catalogVariants" id="variantsIter">
-                              <button type="button" class="popupbuttons catVariants" data-catalogvatiant="{!catalogVariants.Id}" data-variantamount="{!catalogVariants.PriceMoney__c}">{!catalogVariants.Name} ${!catalogVariants.PriceMoney__c}</button>
+                              <button type="button" class="popupbuttons catVariants" data-catalogvatiant="{!catalogVariants.Id}" data-variantamount="{!catalogVariants.PriceMoney__c}">
+                                 {!catalogVariants.Name}
+                                 <apex:outputpanel rendered="{!catalogVariants.PriceMoney__c != null}" styleClass="ponte-event-none">
+                                 ${!catalogVariants.PriceMoney__c}
+                              </apex:outputpanel>
+                              </button>
                            </apex:repeat>
                            <h3 class="modal-content-left">Choose you like</h3>
                            <div class="displayflex">
                               <apex:repeat value="{!selectedProduct.CatalogModifier__r}" var="catalogmodifier" id="modifierIter">
 
-                                 <button type="button" class="popupbuttons catmodifier" data-catalogmodifier="{!catalogmodifier.Id}" data-modifierAmount="{!catalogmodifier.PriceMoney__c}">{!catalogmodifier.Name} ${!catalogmodifier.PriceMoney__c}</button>
+                                 <button type="button" class="popupbuttons catmodifier" data-catalogmodifier="{!catalogmodifier.Id}" data-modifierAmount="{!catalogmodifier.PriceMoney__c}">
+                                    {!catalogmodifier.Name} 
+                                    ${!catalogmodifier.PriceMoney__c}
+                                 </button>
 
                               </apex:repeat>
                            </div>
@@ -240,7 +254,7 @@
                   <div class="scroll-y">
                      <table class="width-inhert">
                         <apex:repeat value="{!order.Order_Items__r}" var="orderlines" id="orderiter">
-                           <tr class="orderline">
+                           <tr class="orderline" id="{!orderlines.Id}">
                               <td class="fontweight">
                                  {!orderlines.Product_Name__c}
                                  <apex:outputpanel rendered="{!orderlines.quantity__c > 1}">
@@ -255,7 +269,7 @@
                                  </apex:outputpanel>
                               </td>
                               <td class="textalign">${!orderlines.Total_Price__c}
-                                 <i data-orderlineid="{!orderlines.Id}" class="fa fa-minus-circle fafadelete"></i>
+                                 <i   data-orderlineid="{!orderlines.Id}" class="fa fa-minus-circle fafadelete"></i>
                               </td>
                            </tr>
                         </apex:repeat>
@@ -264,8 +278,8 @@
                </div>
             </div>
 
-            <apex:outputPanel id="paybuttonpanels" styleClass="{!IF(NOT(ISNULL(order.Total_Price__c)) && order.Total_Price__c > 0, 'paybutton d-flex mx-auto', 'paybuttoninactive d-flex mx-auto')}">
-               <b>Charge ${!order.Total_Price__c}</b>
+            <apex:outputPanel id="paybuttonpanels" styleClass="{!IF(NOT(ISNULL(order.Total_Price__c)) && order.Total_Price__c > 0, 'posproductspaybutton d-flex mx-auto', 'paybuttoninactive d-flex mx-auto')}">
+               <b class="ponte-event-none">Charge ${!order.Total_Price__c}</b>
            </apex:outputPanel>
          </div>
       </apex:outputPanel>

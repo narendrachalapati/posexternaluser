@@ -139,11 +139,27 @@ public without sharing class POS_Utility {
 
     }
       /*This helper class is called for deleteing the orderlineintem*/
-      public static Boolean deleteOrderItemUtil(string orderItemId) {
+      public static string deleteOrderItemUtil(string orderItemId,string lastdeletedItem) {
         Boolean isDelete;
-        Order_Item__c orderedItem =[SELECT Id from Order_Item__c wHERE Id=:orderItemId];
-        delete orderedItem;
+       if((string.isNotBlank(orderItemId)) && (lastdeletedItem != orderItemId) ){
+        list<Order_Item__c> orderedItems =[SELECT Id from Order_Item__c wHERE Id=:orderItemId];
+        if(orderedItems.size()>0){
+        delete orderedItems;
+        }
+        
         isDelete = true;
-        return isDelete;
+        lastdeletedItem = orderItemId;
+        }
+        
+        return lastdeletedItem;
+    }
+    public static order__c orderUpdateUtil(order__c order) {
+      
+        if(order != null){
+            order.Status__c = 'Active';
+             update order;
+     
+        }
+       return order;
     }
 }

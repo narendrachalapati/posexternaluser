@@ -440,7 +440,7 @@ input:focus:-ms-input-placeholder {
 .fourdigit {
   flex: 0 1 100%;
 }
-.radio {
+.card-selection {
   flex: 0 0 50px;
 }
 
