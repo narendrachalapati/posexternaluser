@@ -8,7 +8,8 @@
     <type>
       <members>EstimateUtility</members>
        <members>EstimateController</members>
-       <members>EstimateControllerTest</members>
+       <members>EstimateControllerTest</members> 
+       <members>Square_ApplicationService</members> 
       <name>ApexClass</name>
     </types>
    

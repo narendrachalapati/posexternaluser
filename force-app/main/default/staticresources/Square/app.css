@@ -279,7 +279,7 @@ body {
 }
 
 input {
-  border: none !important;
+  
   outline: none !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
@@ -287,10 +287,20 @@ input {
   width: 100% !important;
   min-width: unset !important;
   background: transparent !important;
-  border-color: transparent !important;
+  border-color: black !important;
   margin: 0 !important
 }
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 .parentwrapper a {
   color: grey !important;
   text-decoration: none !important;
@@ -440,7 +450,10 @@ input:focus:-ms-input-placeholder {
 .fourdigit {
   flex: 0 1 100%;
 }
-.card-selection {
+.square-payment-wrapper{
+  flex: 0 0 50px;
+}
+.square-payment-wrapper .card-selection {
   flex: 0 0 50px;
 }
 

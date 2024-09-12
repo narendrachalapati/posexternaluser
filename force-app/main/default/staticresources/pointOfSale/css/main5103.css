@@ -269,8 +269,11 @@ button[type=submit]:hover {
 .product-cart-wrap .prod-card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   /* padding: 10px; */
-   height: 100px;
-  width: calc(95%/5);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  
+  width: 192px;
   text-align: center;
   background-color: #f1f1f1;
   color:#343c44;
@@ -334,7 +337,10 @@ button[type=submit]:hover {
   text-align: center;
  
 }
-
+.product-cart-wrap .wordwrap {
+  word-wrap: break-word;
+ 
+}
 
 .product-cart-wrap .flexgrow {
   flex-grow:1;
@@ -463,6 +469,13 @@ button[type=submit]:hover {
   text-align: center;
   background-color: #f1f1f1;
 }
+@media (max-width: 1250px) {
+  .product-cart-wrap .card {
+    
+     height: 350px;
+    
+   }
+}
 .product-cart-wrap .font-color {
   
   color: #474e5dbd;
@@ -498,6 +511,7 @@ background-color: #939ca3;
 font-size: 75px;
 }
 .product-cart-wrap .prodName {
+  height: 60px;
  font-size: 55px;
  font-weight: 900;
    }
@@ -506,8 +520,8 @@ font-size: 75px;
 
 }
 .product-cart-wrap .image-size {
-width: 200px; 
-height: 150px;
+width: 192px; 
+height: 138px;
 }
 .product-cart-wrap .quantity {
   font-size:12px;
@@ -788,7 +802,7 @@ input[type="text"]:focus {
     margin: 0% auto 15% auto;
     border: 1px solid #888;
     width: 700px;
-    height: 100vh;
+  /*  height: 100vh; */
 }
 .product-cart-wrap .modal-content-left {
  text-align: left;
@@ -865,7 +879,7 @@ input[type="text"]:focus {
 }
 .product-cart-wrap .product-badges {
   display: flex;
-  height: calc(100% - 190px);
+  /*height: calc(100% - 190px);*/
   flex-wrap: wrap;
   overflow: hidden auto; 
   gap: 10px;
@@ -892,9 +906,11 @@ input[type="text"]:focus {
   display: inline-block;
   font-size: 12px;
   line-height: 1;
+  
   /*border-radius: 15px 15px 0 0;*/
   color: #fff;
   display: flex; 
+  background-color: #939ca3;
   align-items: center;
   justify-content: center;
   /*padding: 9px 20px 10px 20px; */
@@ -961,7 +977,11 @@ input[type="text"]:focus {
 }
 .product-cart-wrap .displayflex {
   display: flex;
+  flex-wrap: wrap;
   gap:5px
+ }
+ .product-cart-wrap .displaycolumn {
+  flex-direction: column;
  }
 .product-cart-wrap .product-card-bottom .add-cart {
   cursor: pointer;

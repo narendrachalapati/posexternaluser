@@ -1,8 +1,9 @@
-var selectedProductId;
-var selectedProductvariantId;
-var selectedProductmodifierId;
-var orderAmount = 0;
-var modierAmount = 0;
+let selectedProductId;
+let selectedProductvariantId;
+let selectedProductmodifierId;
+let orderAmount = 0;
+let modierAmount = 0;
+
 function posPageLoaded() {
    
     var productwrap =  '{!productwrapperList}';
@@ -22,10 +23,11 @@ function posPageLoaded() {
                 console.log('methodcalled product-wrapper');
                 var selectedProductElement = e.target;
                  selectedProductId = selectedProductElement.getAttribute('data-ProductId');
-                var selectedProdOptionCount = selectedProductElement.getAttribute('data-variantscount'); //data-ModifierCount
+                var selectedProdOptionCount = selectedProductElement.getAttribute('data-variantscount'); //data-variant-count
+                var selectedModifierCount = selectedProductElement.getAttribute('data-ModifierCount'); //data-Modifier-Count
                 var selectedProdBasePrice = selectedProductElement.getAttribute('data-defaultprice'); //Default Price
                 console.log('selectedProductIdNDR ' + selectedProductId + ' '+ selectedProdOptionCount);
-                if(selectedProdOptionCount>1){
+                if(selectedProdOptionCount>1 || selectedModifierCount > 0 ){
                     selectedProductDetails(selectedProductId);
                   var modalwindow = document.querySelector('.ProductVariant-modal');
                   modalwindow.style.display='block';
@@ -35,24 +37,25 @@ function posPageLoaded() {
                
                  
                 }else{
+                
                     orderAmount =  selectedProdBasePrice;
-                    console.log('orderAmountNDR' + orderAmount);
+                  
                    addtocart(selectedProductId,'','',orderAmount,1,'');
-
+                  
                    gettingorderDetails();
                 }
                 
              }
              // Catalog selection click listner
              if ((e.target.classList.contains('catVariants'))) {
-                console.log('methodcalled catVariants');
-                var selectedProductElement = e.target;
+                 var selectedProductElement = e.target;
                  selectedProductvariantId = selectedProductElement.getAttribute('data-catalogvatiant');
                  variantAmount = selectedProductElement.getAttribute('data-variantamount');
                 console.log('variantAmount' + variantAmount);
                 if(variantAmount != ''){
+                 
                     orderAmount =  variantAmount;
-                    console.log('orderAmountNDR' + orderAmount);
+                   
                 }else{
                     orderAmount = 0;
                 }
@@ -73,13 +76,13 @@ function posPageLoaded() {
             }
              //########################## Catalog modifier selection click listner ########################
              if ((e.target.classList.contains('catmodifier'))) {
-                console.log('methodcalled catmodifier');
+               
                 var selectedProductElement = e.target;
                  selectedProductmodifierId = selectedProductElement.getAttribute('data-catalogmodifier');
                  modierAmount = selectedProductElement.getAttribute('data-modifierAmount');
+                
                  var sum = parseInt(orderAmount) + parseInt(modierAmount);
-                //var roundedSum = parseFloat(sum.toFixed(2)); // Result: 2.69
-                orderAmount=sum;
+                 orderAmount =   sum;
                 var navLinkCurrentActiveElementsList = document.querySelectorAll(".catVariants.onselect-color");
                     if(selectedProductElement) {
                         // Add "active" class to the setSelectedTab link
@@ -89,22 +92,25 @@ function posPageLoaded() {
             }
               //################## Catalog modifier selection click listner ##############
               if ((e.target.classList.contains('addbutton'))) {
-                console.log('methodcalled addbutton');
+                
                 var selectedProductElement = e.target;
-                console.log('selectedProductId ' +selectedProductId + 'selectedProductvariantId '+selectedProductvariantId+'selectedProductmodifierId '+selectedProductmodifierId);
+                console.log('selectedProductId ' +selectedProductId + 'selectedProductvariantId '+selectedProductvariantId+'selectedProductmodifierId = '+selectedProductmodifierId + 'OrderAmount = ' + orderAmount);
                 var posOrderQuantity = document.querySelector('.posorderquantity');
                 var quantity = posOrderQuantity.value;
                 var posOrdernotes = document.querySelector('.posordernotes');
                 var note = posOrdernotes.value;
                 if (selectedProductvariantId != null) {
-                    orderAmount = orderAmount*quantity;
+                  
+                    orderAmount = parseInt(orderAmount) * parseInt(quantity);
+                  
                     addtocart(selectedProductId,selectedProductvariantId,selectedProductmodifierId,orderAmount,quantity,note);
                     var closemodals = document.querySelectorAll(".ProductVariant-modal");
                     closemodals.forEach(function(modal) {
                         modal.style.display = 'none';
                     });
                     gettingorderDetails();
-                    var orderAmount = 0;
+                     orderAmount = 0;
+                    
                 }
                   
              }
@@ -140,8 +146,9 @@ function posPageLoaded() {
             closemodals.forEach(function(modal) {
                 modal.style.display = 'none';
             });
-            var orderAmount = 0;
-      
+           
+             orderAmount = 0;
+          
         }
       
         });

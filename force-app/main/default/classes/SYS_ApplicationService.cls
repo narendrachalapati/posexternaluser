@@ -975,7 +975,7 @@ global virtual inherited sharing class SYS_ApplicationService {
     global virtual HttpRequest buildOutboundHttpRequest(SYS_IntegrationLog__c log){
         HttpRequest req = new HttpRequest();
 
-        if(SYS_DataCacheFactory.OBJ_TYPE!=NULL){
+        if(SYS_DataCacheFactory.OBJ_TYPE!=NULL && log.WhatId__c != NULL){
             String objApiName = SYS_DataCacheFactory.objectSettingMap.get(SYS_DataCacheFactory.OBJ_TYPE).ObjectApiName__c;
             objApiName = objApiName != null ? objApiName.replace(SYS_DataCacheFactory.integrationSetting?.EscapeCharacter__c !=null ? SYS_DataCacheFactory.integrationSetting?.EscapeCharacter__c :'', SYS_DataCacheFactory.namespacePrefix!=null ? SYS_DataCacheFactory.namespacePrefix :'') : objApiName;
 

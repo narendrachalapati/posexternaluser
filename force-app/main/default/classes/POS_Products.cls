@@ -1,4 +1,4 @@
-public with sharing class POS_Products {
+public without sharing class POS_Products {
     public class PosProductsException extends Exception {}
     public string memberrecordId {get; set; }
     public string accountrecId {get; set; }
@@ -23,6 +23,7 @@ public with sharing class POS_Products {
     public integer quantity {get; set; }
     public string notes {get; set; }
     public string  lastdeletedItem {get; set; }
+    public list<Catalog_Modifer_List__c> catalogmodfierListarray {get; set; }
     public void   fetchProducts() {
         catalogItemList = new list<CatalogItem__c>();
         catItemMap = new Map<Id, CatalogItem__c>();
@@ -35,84 +36,92 @@ public with sharing class POS_Products {
                 system.debug('catalogitemIterNDR' + catalogitemIter);
                 Productwrapper prodwrapper = new Productwrapper();
                 prodwrapper.catalogVariantsCount = catalogitemIter.CatalogItemVariations__r.size();
-                prodwrapper.catalogModifierCount = catalogitemIter.CatalogModifier__r.size();
+                prodwrapper.catalogModifierCount = catalogitemIter.Modifiers_on_Items__r.size();
                 prodwrapper.shortNameCode= ImageController.getShortendImageName(catalogitemIter.Name);
-                prodwrapper.catalogItem = catalogitemIter;
-                
-                productwrapperList.add(prodwrapper);
-                
-            //  }
+                if(catalogitemIter.CatalogItem_Image__r.size()>0){
+                    string imageUrl = catalogitemIter.CatalogItem_Image__r[0].URL__c;
+                    if(string.isNotBlank(imageUrl)){
+                        prodwrapper.imageUrl = imageUrl;
+                        
+                    }
+                }
+                    prodwrapper.catalogItem = catalogitemIter;
+                    productwrapperList.add(prodwrapper);
+                    
+                //  }
+            }
+            system.debug('productwrappersize'+ productwrapperList.size());
+            isproductsloaded = true;
         }
-        system.debug('productwrappersize'+ productwrapperList.size());
-        isproductsloaded = true;
-    }
-    public void   getorderDetails() {
-        order = new order__c();
-        order = POS_Utility.DraftOrderCreation(accountrecId,memberrecordId);
-        iscartloaded = true;
-    }
-    /*this hook is called when we adding the item into the cart*/
-    public void  addingToCart() {
-        POS_Utility.OrderlineItem(order, memberrecordId, selectedProductId,selectedProductVariant,selectedProductModifer,OrderAmount,quantity,notes,catItemMap);
-        selectedProduct = new CatalogItem__c();
-        system.debug('selectedProductNDR' + selectedProduct);
-        isModalOpen = false;
-       
-    }
-    /*on key enter filtering the Product*/
-    public  void productSearch() {
-        List<CatalogItem__c>ItemList = new list<CatalogItem__c>();
-        ItemList =  POS_Utility.productSearchUtil(productSearchName,catalogItemList);
-        productwrapperList = new List<Productwrapper>();
-        for(CatalogItem__c catalogitemIter:ItemList){
-            //  if(catalogitemIter.CatalogItemVariations__r.size()>0){
-                system.debug('catalogitemIterNDR' + catalogitemIter);
-                Productwrapper prodwrapper = new Productwrapper();
-                prodwrapper.catalogVariantsCount = catalogitemIter.CatalogItemVariations__r.size();
-                prodwrapper.shortNameCode= ImageController.getShortendImageName(catalogitemIter.Name);
-                prodwrapper.catalogItem = catalogitemIter;
-                
-                productwrapperList.add(prodwrapper);
-                system.debug('filteredProdNDR' + productwrapperList);
-            //  }
+        public void   getorderDetails() {
+            order = new order__c();
+            order = POS_Utility.DraftOrderCreation(accountrecId,memberrecordId);
+            iscartloaded = true;
+        }
+        /*this hook is called when we adding the item into the cart*/
+        public void  addingToCart() {
+            POS_Utility.OrderlineItem(order, memberrecordId, selectedProductId,selectedProductVariant,selectedProductModifer,OrderAmount,quantity,notes,catItemMap);
+            selectedProduct = new CatalogItem__c();
+            system.debug('selectedProductNDR' + selectedProduct);
+            isModalOpen = false;
             
         }
-    }
-    /*This helper class is called when User clicks the Product only when options are there for the user selected product*/
-    public void getSelectedProductDetails() {
-        selectedProduct = new CatalogItem__c();
-        selectedProduct = POS_Utility.getSelectedProductUtil(selectedProductId,catItemMap);
-        isModalOpen = true;
-        
-    }
-     /*This helper class is called when User clicks the Product only when options are there for the user selected product*/
-     public void deSelectedProductDetails() {
-        selectedProduct = new CatalogItem__c();
-        system.debug('selectedProductNDR' + selectedProduct);
-        isModalOpen = false;
+        /*on key enter filtering the Product*/
+        public  void productSearch() {
+            List<CatalogItem__c>ItemList = new list<CatalogItem__c>();
+            ItemList =  POS_Utility.productSearchUtil(productSearchName,catalogItemList);
+            productwrapperList = new List<Productwrapper>();
+            for(CatalogItem__c catalogitemIter:ItemList){
+                //  if(catalogitemIter.CatalogItemVariations__r.size()>0){
+                    system.debug('catalogitemIterNDR' + catalogitemIter);
+                    Productwrapper prodwrapper = new Productwrapper();
+                    prodwrapper.catalogVariantsCount = catalogitemIter.CatalogItemVariations__r.size();
+                    prodwrapper.shortNameCode= ImageController.getShortendImageName(catalogitemIter.Name);
+                    prodwrapper.catalogItem = catalogitemIter;
+                    prodwrapper.ModifiersOnItemList = catalogitemIter.Modifiers_on_Items__r;
+                    productwrapperList.add(prodwrapper);
+                    system.debug('filteredProdNDR' + productwrapperList);
+                //  }
+                
+            }
         }
-     /*This  method is called for deleteing the orderlineintem*/
-    public void orderLineDelete() {
-        lastdeletedItem =   POS_Utility.deleteOrderItemUtil(orderLineId,lastdeletedItem);
-       
-    }
-     /*This  method is called for doing apicallout to square*/
-     public void orderApiCallout() {
-    SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,order.Id,'POST','INSERT','Square','Square_Orders');
-    }
-    /*This  method is called for for updating the order status to active*/
-    public void updateorder(){
-        POS_Utility.orderUpdateUtil(order);
-    }
-    public class Productwrapper {
+        /*This helper class is called when User clicks the Product only when options are there for the user selected product*/
+        public void getSelectedProductDetails() {
+            selectedProduct = new CatalogItem__c();
+            selectedProduct = POS_Utility.getSelectedProductUtil(selectedProductId,catItemMap);
+            catalogmodfierListarray = POS_Utility.getSelectedModifiers(selectedProduct);
+            isModalOpen = true;
+            
+        }
+        /*This helper class is called when User clicks the Product only when options are there for the user selected product*/
+        public void deSelectedProductDetails() {
+            selectedProduct = new CatalogItem__c();
+            system.debug('selectedProductNDR' + selectedProduct);
+            isModalOpen = false;
+        }
+        /*This  method is called for deleteing the orderlineintem*/
+        public void orderLineDelete() {
+            lastdeletedItem =   POS_Utility.deleteOrderItemUtil(orderLineId,lastdeletedItem);
+            
+        }
+        /*This  method is called for doing apicallout to square*/
+        public void orderApiCallout() {
+            SquarePaymentUtility.ApiCalloutSynchronousWithRecordId(AccountrecId,order.Id,'POST','INSERT','Square','Square_Orders');
+        }
+        /*This  method is called for for updating the order status to active*/
+        public void updateorder(){
+            POS_Utility.orderUpdateUtil(order);
+        }
+        public class Productwrapper {
+            
+            public String shortNameCode {get; set; }
+            public String imageUrl {get; set; }
+            public CatalogItem__c catalogItem {get; set; }
+            public list<Modifiers_on_Item__c> ModifiersOnItemList {get; set; }
+            public integer catalogVariantsCount {get; set; }
+            public integer catalogModifierCount {get; set; }
+            
+        }
         
-        public String shortNameCode {get; set; }
-        public String imageUrl {get; set; }
-        public CatalogItem__c catalogItem {get; set; }
-        public integer catalogVariantsCount {get; set; }
-        public integer catalogModifierCount {get; set; } 
         
     }
-    
-    
-}

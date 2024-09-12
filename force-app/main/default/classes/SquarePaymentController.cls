@@ -11,8 +11,11 @@ public without sharing class SquarePaymentController {
     public Boolean isCardcreated {get; set; }
     public card__c card {get; set; }
     public string cardId {get; set; }
-    
-    public Decimal Amount {
+    public Boolean allowTip {get; set; }
+    public decimal tipAmount  {get; set; }
+    public decimal AmountwithTip {  get{ return ((AmountwithTip!= NULL) ? AmountwithTip : 0.0);}
+    set;
+}   public Decimal Amount {
         get{ return ((Amount!= NULL) ? Amount : 0.0);}
         set;
     }
@@ -37,8 +40,9 @@ public without sharing class SquarePaymentController {
     
     public void fetchCustomerCards() {
         try{
+            allowTip = SquarePaymentUtility.allowTip(AccountrecId);
             AmountTOpay = SquarePaymentUtility.gettingAmountForPayment(payableOrderId, payableAppointmentId, Amount,memberrecordid);
-            
+            AmountwithTip = AmountTOpay;
             cardslist = new list<card__c>();
             system.debug('cardId' + cardId + card);
             Map<string,string> headersmap = new Map<string,string>();
@@ -157,5 +161,14 @@ public without sharing class SquarePaymentController {
         } catch(DmlException e) {
             System.debug('The following exception has occurred: ' + e.getMessage());
         }
+    }
+    public void allowTipCheck(){
+        allowTip = SquarePaymentUtility.allowTip(AccountrecId);
+    }
+    public void addTipamount(){
+        if(tipAmount > 0 && tipAmount !=null) {
+            AmountwithTip = AmountTOpay+tipAmount;
+        }
+       
     }
 }

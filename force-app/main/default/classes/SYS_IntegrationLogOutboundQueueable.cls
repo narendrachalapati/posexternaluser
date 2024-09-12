@@ -53,10 +53,15 @@ public without sharing class SYS_IntegrationLogOutboundQueueable implements Queu
     
                     objectApiName = SYS_DataCacheFactory.objectSettingMap?.get(SYS_DataCacheFactory.OBJ_TYPE)?.ObjectApiName__c;
                     maxRecordCount = SYS_DataCacheFactory.MAX_CALLOUT_COUNT;
+
+                    System.debug('SP integrationType '+
+         +' : accountIds' +SYS_DataCacheFactory.accountId+ ' obj_type: '+SYS_DataCacheFactory.obj_type +' : int_type'+SYS_DataCacheFactory.int_type);
     
                 }
+
+                //commented as the whatId might be empty for logs created from webhooks
                 
-                if (log.whatid__c != NULL && objectSettingName == log.ObjectSettingId__c && i < maxRecordCount) {
+                if (/* log.whatid__c != NULL && */ objectSettingName == log.ObjectSettingId__c && i < maxRecordCount) {
                     logIdvsWhatIdMap.put(log.Id, log.whatid__c);
                     i++;
                 }
@@ -74,24 +79,26 @@ public without sharing class SYS_IntegrationLogOutboundQueueable implements Queu
             objectQuery = 'SELECT Id FROM ' +objectApiName +' WHERE Id in (' + '\'' + String.join(logIdvsWhatIdMap.values(),'\',\'') + '\')';
             records = Database.query(objectQuery);
             
-            appService = (SYS_ApplicationService)Type.forName(SYS_DataCacheFactory.objectSettingMap.get(SYS_DataCacheFactory.OBJ_TYPE).ApexHandler__c).newInstance();
-            Map<Id, String> jsonListForOutbound = appService.transformSObjectToJson(records);
-
-            for(SYS_IntegrationLog__c log:sysLogs) {
-                if(!logIdvsWhatIdMap?.containsKey(log.Id) || log.Status__c == 'FAIL' ) {
-                    continue;
-                }
-                try {
-                    String finalJsonForOutbound = jsonListForOutbound?.get(log.whatid__c);
-                    SYS_Helper.generateRequestBody(log, finalJsonForOutbound);
+            if (records.size() > 0) {
+                appService = (SYS_ApplicationService)Type.forName(SYS_DataCacheFactory.objectSettingMap.get(SYS_DataCacheFactory.OBJ_TYPE).ApexHandler__c).newInstance();
+                Map<Id, String> jsonListForOutbound = appService.transformSObjectToJson(records);
     
-                } catch(Exception e) {
-                    SYS_Helper.logException(log,e.getStackTraceString()+'\n'+e.getMessage());
+                for(SYS_IntegrationLog__c log:sysLogs) {
+                    if(!logIdvsWhatIdMap?.containsKey(log.Id) || log.Status__c == 'FAIL' ) {
+                        continue;
+                    }
+                    try {
+                        String finalJsonForOutbound = jsonListForOutbound?.get(log.whatid__c);
+                        SYS_Helper.generateRequestBody(log, finalJsonForOutbound);
+        
+                    } catch(Exception e) {
+                        SYS_Helper.logException(log,e.getStackTraceString()+'\n'+e.getMessage());
+                    }
                 }
             }
         }
-        
-
+        // System.debug('log '+sysLogs[0].data0__c );
+        // if(true) return;
         
 
         for(SYS_IntegrationLog__c log:sysLogs) {

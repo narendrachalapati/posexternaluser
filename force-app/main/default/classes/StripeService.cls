@@ -219,8 +219,10 @@ public without sharing class StripeService {
         logResp.QB_Entity__c = 'Transaction__c';
         System.debug('transaction==log');
         insert logResp;*/
-         system.debug('sourcePaymentRequestIdNDR'+sourcePaymentRequest.Id);
-        Payment_Intent__c paymentRequest = [SELECT Id, Status__c, Opportunity__r.Id FROM Payment_Intent__c WHERE Id = :sourcePaymentRequest.Id];
+
+        List<Payment_Intent__c> paymentRequestList = [SELECT Id, Status__c, Opportunity__r.Id FROM Payment_Intent__c WHERE Id = :sourcePaymentRequest.Id];
+        Payment_Intent__c paymentRequest = (paymentRequestList.size() > 0) ? paymentRequestList[0] : new Payment_Intent__c(Id = sourcePaymentRequest.Id);
+        
         paymentRequest.Status__c = success ? 'payment_done' : 'payment_failed';
         
         if(success == true){

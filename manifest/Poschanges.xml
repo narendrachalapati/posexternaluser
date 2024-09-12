@@ -3,29 +3,36 @@
 
     <types>
             <members>PMA_ProductsController</members>
+			<members>POS_Products</members>
 		    <members>PMA_SearchController</members>
-			<members>PosUtility</members>
+			<members>POS_Utility</members>
 			<members>StripeService</members>
-		<name>ApexClass</name>
-
-	</types>
+			<members>SquarePaymentUtility</members>
+			<members>SquarePaymentController</members>
+			<members>SquareCardController</members> 
+			<members>Square_ApplicationService</members>
+			<members>EstimateUtility</members>
+            <members>EstimateController</members>
+            <members>EstimateControllerTest</members> 
+            <members>Square_ApplicationService</members>  
+			<members>CreateInvoiceController</members>
+			<members>CreateInvoiceUtility</members>
+		 <name>ApexClass</name>
+    </types>
+	
 	<types>
-           <members>pmaContactsSearch</members>
-		   <members>PmaProducts</members>
-		   <members>pmaContactsSearch</members>
-		    <members>POSscreenapp</members>
-		<name>AuraDefinitionBundle</name>
-
-	</types>
-	 <types>
-       
-        <members>POSscreencmp</members>
+        <members>SquareCardui</members>
+		 <members>SquarePayment</members>
+		  <members>Products</members> 
+		   <members>CreateInvoiceCreateVFcmp</members>
         <name>ApexComponent</name>
     </types>
-
-  <types>
-	    <members>POSscreen</members>
-		<name>ApexPage</name>
+	  <types>
+		<members>Estimate</members> 
+		<members>pointOfSale</members>
+		<members>Square</members>
+		<name>StaticResource</name>
 	</types>
-	<version>56.0</version>
+  
+  <version>56.0</version>
 </Package>

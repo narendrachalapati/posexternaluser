@@ -2,7 +2,7 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
    
      <types>
-     <members>PosUtility</members>
+     <members>Square_ApplicationService</members>
     <name>Apexclass</name>
     </types>
    <version>56.0</version>

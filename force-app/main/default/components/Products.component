@@ -5,13 +5,14 @@
    <apex:attribute name="uuid-string" description="" type="String" assignTo="{!uuid}" />
    <apex:attribute name="todo-id" description="" type="String" assignTo="{!todorecordId}" />
    <!--todo recrod -->
-   <apex:attribute name="member-record-id" description="" type="String" default="0039H00000AgUGrQAN" assignTo="{!memberrecordId}"
+   <apex:attribute name="member-record-id" description="" type="String"  assignTo="{!memberrecordId}"
+   /> <!--default="0039H00000AgUGrQAN" -->
+   <apex:attribute name="account-record-id" description=""  type="String" assignTo="{!accountrecId}"
    />
-   <apex:attribute name="account-record-id" description="" default="0019H000004a9SJQAY" type="String" assignTo="{!accountrecId}"
-   />
+  <!-- default="0019H00000GBT7AQAX" -->
    <!--attributes section end -->
    <!-- actionFunction section start -->
-   <apex:form>
+   <apex:form >
       <apex:actionFunction name="initProductsList" action="{!fetchProducts}" rerender="outputPanel, cartpanel, modaloutputpanel, skeletonpanel, paybuttonpanels"
          oncomplete="posPageLoaded()">
       </apex:actionFunction>
@@ -31,21 +32,24 @@
       <apex:actionFunction name="ProductFiltering" action="{!productSearch}" rerender="outputPanel">
          <apex:param assignto="{!productSearchName}" name="prodName" value="" />
       </apex:actionfunction>
-      <apex:actionFunction name="selectedProductDetails" action="{!getSelectedProductDetails}" rerender="catalogVariantsPanel" oncomplete="onmodalopenaction()">
+      <apex:actionFunction name="selectedProductDetails" action="{!getSelectedProductDetails}" rerender="catalogVariantsPanel"
+         oncomplete="onmodalopenaction()">
          <apex:param assignto="{!selectedProductId}" name="productId" value="" />
       </apex:actionfunction>
       <apex:actionFunction name="deleteOrderLine" action="{!orderLineDelete}" rerender="outputPanel" oncomplete="gettingorderDetails()">
          <apex:param assignto="{!orderLineId}" name="orderline" value="" />
       </apex:actionfunction>
       <apex:actionFunction name="ordercallout" action="{!orderApiCallout}" rerender="outputPanel" oncomplete="orderupdate()">
-     
+
       </apex:actionfunction>
       <apex:actionFunction name="orderupdate" action="{!updateorder}" rerender="outputPanel">
-     
-   </apex:actionfunction>
+
+      </apex:actionfunction>
    </apex:form>
    <script>
       initProductsList();
+      console.log('productions are called');
+     
    </script>
    <!-- actionFunction section END -->
    <apex:stylesheet value="{!URLFOR($Resource.pointOfSale, 'css/main5103.css?v=6.0')}" />
@@ -67,42 +71,41 @@
 
          <!--End header-->
          <apex:outputPanel id="skeletonpanel">
-         <apex:outputpanel rendered="{!isproductsloaded == false}">
-         <div Class="ponte-event-none">
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-         </div>
-      </apex:outputpanel>
-      </apex:outputPanel>
+            <apex:outputpanel rendered="{!isproductsloaded == false}">
+               <div Class="ponte-event-none">
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+               </div>
+            </apex:outputpanel>
+         </apex:outputPanel>
          <apex:outputPanel layout="block" styleclass="product-badges" id="outputPanel">
-            
+            <input type="hidden" value="{!todorecordid}" name="todorecordid" class="todorecordid" />
             <apex:repeat value="{!productwrapperList}" var="productwrapper" id="theRepeat">
-               <div class="prod-card product-wrapper product-class" data-ProductId="{!productwrapper.catalogItem.Id}" data-variantscount="{!productwrapper.catalogVariantsCount}"
-                  data-ModifierCount="{!productwrapper.catalogVariantsCount}" data-defaultprice="{!productwrapper.catalogItem.Default_Price__c}">
+               <div class="prod-card product-wrapper product-class" data-ProductId="{!productwrapper.catalogItem.Id}" data-variantscount="{!productwrapper.catalogVariantsCount} "
+                  data-ModifierCount="{!productwrapper.catalogModifierCount}" data-defaultprice="{!productwrapper.catalogItem.Default_Price__c}">
                   <apex:outputpanel rendered="{!productwrapper.imageUrl != ''}" styleClass="ponte-event-none">
-                     <img class="ponte-event-none image-size" src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/RX_THUMBNAIL/IMAGES/VENDOR/2024/4/17/3334c8c2-3a17-4531-a91d-fe43776e2df1_458210.JPG"
-                     />
+                     <img class="ponte-event-none image-size" src="{!productwrapper.imageUrl}" />
                   </apex:outputpanel>
                   <apex:outputpanel rendered="{!productwrapper.imageUrl == ''}" styleClass="ponte-event-none prod-card-shortcode">
                      <div class="prodName ponte-event-none">
                         {!productwrapper.shortNameCode}
                      </div>
                   </apex:outputpanel>
-                  <div class="padding ponte-event-none">{!productwrapper.catalogItem.Name}</div>
+                  <div class="ponte-event-none">{!productwrapper.catalogItem.Name}</div>
                   <br/>
 
                </div>
@@ -156,21 +159,25 @@
                            <h3 class="modal-content-left">Choose one</h3>
                            <apex:repeat value="{!selectedProduct.CatalogItemVariations__r}" var="catalogVariants" id="variantsIter">
                               <button type="button" class="popupbuttons catVariants" data-catalogvatiant="{!catalogVariants.Id}" data-variantamount="{!catalogVariants.PriceMoney__c}">
-                                 {!catalogVariants.Name}
+                                  {!catalogVariants.Name}
                                  <apex:outputpanel rendered="{!catalogVariants.PriceMoney__c != null}" styleClass="ponte-event-none">
-                                 ${!catalogVariants.PriceMoney__c}
-                              </apex:outputpanel>
+                                    ${!catalogVariants.PriceMoney__c}
+                                 </apex:outputpanel>
                               </button>
                            </apex:repeat>
                            <h3 class="modal-content-left">Choose you like</h3>
-                           <div class="displayflex">
-                              <apex:repeat value="{!selectedProduct.CatalogModifier__r}" var="catalogmodifier" id="modifierIter">
-
-                                 <button type="button" class="popupbuttons catmodifier" data-catalogmodifier="{!catalogmodifier.Id}" data-modifierAmount="{!catalogmodifier.PriceMoney__c}">
-                                    {!catalogmodifier.Name} 
-                                    ${!catalogmodifier.PriceMoney__c}
-                                 </button>
-
+                           <div class="displayflex displaycolumn">
+                              <apex:repeat value="{!catalogmodfierListarray}" var="catalogmodifierList" id="modifierIter">
+                                 <div>
+                                    <p>{!catalogmodifierList.Name}</p>
+                                 </div>
+                                 <div class="displayflex">
+                                    <apex:repeat value="{!catalogmodifierList.CatalogModifier__r}" var="catalogmodifier" id="modifierIter">
+                                       <button type="button" class="popupbuttons catmodifier" data-catalogmodifier="{!catalogmodifier.Id}" data-modifierAmount="{!catalogmodifier.Amount__c}">
+                                          {!catalogmodifier.Name} ${!catalogmodifier.Amount__c}
+                                       </button>
+                                    </apex:repeat>
+                                 </div>
                               </apex:repeat>
                            </div>
                            <table class="width-inhert">
@@ -212,7 +219,7 @@
       </div>
       <apex:outputPanel id="cartpanel" styleClass="flexbasis">
          <h1>Current sale</h1>
-        
+
          <div>
             <div class="textalign-center">
                <table>
@@ -221,34 +228,34 @@
                         <i class="fa fa-solid fa-user"></i>
                      </td>
                      <td class="addcustomer">
-                        {!order.Member__r.Name}
+                        {!order.customer__r.Name}
                      </td>
 
                   </tr>
                </table>
             </div>
-             <!--- skeleton Element start for cart -->
-         <apex:outputpanel rendered="{!iscartloaded == false}">
-         <div Class="ponte-event-none">
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-            <div>
-               <span class="skeleton-box skeleton-w60"></span>
-               <span class="skeleton-box skeleton-w25"></span>
-            </div>
-         </div>
-         </apex:outputpanel>
-           <!--- skeleton Element end for cart -->
+            <!--- skeleton Element start for cart -->
+            <apex:outputpanel rendered="{!iscartloaded == false}">
+               <div Class="ponte-event-none">
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+                  <div>
+                     <span class="skeleton-box skeleton-w60"></span>
+                     <span class="skeleton-box skeleton-w25"></span>
+                  </div>
+               </div>
+            </apex:outputpanel>
+            <!--- skeleton Element end for cart -->
             <div class="column">
                <div class="card">
                   <div class="scroll-y">
@@ -257,10 +264,10 @@
                            <tr class="orderline" id="{!orderlines.Id}">
                               <td class="fontweight">
                                  {!orderlines.Product_Name__c}
-                                 <apex:outputpanel rendered="{!orderlines.quantity__c > 1}">
-                                    <span class="quantity">x{!orderlines.quantity__c}</span>
+                                 <apex:outputpanel rendered="{!orderlines.Quantity__c > 1}">
+                                    <span class="quantity">x{!orderlines.Quantity__c}</span>
                                  </apex:outputpanel>
-                                 <div class="font-color">{!orderlines.Catalog_variant_Name__c}
+                                 <div class="font-color wordwrap">{!orderlines.Catalog_variant_Name__c}
                                     <br></br>
                                     {!orderlines.catalog_Modifer_Name__c}
                                  </div>
@@ -269,7 +276,7 @@
                                  </apex:outputpanel>
                               </td>
                               <td class="textalign">${!orderlines.Total_Price__c}
-                                 <i   data-orderlineid="{!orderlines.Id}" class="fa fa-minus-circle fafadelete"></i>
+                                 <i data-orderlineid="{!orderlines.Id}" class="fa fa-minus-circle fafadelete"></i>
                               </td>
                            </tr>
                         </apex:repeat>
@@ -280,7 +287,7 @@
 
             <apex:outputPanel id="paybuttonpanels" styleClass="{!IF(NOT(ISNULL(order.Total_Price__c)) && order.Total_Price__c > 0, 'posproductspaybutton d-flex mx-auto', 'paybuttoninactive d-flex mx-auto')}">
                <b class="ponte-event-none">Charge ${!order.Total_Price__c}</b>
-           </apex:outputPanel>
+            </apex:outputPanel>
          </div>
       </apex:outputPanel>
 
